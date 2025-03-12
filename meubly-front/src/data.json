@@ -1,0 +1,53 @@
+[
+    {
+        "name": "Habitat et Jardin Canapé d'angle réversible Axel noir",
+        "price": 255,
+        "offerCount": 6,
+        "mainImage": "./assets/meuble1.webp",
+        "offers": [
+            {
+                "url": "url",
+                "website": "amazon"
+            }
+        ]
+    },
+    
+    {
+        "name": "Usinestreet Canapé d'angle droit Rio",
+        "price": 799,
+        "offerCount": 12,
+        "mainImage": "./assets/meuble3.jpg",
+        "offers": [
+            {
+                "url": "url",
+                "website": "amazon"
+            }
+        ]
+    },
+    
+    {
+        "name": "Best mobilier Canapé d'angle réversible Harvey gris",
+        "price": 399,
+        "offerCount": 4,
+        "mainImage": "./assets/meuble2.jpg",
+        "offers": [
+            {
+                "url": "url",
+                "website": "amazon"
+            }
+        ]
+    }, {
+        "name": "Best mobilier Canapé d'angle réversible Harvey gris",
+        "price": 399,
+        "offerCount": 4,
+        "mainImage": "./assets/meuble1.webp",
+        "offers": [
+            {
+                "url": "url",
+                "website": "amazon"
+            }
+        ]
+    }
+    
+   
+]
