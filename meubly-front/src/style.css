@@ -2,5 +2,38 @@
 
 /* Exemple dans un fichier CSS global */
 body {
-  font-family: 'Poppins',
+  margin: 0;
+  padding: 0;
 }
+
+@font-face {
+  font-family: 'Poppins-Regular';
+  src: url('../public/assets/fonts/POPPINS-REGULAR.TTF');
+}
+
+@font-face {
+  font-family: 'Poppins-Bold';
+  src: url('../public/assets/fonts/POPPINS-BOLD.TTF');
+}
+
+@font-face {
+  font-family: 'Poppins-Medium';
+  src: url('../public/assets/fonts/POPPINS-MEDIUM.TTF');
+}
+
+@font-face {
+  font-family: 'Poppins-SemiBold';
+  src: url('../public/assets/fonts/POPPINS-SEMIBOLD.TTF');
+} 
+
+@font-face {
+  font-family: 'Poppins-Light';
+  src: url('../public/assets/fonts/POPPINS-LIGHT.TTF');
+}
+
+
+
+
+
+
+

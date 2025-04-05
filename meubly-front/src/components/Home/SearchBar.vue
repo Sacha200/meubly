@@ -2,7 +2,7 @@
   <div class="flex justify-center py-14">
     <div class="flex items-center bg-white border border-gray-300 rounded-full w-[676px] h-[71px] shadow-sm">
       <div class="flex-1 px-8">
-        <div class="text-[12px] font-bold text text-[#222222]">Produits</div>
+        <div class="text-[12px] search_bar_title text text-[#222222]">Produits</div>
         <input
           type="text"
           v-model="searchQuery"
@@ -38,11 +38,12 @@ export default {
 </script>
 
 <style scoped>
-.text {
-  font-family: 'Poppins', sans-serif;
-}
 
 .button_search{
   cursor: pointer;
+}
+
+.search_bar_title{
+  font-family: 'Poppins-SemiBold';
 }
 </style>

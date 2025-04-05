@@ -17,7 +17,7 @@
       </svg>
     </div>
     <div class="category mt-2" style="padding-inline: 10px;">
-    <h3 class="text-[24px] font-semibold mb-2">Categories</h3>
+    <h3 class="text-[24px] title mb-2">Categories</h3>
     <ul class="space-y-4 mt-5">
       <li class="flex justify-between">
         <span>Crafts</span>
@@ -62,5 +62,17 @@
 
   .filter{
     border-radius: 10px;
+  }
+
+  .title{
+    font-family: 'Poppins-Medium';
+    font-size: 24px;
+    color: #3A3A3A;
+  }
+
+  li{
+    font-family: 'Poppins-Regular';
+    font-size: 16px;
+    color: #767676;
   }
 </style> 
