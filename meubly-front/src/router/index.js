@@ -4,6 +4,7 @@ import ResultatRechercheView from "../views/ResultatRechercheView.vue";
 import ProductDetailView from "../views/ProductDetailView.vue";
 import LoginView from "../views/LoginView.vue";
 import FavorisView from "../views/FavorisView.vue";
+import LogoutView from "../views/LogoutView.vue";
 
 
 const router = createRouter({
@@ -15,12 +16,16 @@ const router = createRouter({
       name: 'ResultatRecherche', component: ResultatRechercheView
     },
     {
-      path: '/product-detail',
+      path: '/product-detail/:id',
       name: 'ProductDetail', component: ProductDetailView
     },
     {
       path: '/login',
       name: 'Login', component: LoginView
+    },
+    {
+      path: '/logout',
+      name: 'Logout', component: LogoutView
     },
     {
       path: '/favoris',

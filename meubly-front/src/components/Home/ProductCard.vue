@@ -17,7 +17,7 @@
       <p class="offers text-gray-500"> {{ product.nb_offers }} offres</p>
       <p class="price"><span class="text_price">à partir de</span> {{ product.price }}€</p>
     </div>
-    <button @click="goToProductDetail" class="text-[#B88E2F] text-white w-full py-2 text-[16px] border border-[#DBDBDB] button" style="border-radius: 10px;">Comparer</button>
+    <button @click="goToProductDetail()" class="text-[#B88E2F] text-white w-full py-2 text-[16px] border border-[#DBDBDB] button" style="border-radius: 10px;">Comparer</button>
   </div>
 </template>
 
@@ -29,7 +29,11 @@ export default {
   },
   methods: {
     goToProductDetail() {
-      this.$router.push({ name: 'ProductDetail', params: { id: this.product.id } });
+      try {
+        this.$router.push({ name: 'ProductDetail', params: { id: this.product.furniture_id } });
+      } catch (error) {
+        console.error('Erreur lors de la navigation vers la page de détails du produit:', error);
+      }
     },
   },
 };

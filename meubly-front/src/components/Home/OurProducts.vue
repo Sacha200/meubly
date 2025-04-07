@@ -5,7 +5,7 @@
       <div class="grid grid-cols-4 gap-4 mt-4">
         <ProductCard
           v-for="product in products"
-          :key="product.id"
+          :key="product.furniture_id"
           :product="product"
         />
       </div>

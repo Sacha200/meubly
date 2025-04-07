@@ -2,7 +2,7 @@
   <div>
     <Header />
     <SearchBar />
-    <BrowseRange />
+    <!--  <BrowseRange /> -->
     <OurProducts />
     <Footer />
   </div>

@@ -32,7 +32,9 @@ export default {
         };
     },
     mounted() {
-        // Supposons que l'ID du produit soit passé via une route ou une autre source
+        console.log(this.$route.params);
+        // Supposons que l'ID du produit
+        //  soit passé via une route ou une autre source
         const productId = this.$route.params.id; // Exemple d'obtention de l'ID depuis les paramètres de route
         if (productId) {
             getProductById(productId).then(product => {

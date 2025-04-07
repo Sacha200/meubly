@@ -3,7 +3,7 @@
         <div class="welcome-section flex flex-col items-center justify-center p-10">
             <h1 class="text-center">Bienvenue sur <br/>
               <span class="text-gold items-center">Meubly !</span></h1>
-            <button class="connect-button mt-6">Se connecter</button>
+            <button @click="login" class="connect-button mt-6">Se connecter</button>
         </div>
         <div class="form-section flex flex-col justify-center p-10 items-center">
             <h2 class=" text-gold mb-6">Création de compte</h2>
@@ -19,8 +19,17 @@
 </template>
 
 <script>
+import { useAuth0 } from '@auth0/auth0-vue'
 export default {
     name: 'RegisterView',
+    setup() {
+        const { loginWithRedirect } = useAuth0()
+        return {
+            login: () => {
+                loginWithRedirect()
+            }
+         }
+    },
     methods: {
         goToHome() {
             this.$router.push('/');
