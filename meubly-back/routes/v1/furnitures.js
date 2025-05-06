@@ -1,4 +1,5 @@
 import express from "express";
+import { furnitureService } from "../../services/furnitureService.js";
 import { supabase } from "../../supabase.js";
 import dotenv from "dotenv";
 
@@ -10,9 +11,21 @@ router.use(express.json());
 // Get all furnitures
 router.get("/furnitures", async (req, res) => {
   try {
-    const furnitures = await supabase.from("Furniture").select("*");
-    res.status(200).json(furnitures);
+    console.log('Récupération des meubles...');
+    const { data, error } = await supabase
+      .from("Furniture")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error('Erreur Supabase:', error);
+      throw error;
+    }
+
+    console.log('Meubles récupérés:', data);
+    res.status(200).json(data);
   } catch (error) {
+    console.error("Erreur:", error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -21,16 +34,16 @@ router.get("/furnitures", async (req, res) => {
 router.get("/furnitures/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { data, error } = await supabase
+    const product = await furnitureService.getFurnitureById(id);
+    
+    // Mise en cache dans Supabase
+    await supabase
       .from("Furniture")
-      .select("*")
-      .eq("furniture_id", id)
+      .upsert(product);
 
-    const firstFurniture = data[0];
-    console.log(firstFurniture);
-    res.status(200).json(firstFurniture);
-
+    res.status(200).json(product);
   } catch (error) {
+    console.error("Erreur:", error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -60,32 +73,17 @@ router.get("/:id/offers", async (req, res) => {
 
 // Create a new furniture
 router.post("/furnitures", async (req, res) => {
-  const {
-    furniture_id,
-    name,
-    type,
-    price,
-    description,
-    height,
-    width,
-    depth,
-    nb_offers,
-  } = req.body;
-  const { data, error } = await supabase
-    .from("Furniture")
-    .insert({
-      furniture_id,
-      name,
-      type,
-      price,
-      description,
-      height,
-      width,
-      depth,
-      nb_offers,
-    });
-  if (error) throw error;
-  res.status(201).json(data);
+  try {
+    const { data, error } = await supabase
+      .from("Furniture")
+      .insert([req.body]);
+
+    if (error) throw error;
+
+    res.status(201).json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // Update a furniture by id

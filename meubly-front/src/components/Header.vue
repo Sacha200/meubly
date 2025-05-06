@@ -14,7 +14,12 @@
           </svg>
           Favoris
         </a>
-        <button class="login-button" @click="goToLogin">Connexion</button>
+        <router-link 
+          to="/login" 
+          class="login-button"
+        >
+          Connexion
+        </router-link>
       </div>
     </div>
   </header>

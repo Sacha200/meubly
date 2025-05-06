@@ -2,12 +2,17 @@
     <div>
         <Header />
         <div class="container d-flex justify-content-center m-auto">
-            <ProductDetail v-if="product" :product="product" />
-            <TableComparison v-if="product" :product="product" />
+            <div v-if="loading" class="loading">
+                Chargement...
+            </div>
+            <div v-else-if="error" class="error">
+                {{ error }}
+            </div>
+            <div v-else-if="product" class="product-detail">
+                <ProductDetail :product="product" />
+                <TableComparison :product="product" />
+            </div>
         </div>
-
-
-
         <Footer />
     </div>
 </template>
@@ -29,23 +34,38 @@ export default {
     data() {
         return {
             product: null,
+            loading: true,
+            error: null
         };
     },
-    mounted() {
-        console.log(this.$route.params);
-        // Supposons que l'ID du produit
-        //  soit passé via une route ou une autre source
-        const productId = this.$route.params.id; // Exemple d'obtention de l'ID depuis les paramètres de route
-        if (productId) {
-            getProductById(productId).then(product => {
-                this.product = product;
-                console.log(product);
-            }).catch(error => {
-                console.error("Erreur lors de la récupération du produit:", error);
-            });
-        } else {
-            console.error("Aucun ID de produit disponible.");
+    async created() {
+        try {
+            this.loading = true;
+            this.error = null;
+            const id = this.$route.params.id;
+            console.log("ID recherché:", id); // Pour le débogage
+            
+            this.product = await getProductById(id);
+            console.log("Produit récupéré:", this.product); // Pour le débogage
+        } catch (error) {
+            console.error("Erreur complète:", error);
+            this.error = `Impossible de charger le produit: ${error.message}`;
+        } finally {
+            this.loading = false;
         }
     },
 };
 </script>
+
+<style scoped>
+.loading {
+    text-align: center;
+    padding: 20px;
+}
+
+.error {
+    color: red;
+    text-align: center;
+    padding: 20px;
+}
+</style>

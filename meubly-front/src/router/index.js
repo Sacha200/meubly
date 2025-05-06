@@ -2,9 +2,10 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import ResultatRechercheView from "../views/ResultatRechercheView.vue";
 import ProductDetailView from "../views/ProductDetailView.vue";
-import LoginView from "../views/LoginView.vue";
-import FavorisView from "../views/FavorisView.vue";
+import RegisterPage  from "../views/RegisterPage.vue";
 import LogoutView from "../views/LogoutView.vue";
+import FavoritesView from "../views/FavoritesView.vue";
+import LoginPage from '../views/LoginPage.vue';
 
 
 const router = createRouter({
@@ -21,7 +22,8 @@ const router = createRouter({
     },
     {
       path: '/login',
-      name: 'Login', component: LoginView
+      name: 'Login',
+      component: LoginPage
     },
     {
       path: '/logout',
@@ -29,8 +31,14 @@ const router = createRouter({
     },
     {
       path: '/favoris',
-      name: 'Favoris', component: FavorisView
-    }
+      name: 'Favorites',
+      component: FavoritesView
+    },
+    {
+      path: '/register',
+      name: 'Register',
+      component: RegisterPage
+    } 
   ]
 });
 

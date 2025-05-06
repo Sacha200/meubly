@@ -27,9 +27,18 @@ router.get('/users/:id', async (req, res) => {
 }); 
 
 router.post('/users', async (req, res) => {
+    // Validation des données
+    const { error: validationError } = userSchema.validate(req.body);
+    if (validationError) {
+        return res.status(400).json({ error: validationError.details[0].message });
+    }
+
     try {
         const { data, error } = await supabase.from('User').insert(req.body);
-        res.status(200).json(data);
+        if (error) {
+            return res.status(400).json({ error: error.message });
+        }
+        res.status(201).json(data);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
