@@ -14,11 +14,15 @@
       </div>
 
       <!-- Products grid -->
-      <div v-else class="grid grid-cols-4 gap-4 mt-4">
+      <div
+        v-else
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-center"
+      >
         <ProductCard
           v-for="product in products"
           :key="product.furniture_id"
           :product="product"
+          class="mx-auto w-full"
         />
       </div>
 
@@ -78,5 +82,52 @@ export default {
 
 h2{
   font-family: 'Poppins-Bold';
+}
+
+.products-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  padding: 2rem;
+}
+
+/* Tablettes */
+@media screen and (max-width: 1024px) {
+  .products-container {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    padding: 1.5rem;
+  }
+}
+
+/* Petites tablettes */
+@media screen and (max-width: 768px) {
+  .products-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .section-title {
+    font-size: 1.8rem;
+  }
+}
+
+/* Mobile */
+@media screen and (max-width: 480px) {
+  .products-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 0.8rem;
+  }
+  
+  .section-title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .product-card {
+    width: 100%;
+  }
 }
 </style>

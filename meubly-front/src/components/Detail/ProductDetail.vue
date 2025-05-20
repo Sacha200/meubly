@@ -1,18 +1,18 @@
 <template>
-    <div class="flex my-10 columns-2" style="display: flex;gap: 81px;">
-
-        <div class="w-1/3">
-            <img :src="product.cover_url" :alt="product.name" class="w-full h-auto object-cover"
-                style="height: 358px;width: 380px;" />
+    <div class="flex flex-col md:flex-row my-5 md:my-10 gap-4 md:gap-8 lg:gap-20 px-4 md:px-8">
+        <!-- Image container -->
+        <div class="w-full md:w-1/2 lg:w-1/3">
+            <img :src="product.cover_url" :alt="product.name" 
+                class="w-full h-[250px] md:h-[358px] object-cover rounded-lg"
+            />
         </div>
 
-        <!-- Colonne de droite pour les données du meuble -->
-        <div class="ml-10 ">
-            <div class="flex items-center">
-                <h2 class="title-product mr-2">{{ product.name }}</h2>
-                <!-- Icône en forme de cœur -->
+        <!-- Détails du produit -->
+        <div class="w-full md:w-1/2 space-y-4">
+            <div class="flex items-center justify-between">
+                <h2 class="title-product">{{ product.name }}</h2>
                 <svg 
-                    class="ml-auto favoris" 
+                    class="favoris" 
                     width="25" 
                     height="22" 
                     viewBox="0 0 25 22" 
@@ -30,13 +30,15 @@
                     />
                 </svg>
             </div>
-            <p class="mt-6 price-product">{{ product.price }} €</p>
+            <p class="price-product">{{ product.price }} €</p>
             <p class="text-description">{{ product.description }}</p>
         </div>
     </div>
 </template>
 
 <script>
+import { addFavorite } from '../../clientapi';
+
 export default {
     name: 'ProductDetail',
     props: {
@@ -55,7 +57,7 @@ export default {
         this.checkIfFavorite();
     },
     methods: {
-        toggleFavorite() {
+        async toggleFavorite() {
             let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
             
             if (this.isFavorite) {
@@ -73,6 +75,14 @@ export default {
             
             // Émettre un événement pour mettre à jour la vue des favoris si nécessaire
             this.$emit('favorite-updated');
+
+            // Ajout en base Supabase
+            try {
+                await addFavorite(this.product.furniture_id);
+                // Optionnel : message de succès
+            } catch (e) {
+                alert("Erreur lors de l'ajout en favoris : " + e.message);
+            }
         },
         checkIfFavorite() {
             const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
@@ -82,24 +92,25 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .title-product {
-    font-size: 24px;
+    font-size: clamp(1.25rem, 2vw, 1.5rem);
     font-family: 'Poppins-Bold';
     color: #3A3A3A;
 }
 
 .price-product {
-    font-size: 20px;
+    font-size: clamp(1.125rem, 1.5vw, 1.25rem);
     font-family: 'Poppins-SemiBold';
     color: #3A3A3A;
 }
 
 .text-description {
-    font-size: 16px;
+    font-size: clamp(0.875rem, 1.2vw, 1rem);
     font-family: 'Poppins-Medium';
     color: #767676;
 }
+
 .favoris {
     cursor: pointer;
     transition: all 0.3s ease;
@@ -107,5 +118,11 @@ export default {
 
 .favoris:hover {
     transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+    .text-description {
+        margin-top: 0.5rem;
+    }
 }
 </style>

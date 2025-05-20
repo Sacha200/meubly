@@ -14,7 +14,11 @@
           </svg>
           Favoris
         </a>
+        <div v-if="isConnected" class="connected-status">
+          Connecté
+        </div>
         <router-link 
+          v-else
           to="/login" 
           class="login-button"
         >
@@ -26,10 +30,13 @@
 </template>     
 
 <script>
+import { supabase } from '../supabase';
+
 export default {
   data() {
     return {
-      isFavorisOpen: false
+      isFavorisOpen: false,
+      isConnected: false
     };
   },
   methods: {  
@@ -39,6 +46,16 @@ export default {
     goToFavoris() {
       this.$router.push('/favoris');
     }
+  },
+  async mounted() {
+    // Vérifie à l'initialisation
+    const { data: { user } } = await supabase.auth.getUser();
+    this.isConnected = !!user;
+
+    // Écoute les changements d'authentification
+    supabase.auth.onAuthStateChange((event, session) => {
+      this.isConnected = !!session?.user;
+    });
   }
 }
 </script>
@@ -69,7 +86,13 @@ export default {
   color: #3A3A3A;
 }
 
-
-
+.connected-status {
+  padding: 8px 16px;
+  background-color: #B88E2F;
+  color: white;
+  border-radius: 10px;
+  font-family: 'Poppins-Medium';
+  font-size: 14px;
+}
 
 </style>

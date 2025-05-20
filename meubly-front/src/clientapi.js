@@ -184,3 +184,54 @@ export async function logoutUser() {
 }
  * 
  */
+
+/**
+ * Ajoute un meuble aux favoris de l'utilisateur connecté
+ * @param {string} furniture_id - L'ID du meuble à ajouter
+ * @returns {Promise<object>} - Le favori ajouté
+ */
+export async function addFavorite(furniture_id) {
+  // Récupérer l'utilisateur connecté
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) {
+    throw new Error("Utilisateur non connecté");
+  }
+
+  // Insérer dans la table Favoris
+  const { data, error } = await supabase
+    .from('Favoris')
+    .insert([
+      {
+        user_id: user_id,
+        furniture_id: furniture_id
+      }
+    ])
+    .select()
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
+export async function removeFavorite(furniture_id) {
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) {
+    throw new Error("Utilisateur non connecté");
+  }
+
+  const { error } = await supabase
+    .from('Favoris')
+    .delete()
+    .eq('user_id', user_id)
+    .eq('furniture_id', furniture_id);
+
+  if (error) throw error;
+}
+
+export async function isUserLoggedIn() {
+  const { data: { user } } = await supabase.auth.getUser();
+  return !!user;
+}
