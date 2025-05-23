@@ -14,15 +14,18 @@
           </svg>
           Favoris
         </a>
-        <div v-if="isConnected" class="connected-status">
-          Connecté
+        <div v-if="isConnected" class="connected-status flex items-center">
+          <span class="mr-2">Connecté</span>
+          <button @click="logout" class="logout-button">
+            Se déconnecter
+          </button>
         </div>
         <router-link 
           v-else
           to="/login" 
           class="login-button"
         >
-          Connexion
+          Se connecter
         </router-link>
       </div>
     </div>
@@ -45,6 +48,14 @@ export default {
     },
     goToFavoris() {
       this.$router.push('/favoris');
+    },
+    async logout() {
+      try {
+        await supabase.auth.signOut();
+        this.$router.push('/');
+      } catch (error) {
+        console.error('Erreur lors de la déconnexion:', error);
+      }
     }
   },
   async mounted() {
@@ -84,6 +95,23 @@ export default {
 
 .link-favoris {
   color: #3A3A3A;
+}
+
+.logout-button {
+  padding: 4px 8px;
+  margin-left: 8px;
+  background-color: transparent;
+  border: 1px solid white;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: white;
+  color: #B88E2F;
 }
 
 .connected-status {

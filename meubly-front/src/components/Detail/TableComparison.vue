@@ -49,6 +49,18 @@ export default {
             ],
         };
     },
+
+    methods: {
+        async getProvider(){
+            try {
+                const response = await axios.get('http://localhost:3000/api/v1/providers');
+                console.log(response.data);
+            } catch (error) {
+                console.error('Erreur lors de la récupération des fournisseurs:', error);
+            }
+            console.log(this.providers);
+        }
+    }
 };
 </script>
 

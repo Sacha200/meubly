@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -37,6 +38,29 @@ export async function getProductById(id) {
         throw error;
     }
 }
+
+// Fonction pour récupérer les produits par catégorie
+export async function getProductsByCategory(category) {
+    try {
+        // Cette ligne fait une requête HTTP GET vers l'API pour récupérer les meubles d'une catégorie spécifique
+        // L'URL est construite en utilisant l'URL de base (API_BASE_URL) et en ajoutant le paramètre de requête 'category'
+        const response = await fetch(`${API_BASE_URL}/api/v1/furnitures?category=${category}`);
+
+        // Cette ligne convertit la réponse HTTP en objet JavaScript en parsant le JSON
+        // La réponse contient la liste des meubles de la catégorie demandée
+        const data = await response.json(); 
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Erreur lors de la récupération des produits');
+        }
+
+        return data;
+    } catch (error) {
+        console.error('Erreur détaillée:', error);
+        throw error;
+    }
+}
+
 
 // Fonction pour l'inscription avec Supabase
 export async function registerUser(userData) {
@@ -234,4 +258,14 @@ export async function removeFavorite(furniture_id) {
 export async function isUserLoggedIn() {
   const { data: { user } } = await supabase.auth.getUser();
   return !!user;
+}
+
+export async function getProviderComparison(categoryId) {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/provider/compare/${categoryId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des comparaisons:', error);
+    throw error;
+  }
 }

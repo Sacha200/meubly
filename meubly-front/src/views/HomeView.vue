@@ -2,7 +2,6 @@
   <div>
     <Header />
     <SearchBar />
-    <!--  <BrowseRange /> -->
     <OurProducts />
     <Footer />
   </div>
@@ -15,6 +14,7 @@ import OurProducts from '../components/Home/OurProducts.vue';
 import Footer from '../components/Footer.vue';
 
 export default {
+  name: 'HomeView',
   components: {
     Header,
     SearchBar,
