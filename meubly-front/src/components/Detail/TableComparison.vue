@@ -20,8 +20,17 @@
 </template>
 
 <script>
+import { getProviderComparison } from '../../clientapi';
+
 export default {
+    
     name: 'TableComparison',
+    props: {
+        product: {
+            type: Object,
+            required: true
+        }
+    },
     data() {
         return {
             offers: [
@@ -49,17 +58,9 @@ export default {
             ],
         };
     },
-
-    methods: {
-        async getProvider(){
-            try {
-                const response = await axios.get('http://localhost:3000/api/v1/providers');
-                console.log(response.data);
-            } catch (error) {
-                console.error('Erreur lors de la récupération des fournisseurs:', error);
-            }
-            console.log(this.providers);
-        }
+    async mounted() {
+        console.log('FSDSZTSDGSFSFTSRTSTSRT');
+        await getProviderComparison(this.product.category_id);
     }
 };
 </script>

@@ -14,7 +14,7 @@ export async function getProducts() {
         }
         
         const data = await response.json();
-        console.log('Données reçues:', data);
+        // console.log('Données reçues:', data);
         return data;
     } catch (error) {
         console.error('Erreur API:', error);
@@ -262,8 +262,8 @@ export async function isUserLoggedIn() {
 
 export async function getProviderComparison(categoryId) {
   try {
-    const response = await axios.get(`${API_BASE_URL}/provider/compare/${categoryId}`);
-    return response.data;
+    const response = await axios.get(`${API_BASE_URL}/api/v1/compare/${categoryId}`);
+    return response;
   } catch (error) {
     console.error('Erreur lors de la récupération des comparaisons:', error);
     throw error;
