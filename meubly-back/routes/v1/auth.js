@@ -22,6 +22,7 @@ router.post('/register', async (req, res) => {
             .single();
 
         if (existingUser) {
+            console.log(existingUser)
             return res.status(400).json({
                 error: "Un compte existe déjà avec cet email"
             });

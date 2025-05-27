@@ -90,15 +90,15 @@ export async function registerUser(userData) {
         console.log('Réponse inscription:', authData);
 
         // 2. Si l'inscription Auth réussit, on ajoute l'utilisateur dans la table User
-        if (authData.user) {
+        if (authData) {
             const { data: userProfile, error: userError } = await supabase
                 .from('User')
                 .insert([
                     {
                         user_id: authData.user.id,
-                        username: userData.username,
-                        lastname: userData.lastname,
-                        email: userData.email,
+                        username: authData.user.user_metadata.username,
+                        lastname: authData.user.user_metadata.lastname,
+                        email: authData.user.user_metadata.email,
                         created_at: new Date().toISOString().split('T')[0]
                     }
                 ])
@@ -112,7 +112,7 @@ export async function registerUser(userData) {
             // 3. Envoyer explicitement l'email de confirmation si nécessaire
             const { error: resendError } = await supabase.auth.resend({
                 type: 'signup',
-                email: userData.email
+                email: authData.user.email
             });
 
             if (resendError) {
@@ -177,7 +177,13 @@ export async function loginUser(credentials) {
 
         return {
             ...data,
-            profile: userProfile
+            profile: (() => {
+                localStorage.setItem('userProfile', JSON.stringify({
+                    id: userProfile.id,
+                    role: userProfile.role
+                }));
+                return userProfile;
+            })()
         };
     } catch (error) {
         console.error('Erreur détaillée:', error);

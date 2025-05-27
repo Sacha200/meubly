@@ -1,7 +1,8 @@
 <template>
   <div class="min-h-screen flex flex-col md:flex-row bg-gray-50">
     <!-- Section bienvenue -->
-    <div class="w-full md:w-1/2 flex flex-col items-center justify-center bg-[#f8f1e7] p-8 md:p-10 h-full min-h-[50vh] md:min-h-screen">
+    <div
+      class="w-full md:w-1/2 flex flex-col items-center justify-center bg-[#f8f1e7] p-8 md:p-10 h-full min-h-[50vh] md:min-h-screen">
       <h1 class="text-center font-bold text-2xl md:text-3xl text-[#3A3A3A] mb-4">
         Bienvenue sur <br />
         <span class="text-gold">Meubly !</span>
@@ -14,50 +15,27 @@
         <h2 class="text-gold mb-6 text-2xl font-semibold text-center">Création de compte</h2>
         <form @submit.prevent="handleRegister" class="flex flex-col space-y-4">
           <div class="form-group">
-            <input
-              v-model="formData.username"
-              type="text"
-              placeholder="Nom d'utilisateur"
-              @input="validateField('username')"
-              required
-              class="input-field"
-            />
+            <input v-model="formData.username" type="text" placeholder="Nom d'utilisateur"
+              @input="validateField('username')" required class="input-field" />
             <span v-if="fieldErrors.username" class="error-message">
               {{ fieldErrors.username }}
             </span>
           </div>
           <div class="form-group">
-            <input
-              v-model="formData.lastname"
-              type="text"
-              placeholder="Nom de famille"
-              required
-              class="input-field"
-            />
+            <input v-model="formData.lastname" type="text" placeholder="Nom de famille" required class="input-field" />
             <span v-if="fieldErrors.lastname" class="error-message">
               {{ fieldErrors.lastname }}
             </span>
           </div>
           <div class="form-group">
-            <input
-              v-model="formData.email"
-              type="email"
-              placeholder="Email"
-              required
-              class="input-field"
-            />
+            <input v-model="formData.email" type="email" placeholder="Email" required class="input-field" />
             <span v-if="fieldErrors.email" class="error-message">
               {{ fieldErrors.email }}
             </span>
           </div>
           <div class="form-group">
-            <input
-              v-model="formData.password"
-              type="password"
-              placeholder="Mot de passe"
-              required
-              class="input-field"
-            />
+            <input v-model="formData.password" type="password" placeholder="Mot de passe" required
+              class="input-field" />
             <span v-if="fieldErrors.password" class="error-message">
               {{ fieldErrors.password }}
             </span>
@@ -119,12 +97,6 @@ export default {
         errors.push("L'adresse email n'est pas valide. Utilisez un format standard (exemple@domaine.com)");
       }
       
-      // Vérification supplémentaire pour les domaines courants
-      const validDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com'];
-      const emailDomain = this.formData.email.split('@')[1];
-      if (!validDomains.includes(emailDomain)) {
-        errors.push("Veuillez utiliser une adresse email avec un domaine connu (Gmail, Yahoo, Hotmail, Outlook)");
-      }
 
       // Validation du mot de passe
       if (this.formData.password.length < 8) {
@@ -139,9 +111,7 @@ export default {
       if (!/[0-9]/.test(this.formData.password)) {
         errors.push("Le mot de passe doit contenir au moins un chiffre");
       }
-      if (!/[!@#$%^&*]/.test(this.formData.password)) {
-        errors.push("Le mot de passe doit contenir au moins un caractère spécial (!@#$%^&*)");
-      }
+  
 
       return errors;
     },
@@ -157,24 +127,26 @@ export default {
         const { user, profile } = await registerUser(this.formData);
 
         if (user) {
+          console.log('User:', user);
           console.log('Profil créé:', profile);
           alert('Inscription réussie ! Veuillez vérifier votre email pour confirmer votre compte.\nVérifiez aussi vos spams si vous ne voyez pas l\'email.');
+          sessionStorage.setItem('role', profile.role);
           this.$router.push('/');
         }
 
       } catch (error) {
         console.error('Erreur:', error);
         alert(
-          error.message.includes('email') 
-          ? 'Cette adresse email n\'est pas acceptée. Veuillez utiliser une adresse email valide (Gmail, Yahoo, Hotmail, Outlook).'
-          : error.message
+          error.message.includes('email')
+            ? 'Cette adresse email n\'est pas acceptée. Veuillez utiliser une adresse email valide (Gmail, Yahoo, Hotmail, Outlook).'
+            : error.message
         );
       }
     },
 
     validateField(fieldName) {
       // Validation en temps réel pour chaque champ
-      switch(fieldName) {
+      switch (fieldName) {
         case 'username':
           if (this.formData.username.length < 3) {
             this.fieldErrors.username = "Le nom d'utilisateur doit contenir au moins 3 caractères";

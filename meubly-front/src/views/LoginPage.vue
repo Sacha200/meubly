@@ -123,6 +123,7 @@ export default {
 
                 if (user) {
                     console.log('Connexion réussie:', profile);
+                    sessionStorage.setItem('role', profile.role);
                     this.$router.push('/');
                 }
 

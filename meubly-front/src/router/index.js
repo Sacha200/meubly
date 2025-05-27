@@ -38,8 +38,42 @@ const router = createRouter({
       path: '/register',
       name: 'Register',
       component: RegisterPage
-    } 
+    },
+    // Routes d'administration
+    
+    {
+      path: '/admin/users',
+      name: 'AdminUsers',
+      meta: { roles: 'ADMIN'},
+      component: () => import('../views/Admin/user/listView.vue')
+    },
+    {
+      path: '/admin/furnitures',
+      name: 'AdminFurnitures',
+      meta: { roles: 'ADMIN'},
+      component: () => import('../views/Admin/furnitures/listView.vue')
+    },
+    {
+      path: '/admin/providers',
+      name: 'AdminProviders',
+      meta: { roles: 'ADMIN'},
+      component: () => import('../views/Admin/provider/listView.vue')
+    }
   ]
 });
+
+router.beforeEach((to, _from, next) => {
+  const role = sessionStorage.getItem('role')          // <-- lecture directe
+
+  if (to.meta.roles) {
+    if (role && to.meta.roles.includes(role)) {
+      next()
+    } else {
+      next('/')     
+    }
+  } else {
+    next()
+  }
+})
 
 export default router;
