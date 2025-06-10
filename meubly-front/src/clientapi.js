@@ -1,6 +1,7 @@
 import { supabase } from './supabase';
 import axios from 'axios';
 
+
 const API_BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
 // Fonction pour récupérer tous les produits
@@ -269,9 +270,57 @@ export async function isUserLoggedIn() {
 export async function getProviderComparison(categoryId) {
   try {
     const response = await axios.get(`${API_BASE_URL}/api/v1/compare/${categoryId}`);
-    return response;
+    return response.data;
   } catch (error) {
     console.error('Erreur lors de la récupération des comparaisons:', error);
+    throw error;
+  }
+}
+
+// Fonction pour rechercher des produits
+export async function searchProducts(searchQuery = '') {
+    try {
+        const url = `${API_BASE_URL}/api/v1/furnitures${searchQuery ? `?search=${searchQuery}` : ''}`;
+        console.log('URL appelée:', url);
+        console.log('Terme de recherche:', searchQuery);
+        
+        const response = await fetch(url);
+        console.log('Status de la réponse:', response.status);
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Erreur du serveur:', errorText);
+            throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Données reçues du serveur:', data);
+        return data;
+    } catch (error) {
+        console.error('Erreur lors de la recherche des produits:', error);
+        throw error;
+    }
+}
+
+// Fonction pour mettre à jour un produit
+export async function updateProduct(id, productData) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/v1/furnitures/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(productData)
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.error || 'Erreur lors de la mise à jour du produit');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Erreur détaillée:', error);
     throw error;
   }
 }

@@ -6,7 +6,7 @@
         <input
           type="text"
           v-model="searchQuery"
-          placeholder="Rechercher un produit"
+          placeholder="Rechercher un type de produit"
           class="w-full text-[14px] text-[#6A6A6A] focus:outline-none"
         />
       </div>

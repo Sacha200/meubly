@@ -6,6 +6,8 @@ import RegisterPage  from "../views/RegisterPage.vue";
 import LogoutView from "../views/LogoutView.vue";
 import FavoritesView from "../views/FavoritesView.vue";
 import LoginPage from '../views/LoginPage.vue';
+import AdminFurnituresView from '../views/Admin/furnitures/listView.vue';
+import AdminUpdateFurnitureView from '../views/Admin/furnitures/updateView.vue';
 
 
 const router = createRouter({
@@ -39,6 +41,7 @@ const router = createRouter({
       name: 'Register',
       component: RegisterPage
     },
+    
     // Routes d'administration
     
     {
@@ -50,20 +53,32 @@ const router = createRouter({
     {
       path: '/admin/furnitures',
       name: 'AdminFurnitures',
+      // meta: { roles: 'ADMIN'},
+      component: AdminFurnituresView
+    },
+    
+    {
+      path: '/admin/furnitures/:id',
+      name: 'AdminUpdateFurniture',
       meta: { roles: 'ADMIN'},
-      component: () => import('../views/Admin/furnitures/listView.vue')
+      component: AdminUpdateFurnitureView
     },
     {
       path: '/admin/providers',
       name: 'AdminProviders',
       meta: { roles: 'ADMIN'},
       component: () => import('../views/Admin/provider/listView.vue')
-    }
+    },
+   
+   
+
   ]
 });
 
 router.beforeEach((to, _from, next) => {
-  const role = sessionStorage.getItem('role')          // <-- lecture directe
+  const role = sessionStorage.getItem('role') 
+  console.log(role)
+  // <-- lecture directe
 
   if (to.meta.roles) {
     if (role && to.meta.roles.includes(role)) {
