@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: meubly-back
+    env: node
+    buildCommand: cd meubly-back && npm install
+    startCommand: cd meubly-back && node app.js
+    envVars:
+      - key: NODE_ENV
+        value: production 
