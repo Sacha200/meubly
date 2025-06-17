@@ -95,7 +95,7 @@ router.get("/:id/offers", async (req, res) => {
   }
 });
 
-// Create a new furniture
+// Création d'un nouveau meuble
 router.post("/furnitures", async (req, res) => {
   try {
     const { data, error } = await supabase

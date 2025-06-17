@@ -7,7 +7,7 @@ import categoriesRouter from './v1/categories.js';
 import providerRouter from './v1/provider.js';
 const router = express.Router();
 
-
+// Configuration des routes
 router.use( furnituresRouter);
 router.use( usersRouter);
 router.use(authRouter);
