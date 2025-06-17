@@ -1,8 +1,7 @@
 import { supabase } from './supabase';
 import axios from 'axios';
 
-
-const API_BASE_URL = import.meta.env.VITE_APP_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_APP_BASE_URL || 'https://meubly-back.onrender.com';
 
 // Fonction pour récupérer tous les produits
 export async function getProducts() {
