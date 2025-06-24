@@ -20,7 +20,7 @@ app.use(helmet({
       styleSrc: ["'self'", "'unsafe-inline'"],
       scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
       imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "http://localhost:3000", "https://meubly-front.vercel.app", "https://*.vercel.app"]
+      connectSrc: ["'self'", "http://localhost:3000", "http://localhost:5173", "https://meubly-front.vercel.app", "https://*.vercel.app"]
     }
   },
   crossOriginResourcePolicy: { policy: "cross-origin" }
@@ -28,7 +28,7 @@ app.use(helmet({
 
 // Configuration CORS pour permettre les requêtes depuis le front-end
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://meubly-front.vercel.app', 'https://*.vercel.app'],
+  origin: ['http://localhost:3000', 'http://localhost:5173', 'https://meubly-front.vercel.app', 'https://*.vercel.app'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
