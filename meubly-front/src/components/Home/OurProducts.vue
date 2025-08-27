@@ -1,5 +1,5 @@
 <template>
-  <section class="py-4">
+  <section class="py-4" data-testid="products-section">
     <div class="container mx-auto text-center">
       <h2 class="text-[32px] text-[#3A3A3A] dark:text-white mb-4">Découvrez nos produits </h2>
       

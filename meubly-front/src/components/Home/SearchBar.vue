@@ -1,7 +1,7 @@
 <!-- SearchBar.vue -->
 <template>
   <!-- Search Bar Container -->
-  <div class="flex justify-center py-14">
+  <div class="flex justify-center py-14" data-testid="search-bar">
     <!-- Search Input Container -->
     <div
       class="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-full w-[676px] h-[71px] shadow-sm dark:shadow-gray-900/30">
@@ -19,7 +19,7 @@
       </div>
 
       <!-- Search Button -->
-      <button @click="performSearch"
+      <button @click="performSearch" type="submit"
         class="bg-[#B88E2F] text-white rounded-full w-12 h-12 flex items-center justify-center mr-4 button_search hover:bg-[#A67B1F] transition-colors duration-200"
         :disabled="!isSearchValid" :class="{ 'opacity-50 cursor-not-allowed': !isSearchValid }">
         <!-- Search Icon -->

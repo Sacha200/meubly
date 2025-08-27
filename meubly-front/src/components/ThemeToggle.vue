@@ -1,6 +1,7 @@
 <template>
   <button
     @click="themeStore.toggleTheme()"
+    data-testid="theme-toggle"
     class="relative inline-flex items-center justify-center w-14 h-14 rounded-full transition-all duration-500 ease-in-out group"
     :class="[
       themeStore.isDarkMode 
