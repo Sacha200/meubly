@@ -33,32 +33,9 @@ app.use(helmet({
 }));
 
 // Configuration CORS pour permettre les requêtes depuis le front-end
-const corsOptions = {
-  origin: function (origin, callback) {
-    // Permettre les requêtes sans origine (applications mobiles, Postman, etc.)
-    if (!origin) return callback(null, true);
-    
-    const allowedOrigins = [
-      'http://localhost:3000',
-      'http://localhost:5173', 
-      'http://localhost:5000',
-      'https://meubly-front.vercel.app',
-      'https://meubly.vercel.app'
-    ];
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      console.log('Origin non autorisée:', origin);
-      callback(new Error('Non autorisé par CORS'));
-    }
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-};
 
-app.use(cors(corsOptions));
+
+app.use(cors());
 
 // Configuration du routeur
 app.use('/api/v1', v1Router);
@@ -68,3 +45,5 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Serveur démarré sur le port ${PORT}`);
 });
+
+export default app;
