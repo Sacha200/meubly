@@ -2,9 +2,7 @@
     <div>
         <Header />
         <div class="flex mt-10">
-            <div class="ml-10">
-                <Sidebar />
-            </div>
+           
             <div class=" p-4 grid grid-cols-3 " style="gap: 20px;margin: auto;margin-top: 30px;">
                 <div v-if="loading" class="col-span-3 text-center">
                     Chargement des produits...
@@ -13,6 +11,11 @@
                     {{ error }}
                 </div>
                 <template v-else>
+                    <div v-if="products.length > 0" class="col-span-3 mb-6">
+                        <p class="text-lg text-gray-700">
+                            Il y a {{ products.length }} résultat{{ products.length > 1 ? 's' : '' }} via votre recherche
+                        </p>
+                    </div>
                     <ProductCard v-for="product in products" :key="product.id" :product="product" />
                     <div v-if="products.length === 0" class="col-span-3 text-center">
                         Aucun produit ne correspond à votre recherche.

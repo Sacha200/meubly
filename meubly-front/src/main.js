@@ -5,6 +5,7 @@ import PrimeVue from 'primevue/config'
 import Paginator from 'primevue/paginator';
 import ToastService from 'primevue/toastservice'
 import './style.css'
+import { useThemeStore } from './stores/themeStore'
 
 
 
@@ -28,4 +29,9 @@ app.use(createAuth0, {
         redirect_uri: window.location.origin
     }
 })
+
+// Initialiser le thème
+const themeStore = useThemeStore(pinia);
+themeStore.init();
+
 app.mount('#app')

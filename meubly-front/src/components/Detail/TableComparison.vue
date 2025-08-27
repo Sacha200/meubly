@@ -9,6 +9,8 @@
         <div v-else-if="error" class="error-message">
             <p>{{ error }}</p>
         </div>
+        
+        <!-- Tableau de comparaison -->
         <div v-else class="comparison-table">
             <div v-for="offer in paginatedOffers" :key="offer.id" class="offer-card">
                 <div class="offer-details">

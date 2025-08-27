@@ -81,7 +81,9 @@ export default {
                 await addFavorite(this.product.furniture_id);
                 // Optionnel : message de succès
             } catch (e) {
-                alert("Erreur lors de l'ajout en favoris : " + e.message);
+                console.error("Erreur lors de l'ajout en favoris :", e.message);
+                // Ne pas afficher d'alerte, juste logger l'erreur
+                // Le favori reste dans le localStorage même si l'ajout en base échoue
             }
         },
         checkIfFavorite() {

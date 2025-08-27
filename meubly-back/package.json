@@ -8,6 +8,7 @@
   "type": "module",
   "scripts": {
     "start": "node app.js",
+    "dev": "nodemon app.js",
     "build": "npm install",
     "seed": "node scripts/seedDatabase.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -26,7 +27,7 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "nodemon": "^3.1.10",
     "prisma": "^6.5.0"
-
   }
 }

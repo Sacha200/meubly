@@ -1,0 +1,148 @@
+@startuml Diagramme de Classes Amélioré - Meubly
+
+!define RECTANGLE class
+!define PACKAGE package
+
+' === STYLES ET COULEURS ===
+skinparam class {
+    BackgroundColor<<Auth>> LightBlue
+    BackgroundColor<<Service>> LightGreen
+    BackgroundColor<<Entity>> LightYellow
+    BackgroundColor<<External>> LightGray
+    BorderColor Black
+    FontColor Black
+}
+
+' === GROUPE AUTHENTIFICATION ===
+package "🔐 Authentification" {
+    RECTANGLE "Supabase Auth" as SupabaseAuth <<External>> {
+        + signInWithPassword()
+        + signUp()
+        + signOut()
+        + getSession()
+        + onAuthStateChange()
+    }
+
+    RECTANGLE AuthStore <<Auth>> {
+        - user: User
+        - session: Session
+        + init(): void
+        + isAuthenticated(): Boolean
+        + userEmail(): String
+        + userName(): String
+    }
+
+    RECTANGLE User <<Entity>> {
+        - user_id: String
+        - username: String
+        - email: String
+        - lastname: String
+        - role: String
+        - created_at: Date
+        + register(userData: Object): User
+        + login(credentials: Object): Session
+        + logout(): void
+    }
+}
+
+' === GROUPE SERVICES MÉTIER ===
+package "🛠️ Services Métier" {
+    RECTANGLE FurnitureService <<Service>> {
+        - supabase: SupabaseClient
+        + initializeDatabase(): Array<Furniture>
+        + getFurnitureById(id: String): Furniture
+        + addFurniture(furniture: Object): Furniture
+        + updateFurniture(id: String, data: Object): Furniture
+        + deleteFurniture(id: String): void
+    }
+
+    RECTANGLE SearchService <<Service>> {
+        + searchFurniture(query: String): Array<Furniture>
+        + filterByCategory(category: String): Array<Furniture>
+        + filterByPrice(min: Number, max: Number): Array<Furniture>
+    }
+
+    RECTANGLE FavoritesService <<Service>> {
+        + addToFavorites(furnitureId: String): void
+        + removeFromFavorites(furnitureId: String): void
+        + getFavorites(): Array<Furniture>
+        + isFavorite(furnitureId: String): Boolean
+    }
+}
+
+' === GROUPE ENTITÉS MÉTIER ===
+package "📊 Entités Métier" {
+    RECTANGLE Furniture <<Entity>> {
+        - furniture_id: String
+        - name: String
+        - text: String
+        - price: Number
+        - cover_url: String
+        - nb_offers: Number
+        - created_at: Date
+        - width: Number
+        - height: Number
+        - depth: Number
+        + getFurnitureById(id: String): Furniture
+        + addFurniture(furniture: Object): Furniture
+        + initializeDatabase(): Array<Furniture>
+    }
+
+    RECTANGLE Offer <<Entity>> {
+        - offer_id: String
+        - name_furniture: String
+        - website: String
+        - url_website: String
+        - prices: Number
+        - furniture_id: String
+        + getOffersByFurniture(furnitureId: String): Array<Offer>
+        + filterByWebsite(website: String): Array<Offer>
+    }
+
+    RECTANGLE Category <<Entity>> {
+        - category_id: String
+        - title: String
+        - cover: String
+        - created_at: Date
+        - updated_at: Date
+        - souscat_id: String
+        + getCategories(): Array<Category>
+        + getSubcategories(): Array<Category>
+    }
+}
+
+' === RELATIONS AVEC DISPOSITION AMÉLIORÉE ===
+' Authentification (gauche)
+SupabaseAuth -down-> AuthStore : "fournit l'état"
+AuthStore -down-> User : "gère l'utilisateur"
+
+' Services vers entités (centre)
+FurnitureService -right-> Furniture : "gère"
+SearchService -right-> Furniture : "recherche"
+FavoritesService -right-> Furniture : "gère les favoris"
+
+' Entités entre elles (droite)
+Furniture -down-> Offer : "contient"
+Furniture -down-> Category : "appartient à"
+Category -right-> Category : "sous-catégorie"
+User -up-> Furniture : "favorise"
+
+' === NOTES AMÉLIORÉES ===
+note top of SupabaseAuth : "🔐 Service d'authentification externe"
+note top of AuthStore : "📦 Store Pinia pour l'état réactif"
+note top of User : "👤 Entité métier utilisateur"
+note top of Furniture : "🪑 Entité métier principale"
+note top of FurnitureService : "⚙️ Service métier CRUD"
+note top of SearchService : "🔍 Service de recherche"
+note top of FavoritesService : "❤️ Service de gestion des favoris"
+
+' === LÉGENDE ===
+legend right
+    |= Couleur |= Type |
+    |<back:LightBlue>   </back>| Service d'authentification |
+    |<back:LightGreen>   </back>| Service métier |
+    |<back:LightYellow>   </back>| Entité métier |
+    |<back:LightGray>   </back>| Service externe |
+endlegend
+
+@enduml 

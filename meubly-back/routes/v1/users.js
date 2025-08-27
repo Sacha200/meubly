@@ -27,10 +27,22 @@ router.get('/users/:id', async (req, res) => {
 }); 
 
 router.post('/users', async (req, res) => {
-    // Validation des données
-    const { error: validationError } = userSchema.validate(req.body);
-    if (validationError) {
-        return res.status(400).json({ error: validationError.details[0].message });
+    // Validation simple des données
+    const { firstName, lastName, email, password, role } = req.body;
+    
+    if (!firstName || !lastName || !email || !password || !role) {
+        return res.status(400).json({ error: 'Tous les champs obligatoires doivent être remplis' });
+    }
+
+    // Validation email simple
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: 'Format d\'email invalide' });
+    }
+
+    // Validation du mot de passe
+    if (password.length < 8) {
+        return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 8 caractères' });
     }
 
     try {

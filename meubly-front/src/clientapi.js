@@ -1,7 +1,7 @@
 import { supabase } from './supabase';
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_APP_BASE_URL || 'https://meubly-back.onrender.com';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 // Fonction pour récupérer tous les produits
 export async function getProducts() {
@@ -232,7 +232,7 @@ export async function addFavorite(furniture_id) {
     .from('Favoris')
     .insert([
       {
-        user_id: user_id,
+        user_id: user.id,
         furniture_id: furniture_id
       }
     ])
@@ -255,7 +255,7 @@ export async function removeFavorite(furniture_id) {
   const { error } = await supabase
     .from('Favoris')
     .delete()
-    .eq('user_id', user_id)
+    .eq('user_id', user.id)
     .eq('furniture_id', furniture_id);
 
   if (error) throw error;
@@ -266,10 +266,16 @@ export async function isUserLoggedIn() {
   return !!user;
 }
 
-export async function getProviderComparison(categoryId) {
+export async function getProviderComparison(category_id) {
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/v1/compare/${categoryId}`);
-    return response.data;
+    const response = await fetch(`${API_BASE_URL}/api/v1/compare/${category_id}`);
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(`Erreur HTTP: ${response.status}`);
+    }
+
+    return data;
   } catch (error) {
     console.error('Erreur lors de la récupération des comparaisons:', error);
     throw error;

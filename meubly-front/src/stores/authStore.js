@@ -1,3 +1,5 @@
+
+// stores/authStore.js                                                                                                              
 import { defineStore } from 'pinia';
 import { supabase } from '../supabase';
 
@@ -26,3 +28,4 @@ export const useAuthStore = defineStore('auth', {
         userName: (state) => state.user?.user_metadata?.username
     }
 }); 
+

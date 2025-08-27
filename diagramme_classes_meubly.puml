@@ -1,0 +1,123 @@
+@startuml Diagramme de Classes - Meubly
+
+!define RECTANGLE class
+
+' Classes principales
+RECTANGLE Furniture {
+  - furniture_id: String
+  - name: String
+  - text: String
+  - price: Number
+  - cover_url: String
+  - nb_offers: Number
+  - created_at: Date
+  - width: Number
+  - height: Number
+  - depth: Number
+  + getFurnitureById(id: String): Furniture
+  + addFurniture(furniture: Object): Furniture
+  + initializeDatabase(): Array<Furniture>
+}
+
+RECTANGLE User {
+  - id_user: String
+  - username: String
+  - email: String
+  - password: String
+  - created_at: Date
+  + register(userData: Object): User
+  + login(credentials: Object): Session
+  + logout(): void
+}
+
+RECTANGLE AuthStore {
+  - user: User
+  - session: Session
+  + init(): void
+  + isAuthenticated(): Boolean
+  + userEmail(): String
+  + userName(): String
+}
+
+RECTANGLE FurnitureService {
+  - supabase: SupabaseClient
+  + initializeDatabase(): Array<Furniture>
+  + getFurnitureById(id: String): Furniture
+  + addFurniture(furniture: Object): Furniture
+  + updateFurniture(id: String, data: Object): Furniture
+  + deleteFurniture(id: String): void
+}
+
+RECTANGLE ProductCard {
+  - product: Furniture
+  - isFavorite: Boolean
+  + goToProductDetail(): void
+  + toggleFavorite(): void
+  + checkIfFavorite(): Boolean
+}
+
+RECTANGLE ProductDetail {
+  - product: Furniture
+  - offers: Array<Offer>
+  + loadProductDetails(id: String): void
+  + compareOffers(): void
+  + addToFavorites(): void
+}
+
+RECTANGLE Offer {
+  - offer_id: String
+  - name_furniture: String
+  - website: String
+  - url_website: String
+  - prices: Number
+  - furniture_id: String
+  + getOffersByFurniture(furnitureId: String): Array<Offer>
+  + filterByWebsite(website: String): Array<Offer>
+}
+
+RECTANGLE Category {
+  - category_id: String
+  - title: String
+  - cover: String
+  - created_at: Date
+  - updated_at: Date
+  - souscat_id: String
+  + getCategories(): Array<Category>
+  + getSubcategories(): Array<Category>
+}
+
+RECTANGLE SearchBar {
+  - searchQuery: String
+  - selectedCategory: String
+  + searchFurniture(query: String): Array<Furniture>
+  + filterByCategory(category: String): Array<Furniture>
+  + clearSearch(): void
+}
+
+RECTANGLE FavoritesView {
+  - favorites: Array<Furniture>
+  + loadFavorites(): Array<Furniture>
+  + removeFavorite(furnitureId: String): void
+  + clearAllFavorites(): void
+}
+
+' Relations
+AuthStore ||--|| User : "gère"
+FurnitureService ||--o{ Furniture : "gère"
+ProductCard ||--|| Furniture : "affiche"
+ProductDetail ||--|| Furniture : "détaille"
+ProductDetail ||--o{ Offer : "compare"
+Furniture ||--o{ Offer : "contient"
+Furniture ||--o{ Category : "appartient à"
+Category ||--o{ Category : "sous-catégorie"
+SearchBar ||--o{ Furniture : "recherche"
+FavoritesView ||--o{ Furniture : "stocke"
+User ||--o{ Furniture : "favorise"
+
+' Notes
+note right of Furniture : "Entité métier principale"
+note right of AuthStore : "Store Pinia pour l'authentification"
+note right of FurnitureService : "Service métier pour les opérations CRUD"
+note right of ProductCard : "Composant Vue.js pour l'affichage"
+
+@enduml 
