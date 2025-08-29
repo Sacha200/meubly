@@ -2,13 +2,13 @@
     <div>
         <Header />
         <div class="container mx-auto px-4 py-8">
-            <div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
+            <div class="max-w-md mx-auto bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md">
                 <h1 class="text-center mb-8">Connexion</h1>
 
                 <form @submit.prevent="handleLogin" class="space-y-6">
                     <!-- Email -->
                     <div>
-                        <label for="email" class="block mb-2">Email</label>
+                        <label for="email" class="block mb-2 text-gray-700 dark:text-gray-300">Email</label>
                         <input
                             type="email"
                             id="email"
@@ -21,7 +21,7 @@
 
                     <!-- Mot de passe -->
                     <div>
-                        <label for="password" class="block mb-2">Mot de passe</label>
+                        <label for="password" class="block mb-2 text-gray-700 dark:text-gray-300">Mot de passe</label>
                         <input
                             type="password"
                             id="password"
@@ -48,7 +48,7 @@
                                 </button>
                             </div>
                         </div>
-                        <p class="text-sm text-gray-600">
+                        <p class="text-sm text-gray-600 dark:text-gray-400">
                             Pas encore de compte ?
                             <router-link to="/register" class="text-[#B88E2F] hover:underline">
                                 S'inscrire
@@ -166,11 +166,26 @@ h1 {
     color: #3A3A3A;
 }
 
+.dark h1 {
+    color: #f3f4f6;
+}
+
 .input-field {
     padding: 10px;
     border: 1px solid #e0e0e0;
     border-radius: 5px;
     background-color: #f9f9f9;
+    color: #374151;
+}
+
+.dark .input-field {
+    border-color: #4b5563;
+    background-color: #374151;
+    color: #f9fafb;
+}
+
+.dark .input-field::placeholder {
+    color: #9ca3af;
 }
 
 .submit-button {
@@ -187,6 +202,11 @@ h1 {
 
 .submit-button:hover {
     background-color: #9c7a2a;
+}
+
+.submit-button:disabled {
+    background-color: #6b7280;
+    cursor: not-allowed;
 }
 
 .error-message {

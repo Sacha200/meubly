@@ -10,9 +10,8 @@ vi.mock('../../src/supabase', () => ({
       getSession: vi.fn(() => Promise.resolve({ data: { session: null } })),
       onAuthStateChange: vi.fn((callback) => {
         // Stocker le callback pour les tests
-        if (!global.authStateChangeCallback) {
-          global.authStateChangeCallback = callback;
-        }
+        global.authStateChangeCallback = callback;
+        return { data: { subscription: { unsubscribe: vi.fn() } } };
       })
     }
   }
@@ -76,6 +75,9 @@ describe('Stores', () => {
         global.authStateChangeCallback('SIGNED_IN', mockSession);
       }
 
+      // Attendre que l'état soit mis à jour
+      await new Promise(resolve => setTimeout(resolve, 10));
+
       expect(authStore.user).toEqual(mockUser);
       expect(authStore.session).toEqual(mockSession);
       expect(authStore.isAuthenticated).toBe(true);
@@ -97,6 +99,9 @@ describe('Stores', () => {
       if (global.authStateChangeCallback) {
         global.authStateChangeCallback('SIGNED_OUT', null);
       }
+
+      // Attendre que l'état soit mis à jour
+      await new Promise(resolve => setTimeout(resolve, 10));
 
       expect(authStore.user).toBeNull();
       expect(authStore.session).toBeNull();

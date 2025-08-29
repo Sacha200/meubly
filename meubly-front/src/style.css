@@ -2,13 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Exemple dans un fichier CSS global */
+/* Styles globaux */
 body {
   margin: 0;
   padding: 0;
   @apply bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300;
 }
 
+/* Transitions fluides pour tous les éléments */
+* {
+  @apply transition-colors duration-300;
+}
+
+/* Polices personnalisées */
 @font-face {
   font-family: 'Poppins-Regular';
   src: url('../public/assets/fonts/POPPINS-REGULAR.TTF');
@@ -32,11 +38,6 @@ body {
 @font-face {
   font-family: 'Poppins-Light';
   src: url('../public/assets/fonts/POPPINS-LIGHT.TTF');
-}
-
-/* Transitions fluides pour tous les éléments */
-* {
-  @apply transition-colors duration-300;
 }
 
 /* Animations personnalisées */

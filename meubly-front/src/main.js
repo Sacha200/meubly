@@ -7,8 +7,6 @@ import ToastService from 'primevue/toastservice'
 import './style.css'
 import { useThemeStore } from './stores/themeStore'
 
-
-
 import App from './App.vue'
 import router from './router'
 
@@ -18,9 +16,7 @@ const pinia = createPinia()
 app.use(router)
 app.use(pinia)
 app.use(ToastService)
-app.use(PrimeVue, {
-   
-});
+app.use(PrimeVue, {});
 app.component('Paginator', Paginator);
 app.use(createAuth0, {
     domain: 'dev-qiffixd22t30g6oo.us.auth0.com',

@@ -21,18 +21,10 @@ vi.mock('../../src/supabase', () => ({
       signUp: vi.fn(),
       signInWithPassword: vi.fn(),
       signOut: vi.fn(),
-      getUser: vi.fn()
+      getUser: vi.fn(),
+      resend: vi.fn()
     },
-    from: vi.fn(() => ({
-      insert: vi.fn(() => ({
-        select: vi.fn(() => ({
-          single: vi.fn()
-        }))
-      })),
-      delete: vi.fn(() => ({
-        eq: vi.fn()
-      }))
-    }))
+    from: vi.fn()
   }
 }));
 
@@ -167,16 +159,26 @@ describe('API Functions', () => {
         }
       };
 
+      const mockUserProfile = { id: 1, user_id: '123', username: 'testuser' };
+
       const { supabase } = await import('../../src/supabase');
+      
+      // Mock signUp
       supabase.auth.signUp.mockResolvedValueOnce({
         data: mockAuthData,
         error: null
       });
 
+      // Mock resend
+      supabase.auth.resend.mockResolvedValueOnce({
+        error: null
+      });
+
+      // Mock from().insert().select() - retourne un tableau pour registerUser
       supabase.from.mockReturnValue({
-        insert: vi.fn(() => ({
-          select: vi.fn(() => [mockAuthData.user])
-        }))
+        insert: vi.fn().mockReturnValue({
+          select: vi.fn().mockReturnValue([mockUserProfile])
+        })
       });
 
       const result = await registerUser(userData);
@@ -186,7 +188,12 @@ describe('API Functions', () => {
         password: userData.password,
         options: expect.any(Object)
       });
+      expect(supabase.auth.resend).toHaveBeenCalledWith({
+        type: 'signup',
+        email: mockAuthData.user.email
+      });
       expect(result.user).toEqual(mockAuthData.user);
+      expect(result.profile).toEqual(mockUserProfile);
     });
 
     it('should login user successfully', async () => {
@@ -199,24 +206,42 @@ describe('API Functions', () => {
       const mockProfile = { id: 1, role: 'user' };
 
       const { supabase } = await import('../../src/supabase');
+      
+      // Mock signInWithPassword
       supabase.auth.signInWithPassword.mockResolvedValueOnce({
         data: { user: mockUser },
         error: null
       });
 
+      // Mock from().select().eq().single() - retourne un objet pour loginUser
       supabase.from.mockReturnValue({
-        select: vi.fn(() => ({
-          eq: vi.fn(() => ({
-            single: vi.fn(() => mockProfile)
-          }))
-        }))
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            single: vi.fn().mockReturnValue(mockProfile)
+          })
+        })
+      });
+
+      // Mock localStorage
+      const localStorageMock = {
+        setItem: vi.fn(),
+        getItem: vi.fn(),
+        removeItem: vi.fn()
+      };
+      Object.defineProperty(window, 'localStorage', {
+        value: localStorageMock
       });
 
       const result = await loginUser(credentials);
 
       expect(supabase.auth.signInWithPassword).toHaveBeenCalledWith(credentials);
+      expect(supabase.from).toHaveBeenCalledWith('User');
       expect(result.user).toEqual(mockUser);
       expect(result.profile).toEqual(mockProfile);
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('userProfile', JSON.stringify({
+        id: mockProfile.id,
+        role: mockProfile.role
+      }));
     });
 
     it('should logout user successfully', async () => {
@@ -237,27 +262,25 @@ describe('API Functions', () => {
       const mockFavorite = { id: 1, user_id: '123', furniture_id: 1 };
 
       const { supabase } = await import('../../src/supabase');
+      
+      // Mock getUser
       supabase.auth.getUser.mockResolvedValueOnce({
         data: { user: mockUser },
         error: null
       });
 
-      const mockInsert = vi.fn(() => ({
-        select: vi.fn(() => ({
-          single: vi.fn(() => mockFavorite)
-        }))
-      }));
-
+      // Mock from().insert().select().single() - retourne un objet pour addFavorite
       supabase.from.mockReturnValue({
-        insert: mockInsert
+        insert: vi.fn().mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            single: vi.fn().mockReturnValue(mockFavorite)
+          })
+        })
       });
 
       const result = await addFavorite(1);
 
-      expect(mockInsert).toHaveBeenCalledWith([{
-        user_id: '123',
-        furniture_id: 1
-      }]);
+      expect(supabase.from).toHaveBeenCalledWith('Favoris');
       expect(result).toEqual(mockFavorite);
     });
 

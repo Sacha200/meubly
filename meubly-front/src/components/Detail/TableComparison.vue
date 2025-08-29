@@ -1,36 +1,39 @@
 <template>
-    <div class="comparison-container mb-10">
-        <h3 class="comparison-title">Comparaison des prix</h3>
-        <div v-if="loading" class="loading-message">
-            <div class="loading-spinner"></div>
-            <p>Recherche des meilleures offres...</p>
-            <p class="loading-subtitle">Comparaison en cours</p>
+    <div class="mb-10">
+        <h3 :class="['text-2xl font-bold mb-5', isDarkMode ? 'text-gray-100' : 'text-gray-800']">Comparaison des prix</h3>
+        
+        <!-- État de chargement -->
+        <div v-if="loading" :class="['text-center py-16 px-10 border rounded-lg shadow-lg min-h-[200px] flex flex-col justify-center items-center', isDarkMode ? 'border-gray-700 shadow-gray-900/30 bg-gray-800' : 'border-gray-200 bg-gray-50']">
+            <div :class="['w-10 h-10 border-4 rounded-full animate-spin mb-5', isDarkMode ? 'border-gray-600 border-t-primary-500' : 'border-gray-200 border-t-primary-500']"></div>
+            <p :class="['font-semibold text-lg mb-2', isDarkMode ? 'text-gray-200' : 'text-gray-800']">Recherche des meilleures offres...</p>
+            <p :class="['font-medium text-sm', isDarkMode ? 'text-gray-400' : 'text-gray-600']">Comparaison en cours</p>
         </div>
-        <div v-else-if="error" class="error-message">
-            <p>{{ error }}</p>
+        
+        <!-- État d'erreur -->
+        <div v-else-if="error" :class="['text-center py-16 px-10 border rounded-lg shadow-lg min-h-[200px] flex flex-col justify-center items-center', isDarkMode ? 'border-gray-700 shadow-gray-900/30 bg-gray-800' : 'border-gray-200 bg-gray-50']">
+            <p :class="['font-medium text-base', isDarkMode ? 'text-red-400' : 'text-red-600']">{{ error }}</p>
         </div>
         
         <!-- Tableau de comparaison -->
-        <div v-else class="comparison-table">
-            <div v-for="offer in paginatedOffers" :key="offer.id" class="offer-card">
-                <div class="offer-details">
+        <div v-else :class="['flex flex-col gap-5 border rounded-lg p-8 shadow-lg', isDarkMode ? 'border-gray-700 shadow-gray-900/30 bg-gray-800' : 'border-gray-200 bg-white']">
+            <div v-for="offer in paginatedOffers" :key="offer.id" :class="['flex justify-between items-center p-6 border rounded-lg hover:shadow-md transition-shadow', isDarkMode ? 'border-gray-600 bg-gray-700 hover:shadow-gray-900/50' : 'border-gray-200 bg-white']">
+                <div class="flex items-center">
                     <div>
-                        <div class="company-header">
-                            <p class="company-name">{{ offer.company }}</p>
+                        <div class="flex items-center gap-3 mb-1">
+                            <p :class="['font-bold text-base', isDarkMode ? 'text-gray-100' : 'text-gray-800']">{{ offer.company }}</p>
                             <img 
                                 :src="getCompanyLogo(offer.company)" 
-                                :alt="`Logo de ${offer.company }`" 
-                                :class="['company-logo', { 'manomano-logo': isManomano(offer.company) }]"
+                                :alt="`Logo de ${offer.company}`" 
+                                :class="['h-auto flex items-center', isManomano(offer.company) ? 'w-9' : 'w-6']"
                                 @error="handleImageError"
-                                @load="handleImageLoad"
                             />
                         </div>
-                        <p class="product-name">{{ offer.description || offer.name }}</p>
+                        <p :class="['font-medium text-sm', isDarkMode ? 'text-gray-200' : 'text-gray-800']">{{ offer.description || offer.name }}</p>
                     </div>
                 </div>
-                <div class="offer-price">
-                    <p class="price">{{ offer.price }} €</p>
-                    <button class="view-site-button" @click="openProductLink(offer.link)">Voir le site</button>
+                <div class="flex items-center">
+                    <p :class="['font-semibold text-xl mr-5', isDarkMode ? 'text-gray-100' : 'text-gray-800']">{{ offer.price }} €</p>
+                    <button :class="['px-10 py-2.5 border-2 border-primary-500 rounded cursor-pointer transition-colors font-semibold text-base hover:bg-primary-500 hover:text-white', isDarkMode ? 'bg-gray-600 text-primary-400' : 'bg-white text-primary-500']" @click="openProductLink(offer.link)">Voir le site</button>
                 </div>
             </div>
         </div>
@@ -39,6 +42,8 @@
 
 <script>
 import { getProviderComparison } from '../../clientapi';
+import { useThemeStore } from '../../stores/themeStore';
+import { computed } from 'vue';
 
 export default {
     name: 'TableComparison',
@@ -55,6 +60,12 @@ export default {
             type: Number,
             default: 5
         }
+    },
+    setup() {
+        const themeStore = useThemeStore();
+        const isDarkMode = computed(() => themeStore.isDarkMode);
+        
+        return { isDarkMode };
     },
     data() {
         return {
@@ -78,60 +89,38 @@ export default {
             this.loading = true;
             this.error = null;
             
-            // Durée minimale de chargement pour une meilleure UX (2 secondes)
             const minLoadingTime = 2000;
             const startTime = Date.now();
             
             try {
-                console.log('Récupération des comparaisons pour la catégorie:', this.product.category_id);
                 const data = await getProviderComparison(this.product.category_id);
-                
-                // Les données sont maintenant directement dans data
                 this.allOffers = data || [];
-                console.log('Offres récupérées:', this.allOffers);
-                
-                // Émettre le nombre total d'offres vers le parent
                 this.$emit('offers-loaded', this.allOffers.length);
                 
-                // Déboguer la structure des données
-                if (this.allOffers.length > 0) {
-                    console.log('Structure du premier élément:', this.allOffers[0]);
-                    console.log('Propriétés disponibles:', Object.keys(this.allOffers[0]));
-                }
-                
-                // Calculer le temps restant pour atteindre la durée minimale
-                const elapsedTime = Date.now() - startTime;
-                const remainingTime = Math.max(0, minLoadingTime - elapsedTime);
-                
-                // Attendre le temps restant si nécessaire
-                if (remainingTime > 0) {
-                    await new Promise(resolve => setTimeout(resolve, remainingTime));
-                }
+                // Respecter la durée minimale de chargement
+                await this.waitForMinLoadingTime(startTime, minLoadingTime);
                 
             } catch (error) {
                 console.error('Erreur lors du chargement des comparaisons:', error);
                 this.error = 'Impossible de charger les comparaisons de prix';
-                
-                // Même en cas d'erreur, respecter la durée minimale
-                const elapsedTime = Date.now() - startTime;
-                const remainingTime = Math.max(0, minLoadingTime - elapsedTime);
-                
-                if (remainingTime > 0) {
-                    await new Promise(resolve => setTimeout(resolve, remainingTime));
-                }
+                await this.waitForMinLoadingTime(startTime, minLoadingTime);
             } finally {
                 this.loading = false;
             }
         },
         
+        async waitForMinLoadingTime(startTime, minLoadingTime) {
+            const elapsedTime = Date.now() - startTime;
+            const remainingTime = Math.max(0, minLoadingTime - elapsedTime);
+            
+            if (remainingTime > 0) {
+                await new Promise(resolve => setTimeout(resolve, remainingTime));
+            }
+        },
+        
         getCompanyLogo(companyName) {
-            console.log('Nom de l\'entreprise reçu:', companyName);
-            
-            // Normaliser le nom de l'entreprise (enlever les espaces, mettre en minuscules)
             const normalizedName = companyName ? companyName.toLowerCase().trim() : '';
-            console.log('Nom normalisé:', normalizedName);
             
-            // Mapping des logos selon le nom de l'entreprise (avec variations)
             const logoMap = {
                 'amazon': '/assets/Amazon_icon.png',
                 'ikea': '/assets/ikea-logo.png',
@@ -139,10 +128,7 @@ export default {
                 'but': '/assets/logo_but.png'
             };
             
-            const logoPath = logoMap[normalizedName] || '/assets/default-logo.svg';
-            console.log('Chemin du logo sélectionné:', logoPath);
-            
-            return logoPath;
+            return logoMap[normalizedName] || '/assets/default-logo.svg';
         },
         
         openProductLink(link) {
@@ -152,11 +138,8 @@ export default {
         },
         
         handleImageError(event) {
-            console.error('Erreur lors du chargement de l\'image:', event);
-        },
-        
-        handleImageLoad(event) {
-            console.log('Image chargée avec succès:', event);
+            // Gestion silencieuse des erreurs d'image
+            event.target.style.display = 'none';
         },
         
         isManomano(companyName) {
@@ -166,148 +149,5 @@ export default {
     }
 };
 </script>
-
-<style scoped>
-.comparison-title {
-    font-family: 'Poppins-Bold';
-    color: #3A3A3A;
-    margin-bottom: 20px;
-}
-
-.comparison-table {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    border: 1px solid #D9D9D9;
-    border-radius: 10px;
-    padding: 30px;
-    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
-}
-
-.offer-card {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 25px;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    background-color: #fff;
-}
-
-.offer-details {
-    display: flex;
-    align-items: center;
-}
-
-.company-header {
-    display: flex;
-    align-items: center;
-    gap: 10px; /* Espace entre le nom et le logo */
-    margin-bottom: 5px;
-}
-
-.company-logo {
-    width: 25px;
-    height: auto;
-    display: flex;
-    align-items: center;
-}
-
-.manomano-logo {
-    width: 35px; /* Logo ManoMano plus grand */
-}
-
-.company-name {
-    font-family: 'Poppins-Bold';
-    font-size: 16px;
-    color: #3A3A3A;
-    margin: 0; /* Supprimer les marges par défaut */
-}
-
-.product-name {
-    font-family: 'Poppins-Medium';
-    color: #3A3A3A;
-    font-size: 14px;
-    margin: 0; /* Supprimer toutes les marges */
-}
-
-.offer-price {
-    display: flex;
-    align-items: center;
-}
-
-.price {
-    font-family: 'Poppins-SemiBold';
-    font-size: 20px;
-    color: #3A3A3A;
-    margin-right: 20px;
-}
-
-.view-site-button {
-    padding: 10px 40px;
-    background-color: #fff;
-    border: 2px solid #B88E2F;
-    border-radius: 5px;
-    color: #B88E2F;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    font-family: 'Poppins-SemiBold';
-    font-size: 16px;
-}
-
-.view-site-button:hover {
-    background-color: #B88E2F;
-    color: #fff;
-}
-
-.loading-message, .error-message {
-    text-align: center;
-    padding: 60px 40px;
-    border: 1px solid #D9D9D9;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
-    background-color: #fafafa;
-    min-height: 200px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.loading-spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #B88E2F;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-bottom: 20px;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.loading-message p {
-    font-family: 'Poppins-SemiBold';
-    color: #3A3A3A;
-    font-size: 18px;
-    margin: 10px 0;
-}
-
-.loading-subtitle {
-    font-family: 'Poppins-Medium' !important;
-    color: #666 !important;
-    font-size: 14px !important;
-    margin-top: 5px !important;
-}
-
-.error-message p {
-    font-family: 'Poppins-Medium';
-    color: #e74c3c;
-    font-size: 16px;
-}
-</style>
 
 

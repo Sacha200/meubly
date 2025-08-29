@@ -1,8 +1,10 @@
+
 describe('Authentification', () => {
   beforeEach(() => {
     cy.visit('http://localhost:5173')
   })
 
+// test de l'inscription
   describe('Inscription', () => {
     it('should navigate to registration page', () => {
       cy.get('[data-testid="register-link"]').click()
@@ -61,6 +63,7 @@ describe('Authentification', () => {
     })
   })
 
+// test de la connexion
   describe('Connexion', () => {
     it('should navigate to login page', () => {
       cy.get('[data-testid="login-link"]').click()
@@ -108,6 +111,7 @@ describe('Authentification', () => {
     })
   })
 
+// test de la déconnexion
   describe('Déconnexion', () => {
     it('should logout successfully', () => {
       // D'abord se connecter
@@ -125,6 +129,7 @@ describe('Authentification', () => {
     })
   })
 
+// test de la protection des routes
   describe('Protection des routes', () => {
     it('should redirect to login when accessing protected route while not authenticated', () => {
       cy.visit('http://localhost:5173/favoris')

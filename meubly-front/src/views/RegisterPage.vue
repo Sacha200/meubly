@@ -1,9 +1,9 @@
 <template>
-  <div class="min-h-screen flex flex-col md:flex-row bg-gray-50">
+  <div class="min-h-screen flex flex-col md:flex-row bg-gray-50 dark:bg-gray-900">
     <!-- Section bienvenue -->
     <div
-      class="w-full md:w-1/2 flex flex-col items-center justify-center bg-[#f8f1e7] p-8 md:p-10 h-full min-h-[50vh] md:min-h-screen">
-      <h1 class="text-center font-bold text-2xl md:text-3xl text-[#3A3A3A] mb-4">
+      class="w-full md:w-1/2 flex flex-col items-center justify-center bg-[#f8f1e7] dark:bg-gray-800 p-8 md:p-10 h-full min-h-[50vh] md:min-h-screen">
+      <h1 class="text-center font-bold text-2xl md:text-3xl text-[#3A3A3A] dark:text-gray-100 mb-4">
         Bienvenue sur <br />
         <span class="text-gold">Meubly !</span>
       </h1>
@@ -11,7 +11,7 @@
     </div>
     <!-- Section formulaire -->
     <div class="w-full md:w-1/2 flex flex-col items-center justify-center p-4 md:p-10">
-      <div class="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
+      <div class="w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
         <h2 class="text-gold mb-6 text-2xl font-semibold text-center">Création de compte</h2>
         <form @submit.prevent="handleRegister" class="flex flex-col space-y-4">
           <div class="form-group">
@@ -177,6 +177,17 @@ export default {
   background-color: #f9f9f9;
   width: 100%;
   font-size: 1rem;
+  color: #374151;
+}
+
+.dark .input-field {
+  border-color: #4b5563;
+  background-color: #374151;
+  color: #f9fafb;
+}
+
+.dark .input-field::placeholder {
+  color: #9ca3af;
 }
 
 .connect-button {
@@ -190,6 +201,10 @@ export default {
   transition: background-color 0.3s;
   font-family: 'Poppins-Medium';
   font-size: 16px;
+}
+
+.dark .connect-button {
+  color: #f3f4f6;
 }
 
 .connect-button:hover {
