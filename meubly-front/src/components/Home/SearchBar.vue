@@ -13,7 +13,7 @@
         </div>
 
         <!-- Search Input Field -->
-        <input type="text" v-model="searchQuery" placeholder="Rechercher un type de produit"
+        <input ref="searchInput" type="text" v-model="searchQuery" placeholder="Rechercher un type de produit"
           class="w-full text-[14px] text-[#6A6A6A] dark:text-gray-300 bg-transparent focus:outline-none placeholder-gray-500 dark:placeholder-gray-400"
           @keyup.enter="performSearch" />
       </div>
@@ -34,74 +34,69 @@
 </template>
 
 <script>
-/**
- * SearchBar Component
- * 
- * A search component that allows users to search for products.
- * Features:
- * - Real-time search input
- * - Enter key support
- * - Responsive design with dark mode support
- * - Navigation to search results page
- */
+import { mapStores } from 'pinia'
+import { useFurnitureStore } from '@/stores/furnitureStore'
+
 export default {
   name: 'SearchBar',
 
   data() {
     return {
-      // Current search query entered by the user
       searchQuery: '',
     };
   },
 
   computed: {
-    /**
-     * Check if the search query is valid (not empty after trimming)
-     * @returns {boolean} True if search query is valid
-     */
+    ...mapStores(useFurnitureStore), // -> this.furnitureStore
     isSearchValid() {
       return this.searchQuery.trim().length > 0;
     },
   },
 
   methods: {
-    /**
-     * Perform the search operation
-     * Navigates to the search results page with the current query
-     */
-    performSearch() {
-      // Only proceed if search query is valid
-      if (this.isSearchValid) {
-        // Navigate to search results page with query parameter
-        this.$router.push({
-          name: 'ResultatRecherche',
-          query: {
-            q: this.searchQuery.trim()
-          },
-        });
+    async performSearch() {
+      if (!this.isSearchValid) return;
+
+      // 1) alimente le store pour la recherche serveur
+      this.furnitureStore.q = this.searchQuery.trim();
+      this.furnitureStore.page = 1;
+
+      // (optionnel) tu peux fetch ici pour précharger avant d'arriver sur la page résultats
+      try {
+        await this.furnitureStore.fetch();
+      } catch (e) {
+        // en cas d'erreur, tu peux afficher un toast ici
       }
+
+      // 2) navigue vers la page résultats (si tu veux rester sur Home, commente ce bloc)
+      this.$router.push({
+        name: 'ResultatRecherche',
+        query: { q: this.furnitureStore.q }
+      });
     },
 
-    /**
-     * Clear the search input
-     */
     clearSearch() {
       this.searchQuery = '';
     },
   },
 
-  // Component lifecycle hooks
   mounted() {
-    // Focus the search input when component is mounted
+    // focus auto
     this.$nextTick(() => {
-      const searchInput = this.$el.querySelector('input');
-      if (searchInput) {
-        searchInput.focus();
+      if (this.$refs.searchInput) {
+        this.$refs.searchInput.focus();
       }
     });
+
+    // si l'URL contient déjà ?q=..., on initialise le champ
+    const existingQ = this.$route?.query?.q;
+    if (existingQ && typeof existingQ === 'string') {
+      this.searchQuery = existingQ;
+    }
   },
 };
 </script>
+
 
 <style scoped>
 /* Search button styling */

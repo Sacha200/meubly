@@ -10,9 +10,9 @@
         <!-- Détails du produit -->
         <div class="w-full md:w-1/2 space-y-4">
             <div class="flex items-center justify-between">
-                <h2 class="title-product">{{ product.name }}</h2>
+                <h2 class="text-[#3A3A3A] dark:text-white font-bold text-xl md:text-2xl font-['Poppins-Bold']">{{ product.name }}</h2>
                 <svg 
-                    class="favoris" 
+                    class="favoris cursor-pointer transition-all duration-300 hover:scale-110" 
                     width="25" 
                     height="22" 
                     viewBox="0 0 25 22" 
@@ -30,8 +30,8 @@
                     />
                 </svg>
             </div>
-            <p class="price-product">{{ product.price }} €</p>
-            <p class="text-description">{{ product.description }}</p>
+            <p class="text-[#3A3A3A] dark:text-white font-semibold text-lg md:text-xl font-['Poppins-SemiBold']">{{ product.price }} €</p>
+            <p class="text-[#767676] dark:text-gray-300 text-sm md:text-base font-medium font-['Poppins-Medium']">{{ product.description }}</p>
         </div>
     </div>
 </template>
@@ -95,36 +95,5 @@ export default {
 </script>
 
 <style scoped>
-.title-product {
-    font-size: clamp(1.25rem, 2vw, 1.5rem);
-    font-family: 'Poppins-Bold';
-    color: #3A3A3A;
-}
-
-.price-product {
-    font-size: clamp(1.125rem, 1.5vw, 1.25rem);
-    font-family: 'Poppins-SemiBold';
-    color: #3A3A3A;
-}
-
-.text-description {
-    font-size: clamp(0.875rem, 1.2vw, 1rem);
-    font-family: 'Poppins-Medium';
-    color: #767676;
-}
-
-.favoris {
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.favoris:hover {
-    transform: scale(1.1);
-}
-
-@media (max-width: 768px) {
-    .text-description {
-        margin-top: 0.5rem;
-    }
-}
+/* Styles personnalisés si nécessaire */
 </style>

@@ -37,6 +37,16 @@
                 </div>
             </div>
         </div>
+
+        <!-- Pagination pour le tableau de comparaison -->
+        <div v-if="!loading && !error && allOffers.length > rowsPerPage" class="mt-6">
+            <Paginator 
+                :rows="rowsPerPage" 
+                :totalRecords="allOffers.length" 
+                @page="onPageChange"
+                :first="currentPage * rowsPerPage"
+            />
+        </div>
     </div>
 </template>
 
@@ -44,9 +54,13 @@
 import { getProviderComparison } from '../../clientapi';
 import { useThemeStore } from '../../stores/themeStore';
 import { computed } from 'vue';
+import Paginator from 'primevue/paginator';
 
 export default {
     name: 'TableComparison',
+    components: {
+        Paginator
+    },
     props: {
         product: {
             type: Object,
@@ -145,9 +159,118 @@ export default {
         isManomano(companyName) {
             const manomanoNames = ['manomano', 'manomano.fr', 'manomano.com'];
             return manomanoNames.includes(companyName ? companyName.toLowerCase().trim() : '');
+        },
+        
+        onPageChange(event) {
+            this.$emit('page-change', event.page);
         }
     }
 };
 </script>
 
+<style scoped>
+/* Styles pour Paginator avec support mode sombre */
+:deep(.p-paginator) {
+    background: transparent;
+    border: none;
+    padding: 1rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
+:deep(.p-paginator-page) {
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+:deep(.p-paginator .p-paginator-pages .p-paginator-page) {
+    width: 40px;
+    height: 40px;
+    margin: 0 4px;
+    border-radius: 50%;
+    border: none;
+    color: #3A3A3A;
+    font-family: 'Poppins-Medium';
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+:deep(.p-paginator-page.p-highlight) {
+    background-color: #B88E2F !important;
+    color: #FFFFFF !important;
+}
+
+:deep(.p-paginator .p-paginator-pages .p-paginator-page:not(.p-highlight):hover) {
+    background: rgba(184, 142, 47, 0.1);
+    color: #B88E2F;
+}
+
+:deep(.p-paginator .p-paginator-first),
+:deep(.p-paginator .p-paginator-prev),
+:deep(.p-paginator .p-paginator-next),
+:deep(.p-paginator .p-paginator-last) {
+    width: 40px;
+    height: 40px;
+    margin: 0 4px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: #3A3A3A;
+    padding: revert;
+    padding-inline: 12px;
+    cursor: pointer;
+}
+
+:deep(.p-paginator .p-paginator-first .p-icon),
+:deep(.p-paginator .p-paginator-prev .p-icon),
+:deep(.p-paginator .p-paginator-next .p-icon),
+:deep(.p-paginator .p-paginator-last .p-icon) {
+    width: 1rem;
+    height: 1rem;
+}
+
+:deep(.p-paginator .p-paginator-first:hover),
+:deep(.p-paginator .p-paginator-prev:hover),
+:deep(.p-paginator .p-paginator-next:hover),
+:deep(.p-paginator .p-paginator-last:hover) {
+    background: rgba(184, 142, 47, 0.1);
+    color: #B88E2F;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+:deep(.p-paginator .p-paginator-current) {
+    margin: 0 8px;
+    color: #767676;
+    font-family: 'Poppins-Regular';
+}
+
+/* Mode sombre */
+:deep(.dark .p-paginator .p-paginator-pages .p-paginator-page) {
+    color: #E5E7EB;
+}
+
+:deep(.dark .p-paginator .p-paginator-pages .p-paginator-page:not(.p-highlight):hover) {
+    background: rgba(184, 142, 47, 0.2);
+    color: #B88E2F;
+}
+
+:deep(.dark .p-paginator .p-paginator-first),
+:deep(.dark .p-paginator .p-paginator-prev),
+:deep(.dark .p-paginator .p-paginator-next),
+:deep(.dark .p-paginator .p-paginator-last) {
+    color: #E5E7EB;
+}
+
+:deep(.dark .p-paginator .p-paginator-first:hover),
+:deep(.dark .p-paginator .p-paginator-prev:hover),
+:deep(.dark .p-paginator .p-paginator-next:hover),
+:deep(.dark .p-paginator .p-paginator-last:hover) {
+    background: rgba(184, 142, 47, 0.2);
+    color: #B88E2F;
+}
+
+:deep(.dark .p-paginator .p-paginator-current) {
+    color: #9CA3AF;
+}
+</style>

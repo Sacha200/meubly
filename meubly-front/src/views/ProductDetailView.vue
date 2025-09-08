@@ -13,8 +13,7 @@
                 <TableComparison :product="product" :currentPage="currentPage" :rowsPerPage="rowsPerPage"
                     @offers-loaded="handleOffersLoaded" />
                 <div class="" v-if="totalOffers > 0">
-                    <Paginator :rows="rowsPerPage" :totalRecords="totalOffers" @page="onPageChange"
-                        :first="currentPage * rowsPerPage"></Paginator>
+                    
                 </div>
             </div>
         </div>
@@ -27,7 +26,6 @@ import Header from '../components/Header.vue';
 import Footer from '../components/Footer.vue';
 import ProductDetail from '../components/Detail/ProductDetail.vue';
 import TableComparison from '../components/Detail/TableComparison.vue';
-import Paginator from 'primevue/paginator';
 import { getProductById } from '../clientapi';
 
 export default {
@@ -36,7 +34,7 @@ export default {
         Footer,
         ProductDetail,
         TableComparison,
-        Paginator
+        
     },
     data() {
         return {
@@ -69,11 +67,7 @@ export default {
             this.totalOffers = totalCount;
             console.log("Nombre total d'offres:", totalCount);
         },
-        onPageChange(event) {
-            this.currentPage = event.page;
-            this.rowsPerPage = event.rows;
-            console.log("Page changée:", event.page, "Lignes par page:", event.rows);
-        }
+     
     },
     watch: {
         currentPage: {

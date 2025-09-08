@@ -11,44 +11,55 @@ router.use(express.json());
 // Get all furnitures
 router.get("/furnitures", async (req, res) => {
   try {
-    console.log('Récupération des meubles...');
-    const { search, category } = req.query;
-    console.log('Paramètres reçus - search:', search, 'category:', category);
-    
+    const {
+      q = "",
+      categoryId,
+      minPrice,
+      maxPrice,
+      sort = "created_at:desc",
+      page = 1,
+      limit = 12
+    } = req.query;
+
+    const pageNum = Math.max(1, parseInt(page, 10) || 1);
+    const lim = Math.min(60, Math.max(1, parseInt(limit, 10) || 12));
+    const from = (pageNum - 1) * lim;
+    const to = from + lim - 1;
+
     let query = supabase
       .from("Furniture")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    console.log('Exécution de la requête...');
-    const { data, error } = await query;
-
-    if (error) {
-      console.error('Erreur Supabase:', error);
-      throw error;
-    }
-
-    console.log('Meubles récupérés:', data?.length || 0, 'éléments');
-    console.log('Premier élément (structure):', data?.[0]);
-
-    // Ajouter un filtre de recherche si le paramètre search est fourni
-    if (search && data && data.length > 0) {
-      console.log('Ajout du filtre de recherche pour:', search);
-      console.log('Champs disponibles:', Object.keys(data[0]));
-      
-      // Filtrage côté serveur JavaScript pour déboguer
-      const filteredData = data.filter(item => 
-        item.name?.toLowerCase().includes(search.toLowerCase())
+      .select(
+        "furniture_id, name, type, description, cover_url, price, category_id, created_at, nb_offers",
+        { count: "exact" }
       );
-      console.log('Résultats filtrés:', filteredData.length);
-      res.status(200).json(filteredData);
-    } else {
-      res.status(200).json(data);
-    }
 
+    if (q) query = query.ilike("name", `%${q}%`);
+    if (categoryId) query = query.eq("category_id", Number(categoryId));
+    if (minPrice) query = query.gte("price", Number(minPrice));
+    if (maxPrice) query = query.lte("price", Number(maxPrice));
+
+    const [col, dir] = String(sort).split(":"); // ex: "price:asc"
+    if (col && dir) query = query.order(col, { ascending: dir === "asc" });
+
+    query = query.range(from, to);
+
+    const { data, error, count } = await query;
+    if (error) return res.status(500).json({ error: error.message });
+
+    // S'assurer que nb_offers a une valeur par défaut
+    const itemsWithOffers = (data || []).map(item => ({
+      ...item,
+      nb_offers: item.nb_offers || 1 // Valeur par défaut si null/undefined
+    }));
+
+    return res.status(200).json({
+      items: itemsWithOffers,
+      total: count || 0,
+      page: pageNum,
+      limit: lim
+    });
   } catch (error) {
-    console.error("Erreur complète:", error);
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 });
 
@@ -142,3 +153,4 @@ router.delete("/furnitures/:id", async (req, res) => {
 });
 
 export default router;
+

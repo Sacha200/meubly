@@ -27,7 +27,7 @@
     </div>
     <div class="p-3 text-left">
       <h3 class="text-[14px] sm:text-[16px] name_product text-[#333333] dark:text-white line-clamp-2">{{ product.name }}</h3>
-      <p class="offers text-gray-500 dark:text-gray-400 text-[10px] sm:text-[12px]"> {{ product.nb_offers }} offres</p>
+      <p class="offers text-gray-500 dark:text-gray-400 text-[10px] sm:text-[12px]"> {{ product.nb_offers || product.offerCount || 'Plusieurs' }} offres</p>
       <p class="price text-[14px] sm:text-[16px]"><span class="text_price">à partir de</span> {{ product.price }}€</p>
     </div>
     <button @click="goToProductDetail()"

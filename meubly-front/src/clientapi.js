@@ -1,56 +1,61 @@
 import { supabase } from './supabase';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1').replace(/\/+$/, '');
+// ===========================
+// PRODUITS (liste + filtres)
+// ===========================
 
 // Fonction pour récupérer tous les produits
-export async function getProducts() {
+export async function getProducts({
+    q = '',
+    categoryId = null,
+    minPrice = null,
+    maxPrice = null,
+    sort = 'created_at:desc',
+    page = 1,
+    limit = 12,
+  } = {}) {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/v1/furnitures`);
-        
-        if (!response.ok) {
-            throw new Error(`Erreur HTTP: ${response.status}`);
-        }
-        
-        return await response.json();
+      const url = new URL(`${API_BASE}/furnitures`);
+      if (q) url.searchParams.set('q', q);
+      if (categoryId) url.searchParams.set('categoryId', String(categoryId));
+      if (minPrice != null) url.searchParams.set('minPrice', String(minPrice));
+      if (maxPrice != null) url.searchParams.set('maxPrice', String(maxPrice));
+      url.searchParams.set('sort', sort);
+      url.searchParams.set('page', String(page));
+      url.searchParams.set('limit', String(limit));
+  
+      const response = await fetch(url.toString());
+      if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+  
+      // <-- Renvoie { items, total, page, limit }
+      return await response.json();
     } catch (error) {
-        console.error('Erreur API:', error);
-        throw error;
+      console.error('Erreur API:', error);
+      throw error;
     }
-}
+  }
+
 
 // Fonction pour récupérer un produit spécifique
 export async function getProductById(id) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/v1/furnitures/${id}`);
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.error || 'Erreur lors de la récupération du produit');
-        }
-
-        return data;
-    } catch (error) {
-        console.error('Erreur détaillée:', error);
-        throw error;
-    }
+  try {
+    const response = await fetch(`${API_BASE}/furnitures/${id}`);
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Erreur lors de la récupération du produit');
+    return data;
+  } catch (error) {
+    console.error('Erreur détaillée:', error);
+    throw error;
+  }
 }
 
 // Fonction pour récupérer les produits par catégorie
-export async function getProductsByCategory(category) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/v1/furnitures?category=${category}`);
-        const data = await response.json(); 
-
-        if (!response.ok) {
-            throw new Error(data.error || 'Erreur lors de la récupération des produits');
-        }
-
-        return data;
-    } catch (error) {
-        console.error('Erreur détaillée:', error);
-        throw error;
-    }
-}
+export async function getProductsByCategory(categoryId, opts = {}) {
+    const { page = 1, limit = 12, sort = 'created_at:desc' } = opts;
+    return getProducts({ categoryId, page, limit, sort });
+  }
+  
 
 // Fonction pour l'inscription avec Supabase
 export async function registerUser(userData) {
@@ -224,56 +229,38 @@ export async function isUserLoggedIn() {
 // Fonction pour récupérer les comparaisons de prix
 export async function getProviderComparison(category_id) {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/v1/compare/${category_id}`);
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(`Erreur HTTP: ${response.status}`);
-        }
-
-        return data;
+      const response = await fetch(`${API_BASE}/compare/${category_id}`);
+      const data = await response.json();
+      if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+      return data;
     } catch (error) {
-        console.error('Erreur lors de la récupération des comparaisons:', error);
-        throw error;
+      console.error('Erreur lors de la récupération des comparaisons:', error);
+      throw error;
     }
-}
+  }
 
-// Fonction pour rechercher des produits
-export async function searchProducts(searchQuery = '') {
-    try {
-        const url = `${API_BASE_URL}/api/v1/furnitures${searchQuery ? `?search=${searchQuery}` : ''}`;
-        const response = await fetch(url);
-        
-        if (!response.ok) {
-            throw new Error(`Erreur HTTP: ${response.status}`);
-        }
-        
-        return await response.json();
-    } catch (error) {
-        console.error('Erreur lors de la recherche des produits:', error);
-        throw error;
-    }
-}
+// Recherche par texte, renvoie { items, total, page, limit }
+export async function searchProducts(searchQuery = '', opts = {}) {
+    const { page = 1, limit = 12, sort = 'created_at:desc', categoryId = null, minPrice = null, maxPrice = null } = opts;
+    return getProducts({ q: searchQuery, categoryId, minPrice, maxPrice, page, limit, sort });
+  }
+  
 
 // Fonction pour mettre à jour un produit
 export async function updateProduct(id, productData) {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/v1/furnitures/${id}`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(productData)
-        });
-
-        if (!response.ok) {
-            const data = await response.json();
-            throw new Error(data.error || 'Erreur lors de la mise à jour du produit');
-        }
-
-        return await response.json();
+      const response = await fetch(`${API_BASE}/furnitures/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(productData)
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Erreur lors de la mise à jour du produit');
+      }
+      return await response.json();
     } catch (error) {
-        console.error('Erreur détaillée:', error);
-        throw error;
+      console.error('Erreur détaillée:', error);
+      throw error;
     }
-}
+  }

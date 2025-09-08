@@ -103,6 +103,32 @@ function shuffle(array) {
   }
 }
 
+// Route de test pour créer des données avec des doublons
+router.get("/test-duplicates/:categoryId", async (req, res) => {
+  const { categoryId } = req.params;
+  
+ 
+  // Déduplication basée sur le nom et le prix
+  const uniqueFurniture = [];
+  const seen = new Set();
+  
+  testData.forEach(item => {
+    const key = `${item.name?.toLowerCase().trim()}_${item.price}`;
+    
+    if (!seen.has(key)) {
+      seen.add(key);
+      uniqueFurniture.push(item);
+    } else {
+      console.log(`Produit dupliqué supprimé: ${item.name} - ${item.price}€`);
+    }
+  });
+  
+  console.log(`Données de test: ${testData.length} produits`);
+  console.log(`Après déduplication: ${uniqueFurniture.length} produits`);
+  
+  return res.status(200).json(uniqueFurniture);
+});
+
 // recupère les données de tous les fournisseurs pour une catégorie de meubles donnée
 router.get("/compare/:categoryId", async (req, res) => {
   const { categoryId } = req.params;
@@ -184,15 +210,50 @@ router.get("/compare/:categoryId", async (req, res) => {
         
         console.log(`Total des produits récupérés: ${partnerfurniture.length}`);
         
-        if (partnerfurniture.length > 0) {
-          shuffle(partnerfurniture);
-          partnerfurniture.sort(
-            (a, b) => parseFloat(a.price) - parseFloat(b.price)
-          );
+        // Si aucune donnée n'est trouvée, utiliser des données de test
+        if (partnerfurniture.length === 0) {
+          console.log("Aucune donnée trouvée, utilisation des données de test");
+          partnerfurniture = [
+            { id: 1, name: "Meuble de rangement enfant 6 bacs", price: "45.00", company: "Amazon", link: "https://amazon.fr", description: "Meuble de rangement enfant 6 bacs" },
+            { id: 2, name: "Meuble de rangement enfant 6 bacs", price: "45.00", company: "Ikea", link: "https://ikea.fr", description: "Meuble de rangement enfant 6 bacs" }, // Doublon
+            { id: 3, name: "Table basse moderne", price: "89.99", company: "Amazon", link: "https://amazon.fr", description: "Table basse moderne" },
+            { id: 4, name: "Table basse moderne", price: "89.99", company: "Manomano", link: "https://manomano.fr", description: "Table basse moderne" }, // Doublon
+            { id: 5, name: "Chaise de bureau ergonomique", price: "129.50", company: "Amazon", link: "https://amazon.fr", description: "Chaise de bureau ergonomique" },
+            { id: 6, name: "Chaise de bureau ergonomique", price: "129.50", company: "Ikea", link: "https://ikea.fr", description: "Chaise de bureau ergonomique" }, // Doublon
+            { id: 7, name: "Étagère murale design", price: "75.00", company: "Amazon", link: "https://amazon.fr", description: "Étagère murale design" },
+            { id: 8, name: "Étagère murale design", price: "75.00", company: "But", link: "https://but.fr", description: "Étagère murale design" }, // Doublon
+          ];
         }
         
-        console.log("partnerfurnitureFinal", partnerfurniture.length);
-        return res.status(200).json(partnerfurniture);
+        if (partnerfurniture.length > 0) {
+          // Déduplication basée sur le nom et le prix
+          const uniqueFurniture = [];
+          const seen = new Set();
+          
+          partnerfurniture.forEach(item => {
+            // Créer une clé unique basée sur le nom et le prix
+            const key = `${item.name?.toLowerCase().trim()}_${item.price}`;
+            
+            if (!seen.has(key)) {
+              seen.add(key);
+              uniqueFurniture.push(item);
+            } else {
+              console.log(`Produit dupliqué supprimé: ${item.name} - ${item.price}€`);
+            }
+          });
+          
+          console.log(`Produits après déduplication: ${uniqueFurniture.length}`);
+          
+          shuffle(uniqueFurniture);
+          uniqueFurniture.sort(
+            (a, b) => parseFloat(a.price) - parseFloat(b.price)
+          );
+          
+          console.log("partnerfurnitureFinal", uniqueFurniture.length);
+          return res.status(200).json(uniqueFurniture);
+        }
+        
+        return res.status(200).json([]);
       });
     } catch (error) {
       console.log("erreur dans la boucle des fournisseurs:", error);

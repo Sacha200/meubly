@@ -445,6 +445,25 @@ Le fichier `cypress.config.js` configure :
 - Viewport
 - Capture de screenshots
 
+### Configuration Supabase pour les tests
+
+Pour les tests d'authentification avec Supabase, il est recommandé de :
+
+```javascript
+// Dans cypress/support/e2e.js
+beforeEach(() => {
+  // Nettoyer l'état d'authentification avant chaque test
+  cy.clearLocalStorage()
+  cy.clearCookies()
+  
+  // Intercepter les appels Supabase pour les mocker
+  cy.intercept('POST', '**/auth/v1/token', { fixture: 'auth-success.json' })
+  cy.intercept('POST', '**/auth/v1/signup', { fixture: 'signup-success.json' })
+})
+```
+
+**Note importante :** Les tests d'authentification utilisent Supabase au lieu d'Auth0, ce qui simplifie la configuration et offre une meilleure intégration avec l'architecture existante du projet.
+
 ## 🚨 Bonnes pratiques
 
 ### Tests unitaires
