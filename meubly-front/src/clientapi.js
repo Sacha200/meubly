@@ -17,6 +17,8 @@ export async function getProducts({
   } = {}) {
     try {
       const url = new URL(`${API_BASE}/furnitures`);
+      console.log('API_BASE:', API_BASE);
+      console.log('URL construite:', url.toString());
       if (q) url.searchParams.set('q', q);
       if (categoryId) url.searchParams.set('categoryId', String(categoryId));
       if (minPrice != null) url.searchParams.set('minPrice', String(minPrice));
