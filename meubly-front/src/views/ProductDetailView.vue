@@ -11,7 +11,7 @@
             <div v-else-if="product" class="product-detail">
                 <ProductDetail :product="product" />
                 <TableComparison :product="product" :currentPage="currentPage" :rowsPerPage="rowsPerPage"
-                    @offers-loaded="handleOffersLoaded" />
+                    @offers-loaded="handleOffersLoaded" @page-change="handlePageChange" />
                 <div class="" v-if="totalOffers > 0">
                     
                 </div>
@@ -67,7 +67,10 @@ export default {
             this.totalOffers = totalCount;
             console.log("Nombre total d'offres:", totalCount);
         },
-     
+        handlePageChange(newPage) {
+            this.currentPage = newPage;
+            console.log("Page changée vers:", newPage);
+        }
     },
     watch: {
         currentPage: {
