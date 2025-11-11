@@ -12,6 +12,7 @@
                 <ProductDetail :product="product" />
                 <TableComparison :product="product" :currentPage="currentPage" :rowsPerPage="rowsPerPage"
                     @offers-loaded="handleOffersLoaded" @page-change="handlePageChange" />
+                <ProductReviews :product-id="product.furniture_id" />
                 <div class="" v-if="totalOffers > 0">
                     
                 </div>
@@ -26,6 +27,7 @@ import Header from '../components/Header.vue';
 import Footer from '../components/Footer.vue';
 import ProductDetail from '../components/Detail/ProductDetail.vue';
 import TableComparison from '../components/Detail/TableComparison.vue';
+import ProductReviews from '../components/Detail/ProductReviews.vue';
 import { getProductById } from '../clientapi';
 
 export default {
@@ -34,6 +36,7 @@ export default {
         Footer,
         ProductDetail,
         TableComparison,
+        ProductReviews,
         
     },
     data() {
