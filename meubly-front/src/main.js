@@ -6,6 +6,7 @@ import Paginator from 'primevue/paginator';
 import ToastService from 'primevue/toastservice'
 import './style.css'
 import { useThemeStore } from './stores/themeStore'
+import { useAuthStore } from './stores/authStore'
 
 import App from './App.vue'
 import router from './router'
@@ -29,5 +30,8 @@ app.use(createAuth0, {
 // Initialiser le thème
 const themeStore = useThemeStore(pinia);
 themeStore.init();
+
+const authStore = useAuthStore(pinia);
+authStore.init();
 
 app.mount('#app')

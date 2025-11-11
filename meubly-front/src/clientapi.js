@@ -266,3 +266,40 @@ export async function updateProduct(id, productData) {
       throw error;
     }
   }
+
+// ===========================
+// AVIS PRODUITS
+// ===========================
+
+export async function listProductReviews(productId, { page = 1, limit = 5 } = {}) {
+    const url = new URL(`${API_BASE}/furnitures/${productId}/reviews`);
+    if (page) url.searchParams.set('page', String(page));
+    if (limit) url.searchParams.set('limit', String(limit));
+
+    const response = await fetch(url.toString());
+    const data = await response.json();
+
+    if (!response.ok) {
+        const message = data?.error || data?.errors?.[0]?.msg || 'Erreur lors de la récupération des avis';
+        throw new Error(message);
+    }
+
+    return data;
+}
+
+export async function submitProductReview(productId, payload) {
+    const response = await fetch(`${API_BASE}/furnitures/${productId}/reviews`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        const message = data?.error || data?.errors?.[0]?.msg || 'Erreur lors de l\'enregistrement de l\'avis';
+        throw new Error(message);
+    }
+
+    return data;
+}
