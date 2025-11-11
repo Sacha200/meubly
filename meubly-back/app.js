@@ -26,15 +26,15 @@ app.use(helmet({
       styleSrc: ["'self'", "'unsafe-inline'"],
       scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
       imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "http://localhost:3000", "http://localhost:5173", "http://localhost:5000", "https://meubly-front.vercel.app", "https://*.vercel.app"]
+      connectSrc: ["'self'", "http://localhost:5173", "http://localhost:5000", "https://meubly-front.vercel.app"]
     }
   },
+
+
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 
 // Configuration CORS pour permettre les requêtes depuis le front-end
-
-
 app.use(cors());
 
 // Configuration du routeur

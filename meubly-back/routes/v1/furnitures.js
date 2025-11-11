@@ -81,8 +81,6 @@ router.get("/furnitures/:id", async (req, res) => {
   }
 });
 
-
-
 // Get a furniture by id with its offers, with optional query parameter
 router.get("/:id/offers", async (req, res) => {
   try {
@@ -106,7 +104,7 @@ router.get("/:id/offers", async (req, res) => {
   }
 });
 
-// Création d'un nouveau meuble
+// create a new furniture
 router.post("/furnitures", async (req, res) => {
   try {
     const { data, error } = await supabase
@@ -121,7 +119,7 @@ router.post("/furnitures", async (req, res) => {
   }
 });
 
-// Update a furniture by id
+// update a furniture by id
 router.patch("/furnitures/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -137,7 +135,7 @@ router.patch("/furnitures/:id", async (req, res) => {
   }
 });
 
-// Delete a furniture by id
+// delete a furniture by id
 router.delete("/furnitures/:id", async (req, res) => {
   try {
     const { id } = req.params;

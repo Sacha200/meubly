@@ -1,5 +1,5 @@
+// routes/v1.js - Organisation modulaire
 import express from 'express';
-
 import furnituresRouter from './v1/furnitures.js';
 import usersRouter from './v1/users.js';
 import authRouter from './v1/auth.js';
