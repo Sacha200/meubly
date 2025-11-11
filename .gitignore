@@ -1,0 +1,11 @@
+*.md
+!README.md
+!**/README.md
+
+# Node dependencies
+node_modules/
+
+# Build outputs
+dist/
+*.log
+
