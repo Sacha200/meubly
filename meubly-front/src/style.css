@@ -6,7 +6,13 @@
 body {
   margin: 0;
   padding: 0;
-  @apply bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300;
+  @apply bg-white text-gray-900 transition-colors duration-300;
+}
+
+/* Mode sombre avec couleurs dynamiques */
+.dark body {
+  background-color: var(--dark-bg, #052e16);
+  color: var(--dark-text, #dcfce7);
 }
 
 /* Transitions fluides pour tous les éléments */

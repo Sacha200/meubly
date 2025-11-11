@@ -11,6 +11,51 @@
         <!-- Theme Toggle -->
         <ThemeToggle class="mr-4" />
         
+        <!-- Quick Color Buttons -->
+        <QuickColorButtons class="mr-4" />
+        
+        <!-- Color Theme Selector -->
+        <div class="relative mr-4">
+          <button 
+            @click="toggleColorMenu" 
+            class="color-menu-button flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer transition-all duration-300 font-medium text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+            :class="{ 'bg-gray-50 dark:bg-gray-700': isColorMenuOpen }"
+            title="Changer la couleur du thème"
+          >
+            <svg class="mr-2 w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1H5C3.89 1 3 1.89 3 3V21C3 22.11 3.89 23 5 23H19C20.11 23 21 22.11 21 21V9M19 9H14V4H19V9Z" fill="currentColor"/>
+            </svg>
+            Couleurs
+            <svg class="ml-1 transition-transform duration-300" :class="{ 'rotate-180': isColorMenuOpen }" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+
+          <!-- Dropdown Color Menu -->
+          <div v-if="isColorMenuOpen" class="color-menu absolute top-full right-0 mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg dark:shadow-gray-900/50 z-50 min-w-[200px] animate-fadeInDown">
+            <div class="p-3">
+              <h3 class="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-200 px-2">Couleur du thème</h3>
+              
+              <div class="space-y-2">
+                <button
+                  v-for="(theme, key) in availableThemes"
+                  :key="key"
+                  @click="setColorTheme(key)"
+                  class="w-full flex items-center px-3 py-2 rounded-lg transition-all duration-200 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  :class="{ 'bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200': currentColorTheme === key }"
+                >
+                  <!-- Aperçu couleur -->
+                  <div class="w-4 h-4 rounded-full mr-3 border border-gray-300 dark:border-gray-600" :style="{ backgroundColor: getThemeColor(key, 'accent') }"></div>
+                  <span class="text-sm font-medium">{{ theme.name }}</span>
+                  <svg v-if="currentColorTheme === key" class="ml-auto w-4 h-4 text-primary-600 dark:text-primary-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
         <!-- Favoris -->
         <a href="#" class="flex items-center mr-8 text-gray-700 dark:text-gray-200 hover:text-primary-500 dark:hover:text-primary-400 transition-colors" @click="goToFavoris">
           <svg class="mr-2 w-6 h-5" viewBox="0 0 25 22" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -93,17 +138,34 @@
 <script>
 import { supabase } from '../supabase';
 import ThemeToggle from './ThemeToggle.vue';
+import QuickColorButtons from './QuickColorButtons.vue';
+import { useThemeStore } from '../stores/themeStore';
+import { THEME_COLORS } from '../config/themeColors';
 
 export default {
   name: 'Header',
   components: {
-    ThemeToggle
+    ThemeToggle,
+    QuickColorButtons
+  },
+  setup() {
+    const themeStore = useThemeStore();
+    return { themeStore };
   },
   data() {
     return {
       isConnected: false,
-      isAdminMenuOpen: false
+      isAdminMenuOpen: false,
+      isColorMenuOpen: false
     };
+  },
+  computed: {
+    availableThemes() {
+      return THEME_COLORS;
+    },
+    currentColorTheme() {
+      return this.themeStore.colorTheme;
+    }
   },
   methods: {
     goToFavoris() {
@@ -119,16 +181,39 @@ export default {
     },
     toggleAdminMenu() {
       this.isAdminMenuOpen = !this.isAdminMenuOpen;
+      this.isColorMenuOpen = false; // Fermer l'autre menu
     },
     closeAdminMenu() {
       this.isAdminMenuOpen = false;
     },
+    toggleColorMenu() {
+      this.isColorMenuOpen = !this.isColorMenuOpen;
+      this.isAdminMenuOpen = false; // Fermer l'autre menu
+    },
+    closeColorMenu() {
+      this.isColorMenuOpen = false;
+    },
+    setColorTheme(themeKey) {
+      this.themeStore.setColorTheme(themeKey);
+      this.closeColorMenu();
+    },
+    getThemeColor(themeKey, colorType) {
+      const theme = THEME_COLORS[themeKey];
+      if (!theme) return '#000000';
+      return theme[colorType] || '#000000';
+    },
     handleClickOutside(event) {
       const adminMenu = this.$el.querySelector('.admin-dropdown');
       const adminButton = this.$el.querySelector('.admin-menu-button');
+      const colorMenu = this.$el.querySelector('.color-menu');
+      const colorButton = this.$el.querySelector('.color-menu-button');
 
       if (this.isAdminMenuOpen && adminMenu && !adminMenu.contains(event.target) && !adminButton.contains(event.target)) {
         this.closeAdminMenu();
+      }
+      
+      if (this.isColorMenuOpen && colorMenu && !colorMenu.contains(event.target) && !colorButton.contains(event.target)) {
+        this.closeColorMenu();
       }
     }
   },
