@@ -18,77 +18,113 @@ function sanitizePagination(page, limit) {
   };
 }
 
+const EMPTY_BREAKDOWN = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+
+function buildEmptySummary() {
+  return {
+    average: null,
+    total: 0,
+    breakdown: { ...EMPTY_BREAKDOWN }
+  };
+}
+
+function buildEmptyResult(page, limit) {
+  return {
+    items: [],
+    total: 0,
+    page,
+    limit,
+    summary: buildEmptySummary()
+  };
+}
+
+function isRelationMissing(error) {
+  if (!error) return false;
+  return error.code === "42P01" || String(error.message ?? "").toLowerCase().includes("relation") || String(error.details ?? "").toLowerCase().includes("does not exist");
+}
+
 async function computeSummary(productId) {
-  const { data, error } = await supabase
-    .from("Reviews")
-    .select("rating")
-    .eq("product_id", productId);
+  try {
+    const { data, error } = await supabase
+      .from("Reviews")
+      .select("rating")
+      .eq("product_id", productId);
 
-  if (error) {
-    throw error;
-  }
+    if (error) {
+      throw error;
+    }
 
-  const breakdown = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    if (!data || data.length === 0) {
+      return buildEmptySummary();
+    }
 
-  if (!data || data.length === 0) {
+    const breakdown = { ...EMPTY_BREAKDOWN };
+    let sum = 0;
+
+    for (const row of data) {
+      const rating = Number(row.rating) || 0;
+      if (rating >= 1 && rating <= 5) {
+        breakdown[rating] += 1;
+        sum += rating;
+      }
+    }
+
+    const total = Object.values(breakdown).reduce((acc, value) => acc + value, 0);
+
     return {
-      average: null,
-      total: 0,
+      average: total > 0 ? sum / total : null,
+      total,
       breakdown
     };
-  }
-
-  let sum = 0;
-
-  for (const row of data) {
-    const rating = Number(row.rating) || 0;
-    if (rating >= 1 && rating <= 5) {
-      breakdown[rating] += 1;
-      sum += rating;
+  } catch (error) {
+    if (isRelationMissing(error)) {
+      console.warn("[reviewService] Table Reviews absente - retour d'un résumé vide.");
+      return buildEmptySummary();
     }
+    throw error;
   }
-
-  const total = Object.values(breakdown).reduce((acc, value) => acc + value, 0);
-
-  return {
-    average: total > 0 ? sum / total : null,
-    total,
-    breakdown
-  };
 }
 
 export const reviewService = {
   async listByProduct(productId, { page = DEFAULT_PAGE, limit = DEFAULT_LIMIT } = {}) {
     const { page: safePage, limit: safeLimit, from, to } = sanitizePagination(page, limit);
 
-    const { data, error, count } = await supabase
-      .from("Reviews")
-      .select(
-        "review_id, product_id, user_id, rating, comment, author_name, created_at, updated_at",
-        { count: "exact" }
-      )
-      .eq("product_id", productId)
-      .order("created_at", { ascending: false })
-      .range(from, to);
+    try {
+      const { data, error, count } = await supabase
+        .from("Reviews")
+        .select(
+          "review_id, product_id, user_id, rating, comment, author_name, created_at, updated_at",
+          { count: "exact" }
+        )
+        .eq("product_id", productId)
+        .order("created_at", { ascending: false })
+        .range(from, to);
 
-    if (error) {
+      if (error) {
+        throw error;
+      }
+
+      const summary = await computeSummary(productId);
+
+      const items = (data ?? []).map((item) => ({
+        ...item,
+        rating: Number(item.rating) || 0,
+      }));
+
+      return {
+        items,
+        total: count ?? 0,
+        page: safePage,
+        limit: safeLimit,
+        summary
+      };
+    } catch (error) {
+      if (isRelationMissing(error)) {
+        console.warn("[reviewService] Table Reviews absente - retour d'une liste vide.");
+        return buildEmptyResult(safePage, safeLimit);
+      }
       throw error;
     }
-
-    const summary = await computeSummary(productId);
-
-    const items = (data ?? []).map((item) => ({
-      ...item,
-      rating: Number(item.rating) || 0,
-    }));
-
-    return {
-      items,
-      total: count ?? 0,
-      page: safePage,
-      limit: safeLimit,
-      summary
-    };
   },
 
   async createOrUpdateReview({ productId, userId, rating, comment, authorName }) {
@@ -104,49 +140,56 @@ export const reviewService = {
       payload.user_id = userId;
     }
 
-    if (userId) {
-      const { data: existing, error: existingError } = await supabase
-        .from("Reviews")
-        .select("review_id")
-        .eq("product_id", productId)
-        .eq("user_id", userId)
-        .maybeSingle();
-
-      if (existingError && existingError.code !== "PGRST116") {
-        throw existingError;
-      }
-
-      if (existing) {
-        const { data, error } = await supabase
+    try {
+      if (userId) {
+        const { data: existing, error: existingError } = await supabase
           .from("Reviews")
-          .update(payload)
-          .eq("review_id", existing.review_id)
-          .select()
-          .single();
+          .select("review_id")
+          .eq("product_id", productId)
+          .eq("user_id", userId)
+          .maybeSingle();
 
-        if (error) {
-          throw error;
+        if (existingError && existingError.code !== "PGRST116") {
+          throw existingError;
         }
 
-        return { action: "updated", review: data };
+        if (existing) {
+          const { data, error } = await supabase
+            .from("Reviews")
+            .update(payload)
+            .eq("review_id", existing.review_id)
+            .select()
+            .single();
+
+          if (error) {
+            throw error;
+          }
+
+          return { action: "updated", review: data };
+        }
       }
-    }
 
-    const { data, error } = await supabase
-      .from("Reviews")
-      .insert([
-        {
-          ...payload,
-          created_at: new Date().toISOString()
-        }
-      ])
-      .select()
-      .single();
+      const { data, error } = await supabase
+        .from("Reviews")
+        .insert([
+          {
+            ...payload,
+            created_at: new Date().toISOString()
+          }
+        ])
+        .select()
+        .single();
 
-    if (error) {
+      if (error) {
+        throw error;
+      }
+
+      return { action: "created", review: data };
+    } catch (error) {
+      if (isRelationMissing(error)) {
+        console.error("[reviewService] Table Reviews absente - impossible d'enregistrer l'avis.");
+      }
       throw error;
     }
-
-    return { action: "created", review: data };
   }
 };
