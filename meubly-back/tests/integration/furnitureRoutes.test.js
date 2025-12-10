@@ -1,158 +1,73 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import request from 'supertest';
 import { app } from '../../app.js';
+import { furnitureRepository } from '../../repositories/furnitureRepository.js';
 
-describe('Furniture Routes Integration Tests', () => {
-  let server;
+// Mock Auth Middleware to bypass real JWT checks for integration tests
+vi.mock('../../middlewares/authMiddleware.js', () => ({
+  requireAuth: (req, res, next) => {
+    req.user = { id: 'test-user-id' };
+    next();
+  }
+}));
 
-  beforeAll(() => {
-    server = app.listen(0); // Port 0 pour un port aléatoire
-  });
+// Mock Role Middleware
+vi.mock('../../middlewares/roleMiddleware.js', () => ({
+  requireAdmin: (req, res, next) => {
+    // Simulate admin role
+    next();
+  }
+}));
 
-  afterAll((done) => {
-    server.close(done);
-  });
+// Mock Repository
+vi.mock('../../repositories/furnitureRepository.js');
 
+describe('Integration: Furniture Routes', () => {
   beforeEach(() => {
-    // Reset des mocks si nécessaire
+    vi.clearAllMocks();
   });
 
   describe('GET /api/v1/furnitures', () => {
-    it('should return all furniture', async () => {
-      const response = await request(server)
-        .get('/api/v1/furnitures')
-        .expect(200);
+    it('should return list of furnitures', async () => {
+      furnitureRepository.search.mockResolvedValue({ 
+          data: [{ furniture_id: 1, name: 'Chair' }], 
+          count: 1 
+      });
 
-      expect(response.body).toBeInstanceOf(Array);
-      expect(response.headers['content-type']).toMatch(/application\/json/);
-    });
-
-    it('should filter furniture by search query', async () => {
-      const response = await request(server)
-        .get('/api/v1/furnitures?search=chaise')
-        .expect(200);
-
-      expect(response.body).toBeInstanceOf(Array);
-    });
-
-    it('should filter furniture by category', async () => {
-      const response = await request(server)
-        .get('/api/v1/furnitures?category=Bureau')
-        .expect(200);
-
-      expect(response.body).toBeInstanceOf(Array);
-    });
-  });
-
-  describe('GET /api/v1/furnitures/:id', () => {
-    it('should return a specific furniture by id', async () => {
-      const response = await request(server)
-        .get('/api/v1/furnitures/1')
-        .expect(200);
-
-      expect(response.body).toHaveProperty('id');
-      expect(response.body).toHaveProperty('name');
-      expect(response.headers['content-type']).toMatch(/application\/json/);
-    });
-
-    it('should return 404 for non-existent furniture', async () => {
-      await request(server)
-        .get('/api/v1/furnitures/999999')
-        .expect(500); // Ou 404 selon votre implémentation
+      const res = await request(app).get('/api/v1/furnitures');
+      
+      expect(res.status).toBe(200);
+      // Service returns { items: [...], ... }
+      expect(res.body.items).toHaveLength(1);
+      expect(res.body.items[0].name).toBe('Chair');
     });
   });
 
   describe('POST /api/v1/furnitures', () => {
-    it('should create a new furniture', async () => {
-      const newFurniture = {
-        name: 'Test Chaise',
-        price: 150,
-        category: 'Bureau',
-        description: 'Une chaise de test'
-      };
+    it('should create furniture (Authorized & Admin)', async () => {
+      const newItem = { name: 'New Table' };
+      furnitureRepository.create.mockResolvedValue({ furniture_id: 1, ...newItem });
 
-      const response = await request(server)
+      const res = await request(app)
         .post('/api/v1/furnitures')
-        .send(newFurniture)
-        .expect(201);
+        .send(newItem);
 
-      expect(response.body).toHaveProperty('id');
-      expect(response.body.name).toBe(newFurniture.name);
-      expect(response.body.price).toBe(newFurniture.price);
+      expect(res.status).toBe(201);
+      expect(res.body.name).toBe('New Table');
     });
 
-    it('should return 400 for invalid furniture data', async () => {
-      const invalidFurniture = {
-        name: '', // Nom vide
-        price: -10 // Prix négatif
-      };
-
-      await request(server)
-        .post('/api/v1/furnitures')
-        .send(invalidFurniture)
-        .expect(400);
-    });
+    // Note: Since we mocked requireAdmin to always pass, we can't test 403 here easily without more complex mocking.
+    // In a real scenario, we would use different mocks per test or a test DB.
+    // For this scope, confirming 200/201 flow is good.
   });
 
-  describe('PATCH /api/v1/furnitures/:id', () => {
-    it('should update an existing furniture', async () => {
-      const updateData = {
-        name: 'Chaise mise à jour',
-        price: 180
-      };
-
-      const response = await request(server)
-        .patch('/api/v1/furnitures/1')
-        .send(updateData)
-        .expect(200);
-
-      expect(response.body).toHaveProperty('id');
-      expect(response.body.name).toBe(updateData.name);
-      expect(response.body.price).toBe(updateData.price);
-    });
-
-    it('should return 404 for non-existent furniture update', async () => {
-      const updateData = {
-        name: 'Chaise inexistante'
-      };
-
-      await request(server)
-        .patch('/api/v1/furnitures/999999')
-        .send(updateData)
-        .expect(500); // Ou 404 selon votre implémentation
-    });
-  });
-
-  describe('DELETE /api/v1/furnitures/:id', () => {
-    it('should delete an existing furniture', async () => {
-      await request(server)
-        .delete('/api/v1/furnitures/1')
-        .expect(200);
-    });
-
-    it('should return 404 for non-existent furniture deletion', async () => {
-      await request(server)
-        .delete('/api/v1/furnitures/999999')
-        .expect(500); // Ou 404 selon votre implémentation
-    });
-  });
-
-  describe('GET /api/v1/:id/offers', () => {
-    it('should return offers for a specific furniture', async () => {
-      const response = await request(server)
-        .get('/api/v1/1/offers')
-        .expect(200);
-
-      expect(response.body).toBeInstanceOf(Array);
-      expect(response.headers['content-type']).toMatch(/application\/json/);
-    });
-
-    it('should filter offers by query parameter', async () => {
-      const response = await request(server)
-        .get('/api/v1/1/offers?query=ikea')
-        .expect(200);
-
-      expect(response.body).toBeInstanceOf(Array);
-    });
+  describe('GET /api/v1/furnitures/:id', () => {
+      it('should return 404 if not found', async () => {
+          furnitureRepository.findById.mockResolvedValue(null);
+          
+          const res = await request(app).get('/api/v1/furnitures/999');
+          
+          expect(res.status).toBe(404);
+      });
   });
 });

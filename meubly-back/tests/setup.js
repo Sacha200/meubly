@@ -22,14 +22,7 @@ afterAll(() => {
   console.error = originalConsoleError
 })
 
-// Mock de setTimeout et setInterval pour les tests
-global.setTimeout = vi.fn((callback, delay) => {
-  return setTimeout(callback, delay)
-})
-
-global.setInterval = vi.fn((callback, delay) => {
-  return setInterval(callback, delay)
-})
+// Mocks de timer supprimés pour éviter la récursion infinie. Vitest gère ça nativement avec vi.useFakeTimers() si besoin.
 
 // Mock de process.exit pour éviter l'arrêt des tests
 process.exit = vi.fn()

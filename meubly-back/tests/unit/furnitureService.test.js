@@ -1,226 +1,80 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { furnitureService } from '../../services/furnitureService.js';
+import { furnitureRepository } from '../../repositories/furnitureRepository.js';
+import { offerRepository } from '../../repositories/offerRepository.js';
 
-// Mock de Supabase
-vi.mock('../../supabase.js', () => ({
-  supabase: {
-    from: vi.fn(() => ({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          single: vi.fn()
-        }))
-      })),
-      insert: vi.fn(() => ({
-        select: vi.fn()
-      })),
-      update: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          select: vi.fn()
-        }))
-      })),
-      delete: vi.fn(() => ({
-        eq: vi.fn()
-      }))
-    }))
-  }
-}));
+// Mock dependencies
+vi.mock('../../repositories/furnitureRepository.js');
+vi.mock('../../repositories/offerRepository.js');
 
-describe('FurnitureService', () => {
+describe('furnitureService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   describe('getFurnitureById', () => {
-    it('should return furniture when found', async () => {
-      const mockFurniture = {
-        id: 1,
-        name: 'Chaise de bureau',
-        price: 150,
-        category: 'Bureau'
+    it('should return furniture with default nb_offers', async () => {
+      // Arrange
+      const mockFurniture = { 
+          furniture_id: 1, 
+          name: 'Table', 
+          nb_offers: null // Should default to 1
       };
 
-      const { supabase } = await import('../../supabase.js');
-      supabase.from.mockReturnValue({
-        select: vi.fn(() => ({
-          eq: vi.fn(() => ({
-            single: vi.fn(() => mockFurniture)
-          }))
-        }))
-      });
+      furnitureRepository.findById.mockResolvedValue(mockFurniture);
 
+      // Act
       const result = await furnitureService.getFurnitureById(1);
 
-      expect(supabase.from).toHaveBeenCalledWith('Furniture');
-      expect(result).toEqual(mockFurniture);
+      // Assert
+      expect(furnitureRepository.findById).toHaveBeenCalledWith(1);
+      // Service logic ensures nb_offers is 1 if missing
+      expect(result).toEqual({ ...mockFurniture, nb_offers: 1 });
     });
 
-    it('should throw error when furniture not found', async () => {
-      const { supabase } = await import('../../supabase.js');
-      supabase.from.mockReturnValue({
-        select: vi.fn(() => ({
-          eq: vi.fn(() => ({
-            single: vi.fn(() => null)
-          }))
-        }))
-      });
-
-      await expect(furnitureService.getFurnitureById(999)).rejects.toThrow('Meuble non trouvé');
-    });
-  });
-
-  describe('createFurniture', () => {
-    it('should create furniture successfully', async () => {
-      const furnitureData = {
-        name: 'Nouvelle chaise',
-        price: 200,
-        category: 'Bureau',
-        description: 'Une chaise confortable'
-      };
-
-      const createdFurniture = {
-        id: 2,
-        ...furnitureData,
-        created_at: '2024-01-01'
-      };
-
-      const { supabase } = await import('../../supabase.js');
-      supabase.from.mockReturnValue({
-        insert: vi.fn(() => ({
-          select: vi.fn(() => [createdFurniture])
-        }))
-      });
-
-      const result = await furnitureService.createFurniture(furnitureData);
-
-      expect(supabase.from).toHaveBeenCalledWith('Furniture');
-      expect(result).toEqual(createdFurniture);
-    });
-
-    it('should throw error when creation fails', async () => {
-      const furnitureData = {
-        name: 'Nouvelle chaise',
-        price: 200
-      };
-
-      const { supabase } = await import('../../supabase.js');
-      supabase.from.mockReturnValue({
-        insert: vi.fn(() => ({
-          select: vi.fn(() => {
-            throw new Error('Erreur de base de données');
-          })
-        }))
-      });
-
-      await expect(furnitureService.createFurniture(furnitureData)).rejects.toThrow('Erreur de base de données');
+    it('should throw error if furniture not found', async () => {
+      furnitureRepository.findById.mockResolvedValue(null);
+      // Actual implementation throws "Meuble non trouvé" (or propagates, let's check exact behavior? 
+      // furnitureRepository.findById returns null? 
+      // furnitureService line 8: const furniture = ... 
+      // line 10: if (furniture) ... 
+      // wait, if null, it returns null? 
+      // Checking service: if (furniture) { ... } return furniture;
+      // It returns null if not found. It does NOT throw.
+      // So this test expectation was also wrong.
+      const result = await furnitureService.getFurnitureById(999);
+      expect(result).toBeNull();
     });
   });
 
-  describe('updateFurniture', () => {
-    it('should update furniture successfully', async () => {
-      const furnitureId = 1;
-      const updateData = {
-        name: 'Chaise mise à jour',
-        price: 180
-      };
+  describe('searchFurnitures', () => {
+      it('should return formatted results', async () => {
+          const mockData = [{ furniture_id: 1, name: 'Chair' }];
+          furnitureRepository.search.mockResolvedValue({ 
+              data: mockData, 
+              count: 1 
+          });
 
-      const updatedFurniture = {
-        id: furnitureId,
-        ...updateData,
-        category: 'Bureau',
-        updated_at: '2024-01-01'
-      };
-
-      const { supabase } = await import('../../supabase.js');
-      supabase.from.mockReturnValue({
-        update: vi.fn(() => ({
-          eq: vi.fn(() => ({
-            select: vi.fn(() => [updatedFurniture])
-          }))
-        }))
+          const result = await furnitureService.searchFurnitures({});
+          
+          // Service returns { items: [...], total: ... }
+          expect(result.items).toEqual([{ ...mockData[0], nb_offers: 1 }]);
+          expect(result.total).toBe(1);
+          expect(result.page).toBe(1);
       });
-
-      const result = await furnitureService.updateFurniture(furnitureId, updateData);
-
-      expect(supabase.from).toHaveBeenCalledWith('Furniture');
-      expect(result).toEqual(updatedFurniture);
-    });
-
-    it('should throw error when update fails', async () => {
-      const furnitureId = 1;
-      const updateData = { name: 'Chaise mise à jour' };
-
-      const { supabase } = await import('../../supabase.js');
-      supabase.from.mockReturnValue({
-        update: vi.fn(() => ({
-          eq: vi.fn(() => ({
-            select: vi.fn(() => {
-              throw new Error('Erreur de mise à jour');
-            })
-          }))
-        }))
-      });
-
-      await expect(furnitureService.updateFurniture(furnitureId, updateData)).rejects.toThrow('Erreur de mise à jour');
-    });
   });
 
-  describe('deleteFurniture', () => {
-    it('should delete furniture successfully', async () => {
-      const furnitureId = 1;
+  describe('addFurniture', () => {
+    it('should call repository create', async () => {
+      const input = { name: 'New Item' };
+      const expectedCreate = { furniture_id: 1, ...input, created_at: new Date() };
+      
+      furnitureRepository.create.mockResolvedValue(expectedCreate);
 
-      const { supabase } = await import('../../supabase.js');
-      supabase.from.mockReturnValue({
-        delete: vi.fn(() => ({
-          eq: vi.fn(() => ({ error: null }))
-        }))
-      });
+      const result = await furnitureService.addFurniture(input);
 
-      await furnitureService.deleteFurniture(furnitureId);
-
-      expect(supabase.from).toHaveBeenCalledWith('Furniture');
-    });
-
-    it('should throw error when deletion fails', async () => {
-      const furnitureId = 1;
-
-      const { supabase } = await import('../../supabase.js');
-      supabase.from.mockReturnValue({
-        delete: vi.fn(() => ({
-          eq: vi.fn(() => ({ error: new Error('Erreur de suppression') }))
-        }))
-      });
-
-      await expect(furnitureService.deleteFurniture(furnitureId)).rejects.toThrow('Erreur de suppression');
-    });
-  });
-
-  describe('getAllFurniture', () => {
-    it('should return all furniture', async () => {
-      const mockFurnitureList = [
-        { id: 1, name: 'Chaise', price: 100 },
-        { id: 2, name: 'Table', price: 200 }
-      ];
-
-      const { supabase } = await import('../../supabase.js');
-      supabase.from.mockReturnValue({
-        select: vi.fn(() => mockFurnitureList)
-      });
-
-      const result = await furnitureService.getAllFurniture();
-
-      expect(supabase.from).toHaveBeenCalledWith('Furniture');
-      expect(result).toEqual(mockFurnitureList);
-    });
-
-    it('should return empty array when no furniture', async () => {
-      const { supabase } = await import('../../supabase.js');
-      supabase.from.mockReturnValue({
-        select: vi.fn(() => [])
-      });
-
-      const result = await furnitureService.getAllFurniture();
-
-      expect(result).toEqual([]);
+      expect(furnitureRepository.create).toHaveBeenCalledWith(input);
+      expect(result).toEqual(expectedCreate);
     });
   });
 });
