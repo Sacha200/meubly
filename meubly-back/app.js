@@ -5,6 +5,9 @@ import cors from 'cors';
 import v1Router from './routes/v1.js';
 import helmet from 'helmet';
 
+import { requestLogger } from './middlewares/loggerMiddleware.js';
+import { errorHandler } from './middlewares/errorMiddleware.js';
+
 // Création de l'application Express
 export const app = express();
 
@@ -12,11 +15,8 @@ export const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Middleware de logging pour déboguer les requêtes CORS
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url} - Origin: ${req.headers.origin}`);
-  next();
-});
+// Middleware de logging
+app.use(requestLogger);
 
 // Configuration de Helmet
 app.use(helmet({
@@ -39,6 +39,9 @@ app.use(cors());
 
 // Configuration du routeur
 app.use('/api/v1', v1Router);
+
+// Global Error Handler
+app.use(errorHandler);
 
 // Démarrage du serveur
 const PORT = process.env.PORT || 5000;
