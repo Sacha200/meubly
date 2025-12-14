@@ -6,14 +6,19 @@ import authRouter from './v1/auth.js';
 import categoriesRouter from './v1/categories.js';
 import providerRouter from './v1/provider.js';
 import reviewsRouter from './v1/reviews.js';
+import favoritesRouter from './v1/favorites.js';
 const router = express.Router();
 
 // Configuration des routes
-router.use( furnituresRouter);
-router.use( usersRouter);
-router.use(authRouter);
-router.use( categoriesRouter);
-router.use( providerRouter);
-router.use( reviewsRouter);
+// Configuration des routes (Ordre important !)
+router.use('/auth', authRouter); // 1. Auth d'abord (Login/Register publics)
+router.use(usersRouter); // Permissions handled by requireAuth middleware in routes
+router.use(furnituresRouter); // Public Search is important
+router.use(categoriesRouter);
+router.use(providerRouter);
+router.use(reviewsRouter);
+
+// Routes nécessitant Auth (Si middleware global dans le router)
+router.use(favoritesRouter);
 
 export default router;

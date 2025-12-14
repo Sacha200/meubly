@@ -19,14 +19,7 @@ router.patch("/providers/:id", providerController.update);
 // Route pour supprimer un fournisseur
 router.delete("/providers/:id", providerController.delete);
 
-// Routes existantes pour la récupération des données des fournisseurs
-router.get("/:partner/offers/:categoryId", providerController.getPartnerOffers);
-
-// Route de test (Supprimée car logic déplacée/obsolète? Ou je peux la garder en pointant vers une méthode controller si on veut)
-// Je vais supprimer le test-duplicates car c'était du debug code.
-// Le controller.compareCategory gère tout ça proprement.
-
-// recupère les données de tous les fournisseurs pour une catégorie de meubles donnée
+// Récupère les données de tous les fournisseurs pour une catégorie de meubles donnée
 router.get("/compare/:categoryId", providerController.getAllOffers);
 
 export default router;

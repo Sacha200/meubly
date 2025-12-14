@@ -79,7 +79,6 @@ export const providerService = {
 
       // Fallback test data if empty
       if (partnerfurniture.length === 0) {
-           console.log("Utilisation des données de test (Fallback)");
            partnerfurniture = [
             { id: 1, name: "Meuble de rangement enfant 6 bacs", price: "45.00", company: "Amazon", link: "https://amazon.fr", description: "Meuble de rangement enfant 6 bacs" },
             { id: 2, name: "Meuble de rangement enfant 6 bacs", price: "45.00", company: "Ikea", link: "https://ikea.fr", description: "Meuble de rangement enfant 6 bacs" },
