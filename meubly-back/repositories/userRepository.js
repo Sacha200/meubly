@@ -8,7 +8,7 @@ export const userRepository = {
   },
 
   async findById(id) {
-    const { data, error } = await supabase.from('User').select('*').eq('id', id).maybeSingle();
+    const { data, error } = await supabase.from('User').select('*').eq('user_id', id).maybeSingle();
     if (error) throw error;
     return data;
   },
@@ -26,13 +26,13 @@ export const userRepository = {
   },
 
   async update(id, updates) {
-    const { data, error } = await supabase.from('User').update(updates).eq('id', id).select().single();
+    const { data, error } = await supabase.from('User').update(updates).eq('user_id', id).select().single();
     if (error) throw error;
     return data;
   },
 
   async delete(id) {
-    const { data, error } = await supabase.from('User').delete().eq('id', id);
+    const { data, error } = await supabase.from('User').delete().eq('user_id', id);
     if (error) throw error;
     return data;
   }

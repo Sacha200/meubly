@@ -17,6 +17,21 @@ export const furnitureService = {
     }
   },
 
+  async getOffers(furnitureId) {
+    // Récupérer les offres triées par prix
+    const offers = await offerRepository.findByFurnitureId(furnitureId);
+    
+    // Enrichir les données : Identifier la meilleure offre (et autres stats si besoin)
+    if (offers && offers.length > 0) {
+        offers[0].is_best_price = true; // Le premier est le moins cher grâce au tri SQL
+        
+        // Calculer l'économie réalisée / Ecart type ?
+        // Pour l'instant restons simple : Tri + Flag
+    }
+    
+    return offers;
+  },
+
   async addFurniture(furniture) {
     try {
       return await furnitureRepository.create(furniture);
@@ -78,14 +93,7 @@ export const furnitureService = {
       }
   },
 
-  async getOffers(furnitureId, query) {
-      try {
-          return await offerRepository.findByFurnitureId(furnitureId, query);
-      } catch (error) {
-          console.error("Erreur getOffers:", error);
-          throw error;
-      }
-  },
+
   
   async cacheFurniture(furniture) {
        try {

@@ -13,7 +13,7 @@ router.get("/furnitures", furnitureController.getAll);
 router.get("/furnitures/:id", furnitureController.getById);
 
 // Get a furniture by id with its offers
-router.get("/:id/offers", furnitureController.getOffers);
+router.get("/furnitures/:id/offers", furnitureController.getOffers);
 
 // create a new furniture (Protected)
 router.post("/furnitures", requireAuth, requireAdmin, furnitureController.create);
