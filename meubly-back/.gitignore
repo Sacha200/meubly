@@ -1,3 +1,13 @@
 node_modules/
-# Keep environment variables out of version control
+
+# Environment variables - NEVER commit these!
 .env
+.env.*
+!.env.example
+
+# Debug and test files
+*.txt
+*.log
+data.json
+data_analysis.json
+analysis_output.log
