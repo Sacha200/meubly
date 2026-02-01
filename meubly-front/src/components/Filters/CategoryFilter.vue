@@ -30,12 +30,12 @@
       })
   
       const options = computed(() =>
-        cat.categories.map(c => ({ label: c.title, value: c.category_id }))
+        cat.categories.map(c => ({ label: c.label, value: c.category_id }))
       )
   
       const onChange = (e) => {
         const v = e.target.value
-        emit('update:modelValue', v ? Number(v) : null)
+        emit('update:modelValue', v || null)
       }
   
       return { options, onChange }

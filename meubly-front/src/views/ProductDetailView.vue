@@ -28,7 +28,7 @@ import Footer from '../components/Footer.vue';
 import ProductDetail from '../components/Detail/ProductDetail.vue';
 import TableComparison from '../components/Detail/TableComparison.vue';
 import ProductReviews from '../components/Detail/ProductReviews.vue';
-import { getProductById } from '../clientapi';
+import { getFurnitureById } from '../api/furnituresApi';
 
 export default {
     components: {
@@ -56,7 +56,7 @@ export default {
             const id = this.$route.params.id;
             console.log("ID recherché:", id); // Pour le débogage
 
-            this.product = await getProductById(id);
+            this.product = await getFurnitureById(id);
             console.log("Produit récupéré:", this.product); // Pour le débogage
         } catch (error) {
             console.error("Erreur complète:", error);

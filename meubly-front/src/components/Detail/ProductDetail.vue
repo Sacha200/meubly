@@ -2,7 +2,7 @@
     <div class="flex flex-col md:flex-row my-5 md:my-10 gap-4 md:gap-8 lg:gap-20 px-4 md:px-8">
         <!-- Image container -->
         <div class="w-full md:w-1/2 lg:w-1/3">
-            <img :src="product.cover_url" :alt="product.name" 
+            <img :src="product.cover_url" :alt="product.title" 
                 class="w-full h-[250px] md:h-[358px] object-cover rounded-lg"
             />
         </div>
@@ -10,7 +10,7 @@
         <!-- Détails du produit -->
         <div class="w-full md:w-1/2 space-y-4">
             <div class="flex items-center justify-between">
-                <h2 class="text-[#3A3A3A] dark:text-white font-bold text-xl md:text-2xl font-['Poppins-Bold']">{{ product.name }}</h2>
+                <h2 class="text-[#3A3A3A] dark:text-white font-bold text-xl md:text-2xl font-['Poppins-Bold']">{{ product.title }}</h2>
                 <svg 
                     class="favoris cursor-pointer transition-all duration-300 hover:scale-110" 
                     width="25" 
@@ -30,14 +30,14 @@
                     />
                 </svg>
             </div>
-            <p class="text-[#3A3A3A] dark:text-white font-semibold text-lg md:text-xl font-['Poppins-SemiBold']">{{ product.price }} €</p>
+            <p class="text-[#3A3A3A] dark:text-white font-semibold text-lg md:text-xl font-['Poppins-SemiBold']">{{ product.cached_min_price }} €</p>
             <p class="text-[#767676] dark:text-gray-300 text-sm md:text-base font-medium font-['Poppins-Medium']">{{ product.description }}</p>
         </div>
     </div>
 </template>
 
 <script>
-import { addFavorite } from '../../clientapi';
+import { addFavorite } from '../../api/favoritesApi';
 
 export default {
     name: 'ProductDetail',

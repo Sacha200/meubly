@@ -8,7 +8,7 @@ export const furnitureService = {
       const furniture = await furnitureRepository.findById(id);
       // Clean up nb_offers
       if (furniture) {
-          furniture.nb_offers = furniture.nb_offers || 1;
+          furniture.nb_offers = furniture.cached_nb_offers || 1;
       }
       return furniture;
     } catch (error) {
@@ -24,12 +24,14 @@ export const furnitureService = {
     // Enrichir les données : Identifier la meilleure offre (et autres stats si besoin)
     if (offers && offers.length > 0) {
         offers[0].is_best_price = true; // Le premier est le moins cher grâce au tri SQL
-        
-        // Calculer l'économie réalisée / Ecart type ?
-        // Pour l'instant restons simple : Tri + Flag
     }
     
     return offers;
+  },
+
+  async getBestOffer(furnitureId) {
+      const offers = await this.getOffers(furnitureId);
+      return offers.length > 0 ? offers[0] : null;
   },
 
   async addFurniture(furniture) {
@@ -50,7 +52,7 @@ export const furnitureService = {
     try {
         const { data, count } = await furnitureRepository.search({
             q,
-            categoryId: categoryId ? Number(categoryId) : undefined,
+            categoryId: categoryId || undefined, // UUID (String), ne pas convertir en Number
             minPrice: minPrice ? Number(minPrice) : undefined,
             maxPrice: maxPrice ? Number(maxPrice) : undefined,
             sort,
@@ -60,7 +62,7 @@ export const furnitureService = {
 
         const items = (data || []).map(item => ({
             ...item,
-            nb_offers: item.nb_offers || 1
+            nb_offers: item.cached_nb_offers || 1 // Mapping vers le front qui attend peut-être encore nb_offers
         }));
 
         return {

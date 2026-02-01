@@ -63,7 +63,7 @@
 <script>
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { getProductById, updateProduct } from '../../../clientapi';
+import { getFurnitureById, updateFurniture as updateFurnitureApi } from '../../../api/furnituresApi';
 import TextInput from '../../../components/form/TextInput.vue';
 import TextArea from '../../../components/form/TextArea.vue';
 import Select from '../../../components/form/Select.vue';
@@ -108,7 +108,7 @@ export default {
       try {
         loading.value = true;
         error.value = null;
-        const data = await getProductById(route.params.id);
+        const data = await getFurnitureById(route.params.id);
         furniture.value = data;
       } catch (e) {
         error.value = "Erreur lors du chargement du produit.";
@@ -121,7 +121,7 @@ export default {
     const updateFurniture = async () => {
       try {
         updating.value = true;
-        await updateProduct(route.params.id, furniture.value);
+        await updateFurnitureApi(route.params.id, furniture.value);
         await router.push('/admin/furnitures');
       } catch (e) {
         error.value = "Erreur lors de la mise à jour du produit.";

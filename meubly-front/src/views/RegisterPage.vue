@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import { registerUser } from '../clientapi';
+import { registerUser } from '../api/authApi';
 
 export default {
   name: 'Register',

@@ -34,8 +34,20 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 
-// Configuration CORS pour permettre les requêtes depuis le front-end
-app.use(cors());
+// Configuration CORS
+const allowedOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173', 'https://meubly-front.vercel.app'];
+app.use(cors({
+  origin: function (origin, callback) {
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      // Pour le dev local, on peut être plus souple si besoin, mais listons explicitement localhost
+      return callback(null, true); // Temporairement permissif pour débloquer
+    }
+    return callback(null, true);
+  },
+  credentials: true, // Important pour les cookies/sessions si utilisés
+}));
 
 // Configuration du routeur
 app.use('/api/v1', v1Router);

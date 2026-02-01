@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import { loginUser } from '../clientapi';
+import { loginUser } from '../api/authApi';
 import { supabase } from '../supabase';
 import Header from '../components/Header.vue';
 import Footer from '../components/Footer.vue';

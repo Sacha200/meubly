@@ -144,7 +144,7 @@
 
 <script>
 import Paginator from 'primevue/paginator';
-import { getProducts } from '../../../clientapi';
+import { getFurnitures } from '../../../api/furnituresApi';
 
 export default {
   components: {
@@ -181,7 +181,7 @@ export default {
     try {
       this.loading = true;
       this.error = null;
-      const data = await getProducts();
+      const data = await getFurnitures();
       this.products = Array.isArray(data) ? data : data.data || [];
     } catch (e) {
       this.error = "Erreur lors du chargement des produits.";
@@ -238,7 +238,7 @@ export default {
       try {
         this.loading = true;
         this.error = null;
-        const data = await getProducts();
+        const data = await getFurnitures();
         this.products = Array.isArray(data) ? data : data.data || [];
       } catch (e) {
         this.error = "Erreur lors du chargement des produits.";

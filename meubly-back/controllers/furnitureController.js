@@ -52,17 +52,17 @@ export const furnitureController = {
     }
   },
 
-  async update(req, res) {
-    try {
-      const { id } = req.params;
-      const { name, type, price } = req.body; // Validation should be here or in middleware (express-validator used in reviews)
-      // For now, pass to service
-      const data = await furnitureService.updateFurniture(id, { name, type, price });
-      res.json(data);
-    } catch (error) {
-      res.status(400).json({ error: error.message });
-    }
-  },
+  // async update(req, res) {
+  //   try {
+  //     const { id } = req.params;
+  //     const { name, type, price } = req.body; // Validation should be here or in middleware (express-validator used in reviews)
+  //     // For now, pass to service
+  //     const data = await furnitureService.updateFurniture(id, { name, type, price });
+  //     res.json(data);
+  //   } catch (error) {
+  //     res.status(400).json({ error: error.message });
+  //   }
+  // },
 
   async delete(req, res) {
     try {

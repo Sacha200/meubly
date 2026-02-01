@@ -1,31 +1,30 @@
-<!-- SearchBar.vue -->
 <template>
   <!-- Search Bar Container -->
-  <div class="flex justify-center py-14" data-testid="search-bar">
+  <div class="w-full mb-8" data-testid="search-bar">
     <!-- Search Input Container -->
     <div
-      class="flex items-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-full w-[676px] h-[71px] shadow-sm dark:shadow-gray-900/30">
+      class="flex items-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl w-full h-[72px] shadow-sm hover:shadow-md transition-shadow duration-300 focus-within:ring-2 focus-within:ring-primary-500/20">
       <!-- Input Section -->
-      <div class="flex-1 px-8">
+      <div class="flex-1 px-6">
         <!-- Label -->
-        <div class="text-[12px] search_bar_title text text-[#222222] dark:text-white">
-          Produits
+        <div class="text-[11px] uppercase tracking-wider font-semibold text-gray-500 dark:text-gray-400 mb-0.5">
+          Rechercher
         </div>
 
         <!-- Search Input Field -->
-        <input ref="searchInput" type="text" v-model="searchQuery" placeholder="Rechercher un type de produit"
-          class="w-full text-[14px] text-[#6A6A6A] dark:text-gray-300 bg-transparent focus:outline-none placeholder-gray-500 dark:placeholder-gray-400"
+        <input ref="searchInput" type="text" v-model="searchQuery" placeholder="Quel meuble cherchez-vous ?"
+          class="w-full text-base sm:text-lg text-gray-800 dark:text-white bg-transparent focus:outline-none placeholder-gray-400 dark:placeholder-gray-500 font-medium"
           @keyup.enter="performSearch" />
       </div>
 
       <!-- Search Button -->
       <button @click="performSearch" type="submit"
-        class="bg-[#B88E2F] text-white rounded-full w-12 h-12 flex items-center justify-center mr-4 button_search hover:bg-[#A67B1F] transition-colors duration-200"
+        class="bg-[#B88E2F] text-white rounded-lg w-12 h-12 flex items-center justify-center mr-3 button_search hover:bg-[#a47e2a] active:scale-95 transition-all duration-200 shadow-sm"
         :disabled="!isSearchValid" :class="{ 'opacity-50 cursor-not-allowed': !isSearchValid }">
         <!-- Search Icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-          aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+          stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round"
             d="M21 21l-4.35-4.35M16.65 11a5.65 5.65 0 11-11.3 0 5.65 5.65 0 0111.3 0z" />
         </svg>
       </button>
@@ -97,50 +96,16 @@ export default {
 };
 </script>
 
-
 <style scoped>
 /* Search button styling */
 .button_search {
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
-}
-
-.button_search:hover:not(:disabled) {
-  transform: scale(1.05);
-}
-
-.button_search:active:not(:disabled) {
-  transform: scale(0.95);
-}
-
-/* Search bar title styling */
-.search_bar_title {
-  font-family: "Poppins-SemiBold";
-}
-
-/* Input field focus styling */
-input:focus {
-  outline: none;
-  border-color: #B88E2F;
 }
 
 /* Responsive design adjustments */
 @media (max-width: 768px) {
   .search-container {
-    width: 90%;
-    max-width: 500px;
-  }
-}
-
-@media (max-width: 480px) {
-  .search-container {
-    width: 95%;
-    height: 60px;
-  }
-
-  .button_search {
-    width: 40px;
-    height: 40px;
+    width: 100%;
   }
 }
 </style>

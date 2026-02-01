@@ -47,8 +47,8 @@ export const favoritesRepository = {
         created_at,
         furniture:Furniture (
           furniture_id,
-          name,
-          price,
+          title,
+          cached_min_price,
           cover_url,
           description
         )

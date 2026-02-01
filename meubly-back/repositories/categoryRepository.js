@@ -4,12 +4,12 @@ export const categoryRepository = {
   async findAll(search, limit = 100) {
     let query = supabase
       .from('Category')
-      .select('category_id, title, cover_url')
-      .order('title', { ascending: true })
+      .select('category_id, label, cover_url, parent_id')
+      .order('label', { ascending: true })
       .limit(Number(limit) || 100);
 
     if (search) {
-      query = query.ilike('title', `%${search}%`);
+      query = query.ilike('label', `%${search}%`);
     }
 
     const { data, error } = await query;
@@ -20,7 +20,7 @@ export const categoryRepository = {
   async findById(id) {
     const { data, error } = await supabase
       .from('Category')
-      .select('category_id, title, cover_url')
+      .select('category_id, label, cover_url, parent_id')
       .eq('category_id', id)
       .single();
 
@@ -32,7 +32,7 @@ export const categoryRepository = {
     const { data, error } = await supabase
       .from('Category')
       .insert(category)
-      .select('category_id, title, cover_url')
+      .select('category_id, label, cover_url, parent_id')
       .single();
 
     if (error) throw error;
@@ -44,7 +44,7 @@ export const categoryRepository = {
       .from('Category')
       .update(updates)
       .eq('category_id', id)
-      .select('category_id, title, cover_url')
+      .select('category_id, label, cover_url, parent_id')
       .single();
 
     if (error) throw error;

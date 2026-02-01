@@ -30,12 +30,12 @@
                         <div class="flex items-center gap-3 mb-1">
                             <p :class="['font-bold text-base', isDarkMode ? 'text-gray-100' : 'text-gray-800']">{{
                                 offer.company }}</p>
-                            <img :src="getCompanyLogo(offer.company)" :alt="`Logo de ${offer.company}`"
+                            <img :src="offer.logo" :alt="`Logo de ${offer.company}`"
                                 :class="['h-auto flex items-center', isManomano(offer.company) ? 'w-9' : 'w-6']"
                                 @error="handleImageError" />
                         </div>
                         <p :class="['font-medium text-sm', isDarkMode ? 'text-gray-200' : 'text-gray-800']">{{
-                            offer.description || offer.name }}</p>
+                            offer.external_title }}</p>
                     </div>
                 </div>
                 <div class="flex items-center">
@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import { getProductOffers } from '../../clientapi';
+import { getFurnitureOffers } from '../../api/offersApi';
 import { useThemeStore } from '../../stores/themeStore';
 import { computed } from 'vue';
 import Paginator from 'primevue/paginator';
@@ -113,11 +113,12 @@ export default {
             const startTime = Date.now();
 
             try {
-                const data = await getProductOffers(this.product.furniture_id || this.product.id);
+                const data = await getFurnitureOffers(this.product.furniture_id || this.product.id);
                 this.allOffers = (data || []).map(offer => ({
-                    id: offer.id,
-                    company: offer.website,
-                    name: offer.name_furniture,
+                    id: offer.offer_id, // L'ID brut
+                    company: offer.Partner?.name || 'Inconnu',
+                    logo: offer.Partner?.logo_url || '/assets/default-logo.svg',
+                    name: offer.external_title,
                     price: offer.price,
                     link: offer.url_website
                 }));
@@ -144,17 +145,13 @@ export default {
             }
         },
 
-        getCompanyLogo(companyName) {
-            const normalizedName = companyName ? companyName.toLowerCase().trim() : '';
+        // getCompanyLogo n'est plus nécessaire car on a logo_url en DB
+        // On le supprime ou on laisse vide si utilisé ailleurs, mais ici on va juste utiliser offer.logo direct dans le template
 
-            const logoMap = {
-                'amazon': '/assets/Amazon_icon.png',
-                'ikea': '/assets/ikea-logo.png',
-                'manomano': '/assets/manomano.png',
-                'but': '/assets/logo_but.png'
-            };
-
-            return logoMap[normalizedName] || '/assets/default-logo.svg';
+        openProductLink(link) {
+            if (link) {
+                window.open(link, '_blank');
+            }
         },
 
         openProductLink(link) {

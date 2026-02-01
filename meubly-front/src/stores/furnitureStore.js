@@ -65,7 +65,7 @@ export const useFurnitureStore = defineStore('furniture', {
       return items.sort((a, b) => {
         // Fonction pour déterminer la priorité d'un produit
         const getPriority = (item) => {
-          const name = (item.name || '').toLowerCase();
+          const name = (item.title || '').toLowerCase();
           const description = (item.description || '').toLowerCase();
           const text = name + ' ' + description;
           

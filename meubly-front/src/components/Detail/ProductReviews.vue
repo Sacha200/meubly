@@ -124,7 +124,7 @@
 <script setup>
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useAuthStore } from '../../stores/authStore';
-import { listProductReviews, submitProductReview } from '../../clientapi';
+import { listFurnitureReviews, submitFurnitureReview } from '../../api/furnituresApi';
 
 const props = defineProps({
     productId: {
@@ -180,7 +180,7 @@ async function loadReviews(page = currentPage.value) {
     loading.value = true;
     errorMessage.value = '';
     try {
-        const data = await listProductReviews(props.productId, { page, limit: limit.value });
+        const data = await listFurnitureReviews(props.productId, { page, limit: limit.value });
         reviews.value = data.items || [];
         summary.value = data.summary || { average: null, total: 0, breakdown: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 } };
         totalItems.value = data.total || 0;
@@ -230,7 +230,7 @@ async function handleSubmit() {
             authorName: authStore.user.user_metadata?.username || authStore.user.email?.split('@')[0]
         };
 
-        const { action } = await submitProductReview(props.productId, payload);
+        const { action } = await submitFurnitureReview(props.productId, payload);
         successMessage.value = action === 'updated'
             ? 'Votre avis a été mis à jour avec succès.'
             : 'Merci pour votre avis !';

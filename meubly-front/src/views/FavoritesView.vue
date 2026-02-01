@@ -18,7 +18,8 @@
 import ProductCard from '../components/Home/ProductCard.vue';
 import Header from '../components/Header.vue';
 import Footer from '../components/Footer.vue';
-import { getUserFavorites, isUserLoggedIn } from '../clientapi';
+import { getUserFavorites } from '../api/favoritesApi';
+import { isUserLoggedIn } from '../api/authApi';
 
 export default {
   components: { ProductCard, Header, Footer },

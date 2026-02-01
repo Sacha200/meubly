@@ -6,7 +6,9 @@ export const categoryService = {
   },
 
   async getCategoryById(id) {
-    if (Number.isNaN(id)) throw new Error('Invalid category id');
+    // Note: id is UUID now, so isNaN check might be wrong if it expects number.
+    // Assuming UUID is string.
+    if (!id) throw new Error('Invalid category id');
     
     const category = await categoryRepository.findById(id);
     if (!category) throw new Error('Category not found');
@@ -15,24 +17,25 @@ export const categoryService = {
   },
 
   async createCategory(categoryData) {
-     if (!categoryData.title || typeof categoryData.title !== 'string') {
-        throw new Error('title is required');
+     if (!categoryData.label || typeof categoryData.label !== 'string') {
+        throw new Error('label is required');
      }
      return await categoryRepository.create(categoryData);
   },
 
-  async updateCategory(id, { title, cover_url }) {
-     if (Number.isNaN(id)) throw new Error('Invalid category id');
+  async updateCategory(id, { label, cover_url, parent_id }) {
+     if (!id) throw new Error('Invalid category id');
 
      const payload = {};
-     if (typeof title === 'string') payload.title = title;
+     if (typeof label === 'string') payload.label = label;
      if (typeof cover_url === 'string' || cover_url === null) payload.cover_url = cover_url;
+     if (parent_id !== undefined) payload.parent_id = parent_id;
 
      return await categoryRepository.update(id, payload);
   },
 
   async deleteCategory(id) {
-      if (Number.isNaN(id)) throw new Error('Invalid category id');
+      if (!id) throw new Error('Invalid category id');
       await categoryRepository.delete(id);
   }
 };

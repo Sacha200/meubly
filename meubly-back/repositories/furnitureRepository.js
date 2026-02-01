@@ -24,31 +24,46 @@ export const furnitureRepository = {
     return data;
   },
 
-  async search({ q, categoryId, minPrice, maxPrice, sort, from, to }) {
-    let query = supabase
-      .from("Furniture")
-      .select(
-        "furniture_id, name, type, description, cover_url, price, category_id, created_at, nb_offers",
-        { count: "exact" }
-      );
+  async search({ query, categoryId, minPrice, maxPrice, sort, from, to }) {
+    // Mise à jour des colonnes sélectionnées selon le nouveau schéma
+    let selectClause = "furniture_id, title, description, cover_url, cached_min_price, cached_nb_offers, size_width, size_height, size_depth, created_at";
+    
+    // Si filtrage par catégorie, on ajoute la jointure inner
+    if (categoryId) {
+      selectClause += ", FurnitureCategory!inner(category_id)";
+    }
 
-    if (q) query = query.ilike("name", `%${q}%`);
-    if (categoryId) query = query.eq("category_id", categoryId);
-    if (minPrice) query = query.gte("price", minPrice);
-    if (maxPrice) query = query.lte("price", maxPrice);
+    let queryFurniture = supabase
+      .from("Furniture")
+      .select(selectClause, { count: "exact" });
+
+    // Recherche sur 'title' au lieu de 'name'
+    if (query) queryFurniture = queryFurniture.ilike("title", `%${query}%`);
+    
+    // Filtre via la table de liaison
+    if (categoryId) queryFurniture = queryFurniture.eq("FurnitureCategory.category_id", categoryId);
+    
+    // Filtre sur 'cached_min_price' au lieu de 'price'
+    if (minPrice) queryFurniture = queryFurniture.gte("cached_min_price", minPrice);
+    if (maxPrice) queryFurniture = queryFurniture.lte("cached_min_price", maxPrice);
 
     if (sort) {
       const [col, dir] = sort.split(":");
-      if (col && dir) query = query.order(col, { ascending: dir === "asc" });
+      // Mapping des tris si nécessaire
+      let sortCol = col;
+      if (col === 'price') sortCol = 'cached_min_price';
+      if (col === 'name') sortCol = 'title';
+      
+      if (sortCol && dir) queryFurniture = queryFurniture.order(sortCol, { ascending: dir === "asc" });
     } else {
-        query = query.order("created_at", { ascending: false });
+        queryFurniture = queryFurniture.order("created_at", { ascending: false });
     }
 
     if (from !== undefined && to !== undefined) {
-      query = query.range(from, to);
+      queryFurniture = queryFurniture.range(from, to);
     }
 
-    const { data, error, count } = await query;
+    const { data, error, count } = await queryFurniture;
     if (error) throw error;
     return { data, count };
   },
@@ -57,8 +72,8 @@ export const furnitureRepository = {
     const { data, error } = await supabase
       .from("Furniture")
       .update(updates)
-      .eq("furniture_id", id) // Note: route used "id", schema has "furniture_id". Assuming furniture_id is correct based on findById.
-      .select(); // Route didn't select, but it return data.
+      .eq("furniture_id", id)
+      .select();
 
     if (error) throw error;
     return data;
