@@ -1,0 +1,342 @@
+{
+  "Partner": [
+    {
+      "partner_id": "8d2e3d7c-1f4a-4a2c-8c3f-0b9cf7f8e2a1",
+      "name": "Ikea",
+      "website_base_url": "https://www.ikea.com",
+      "logo_url": "https://upload.wikimedia.org/wikipedia/commons/c/c5/Ikea_logo.svg",
+      "is_active": true
+    },
+    {
+      "partner_id": "0c4b7f43-9e2a-4e18-8e9a-3b7f3a9d1c72",
+      "name": "Maisons du Monde",
+      "website_base_url": "https://www.maisonsdumonde.com",
+      "logo_url": "https://upload.wikimedia.org/wikipedia/commons/7/76/Maisons_du_Monde_logo.svg",
+      "is_active": true
+    },
+    {
+      "partner_id": "b3a1f9e6-0f5d-4d2b-9b3e-9d0d2c5b4e71",
+      "name": "BUT",
+      "website_base_url": "https://www.but.fr",
+      "logo_url": "https://upload.wikimedia.org/wikipedia/commons/8/8e/Logo_But.svg",
+      "is_active": true
+    },
+    {
+      "partner_id": "f2c1a0b9-3d4e-4a5b-8c7d-1e2f3a4b5c6d",
+      "name": "Amazon",
+      "website_base_url": "https://www.amazon.fr",
+      "logo_url": "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg",
+      "is_active": true
+    }
+  ],
+  "Furniture": [
+    {
+      "furniture_id": "3f4c8a12-7b6e-4c0f-9e8c-2b4b1a9d7c31",
+      "title": "Canapé d'angle convertible (3/4 places)",
+      "description": "Canapé d'angle convertible avec coffre de rangement, tissu chiné.",
+      "cover_url": "https://images.unsplash.com/photo-1540574163026-643ea20ade25",
+      "size_width": 230,
+      "size_height": 85,
+      "size_depth": 150,
+      "cached_min_price": null,
+      "cached_nb_offers": 0
+    },
+    {
+      "furniture_id": "a9b1c2d3-e4f5-4a6b-8c7d-9e0f1a2b3c4d",
+      "title": "Table à manger extensible (140-200 cm)",
+      "description": "Table extensible 6 à 10 personnes, finition chêne clair.",
+      "cover_url": "https://images.unsplash.com/photo-1551298370-9d3d53740c72",
+      "size_width": 140,
+      "size_height": 75,
+      "size_depth": 90,
+      "cached_min_price": null,
+      "cached_nb_offers": 0
+    },
+    {
+      "furniture_id": "6d5c4b3a-2f1e-4d3c-8b7a-9c0d1e2f3a4b",
+      "title": "Bureau industriel (120 cm)",
+      "description": "Bureau compact style industriel, plateau bois et structure métal.",
+      "cover_url": "https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd",
+      "size_width": 120,
+      "size_height": 75,
+      "size_depth": 60,
+      "cached_min_price": null,
+      "cached_nb_offers": 0
+    },
+    {
+      "furniture_id": "1b2c3d4e-5f60-4a7b-8c9d-0e1f2a3b4c5d",
+      "title": "Chaise de bureau ergonomique",
+      "description": "Chaise de bureau avec soutien lombaire et accoudoirs réglables.",
+      "cover_url": "https://images.unsplash.com/photo-1586023492125-27b2c045efd7",
+      "size_width": 62,
+      "size_height": 118,
+      "size_depth": 62,
+      "cached_min_price": null,
+      "cached_nb_offers": 0
+    },
+    {
+      "furniture_id": "9f8e7d6c-5b4a-4c3d-2e1f-0a9b8c7d6e5f",
+      "title": "Meuble TV (160 cm)",
+      "description": "Meuble TV 2 portes + 2 niches, passe-câbles, finition noyer.",
+      "cover_url": "https://images.unsplash.com/photo-1555041469-a586c61ea9bc",
+      "size_width": 160,
+      "size_height": 55,
+      "size_depth": 40,
+      "cached_min_price": null,
+      "cached_nb_offers": 0
+    },
+    {
+      "furniture_id": "7a6b5c4d-3e2f-4a1b-9c8d-6e5f4a3b2c1d",
+      "title": "Commode (6 tiroirs)",
+      "description": "Commode 6 tiroirs, façade rainurée, finition blanc mat.",
+      "cover_url": "https://images.unsplash.com/photo-1582582494700-78b3f36f7b9a",
+      "size_width": 120,
+      "size_height": 78,
+      "size_depth": 45,
+      "cached_min_price": null,
+      "cached_nb_offers": 0
+    },
+    {
+      "furniture_id": "2c1d0e9f-8d7c-4b6a-5f4e-3d2c1b0a9f8e",
+      "title": "Lit coffre (160x200)",
+      "description": "Lit coffre 160x200 avec sommier relevable, tête de lit rembourrée.",
+      "cover_url": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85",
+      "size_width": 170,
+      "size_height": 105,
+      "size_depth": 210,
+      "cached_min_price": null,
+      "cached_nb_offers": 0
+    },
+    {
+      "furniture_id": "4e3d2c1b-0a9f-4e8d-7c6b-5a4f3e2d1c0b",
+      "title": "Armoire penderie (2 portes coulissantes)",
+      "description": "Armoire 2 portes coulissantes, miroir, tringle + étagères.",
+      "cover_url": "https://images.unsplash.com/photo-1615873968403-89e068629265",
+      "size_width": 200,
+      "size_height": 215,
+      "size_depth": 60,
+      "cached_min_price": null,
+      "cached_nb_offers": 0
+    }
+  ],
+  "offers": [
+    {
+      "offer_id": "c1b7a2a4-5f4f-4b0a-a3d2-8e3b0c4c9d01",
+      "external_title": "Canapé d'angle convertible - Tissu chiné (gris)",
+      "url_website": "https://www.ikea.com/fr/fr/",
+      "price": 549.0,
+      "updated_at": "2026-02-09T00:00:00.000Z",
+      "is_active": true,
+      "furniture_id": "3f4c8a12-7b6e-4c0f-9e8c-2b4b1a9d7c31",
+      "partner_id": "8d2e3d7c-1f4a-4a2c-8c3f-0b9cf7f8e2a1"
+    },
+    {
+      "offer_id": "d0c8b3f6-7a1d-4a2f-9e5b-1c2d3e4f5002",
+      "external_title": "Canapé d'angle convertible - Coffre",
+      "url_website": "https://www.but.fr/",
+      "price": 499.99,
+      "updated_at": "2026-02-09T00:00:00.000Z",
+      "is_active": true,
+      "furniture_id": "3f4c8a12-7b6e-4c0f-9e8c-2b4b1a9d7c31",
+      "partner_id": "b3a1f9e6-0f5d-4d2b-9b3e-9d0d2c5b4e71"
+    },
+    {
+      "offer_id": "e2a1c0d9-3b2c-4d5e-8f7a-9b0c1d2e3003",
+      "external_title": "Canapé convertible d'angle - Style contemporain",
+      "url_website": "https://www.maisonsdumonde.com/",
+      "price": 599.0,
+      "updated_at": "2026-02-09T00:00:00.000Z",
+      "is_active": true,
+      "furniture_id": "3f4c8a12-7b6e-4c0f-9e8c-2b4b1a9d7c31",
+      "partner_id": "0c4b7f43-9e2a-4e18-8e9a-3b7f3a9d1c72"
+    },
+
+    {
+      "offer_id": "a3d2c1b0-4e5f-4a6b-8c7d-9e0f1a2b3004",
+      "external_title": "Table à manger extensible 140-200 cm - Chêne clair",
+      "url_website": "https://www.ikea.com/fr/fr/",
+      "price": 229.0,
+      "updated_at": "2026-02-09T00:00:00.000Z",
+      "is_active": true,
+      "furniture_id": "a9b1c2d3-e4f5-4a6b-8c7d-9e0f1a2b3c4d",
+      "partner_id": "8d2e3d7c-1f4a-4a2c-8c3f-0b9cf7f8e2a1"
+    },
+    {
+      "offer_id": "b4e3d2c1-5f60-4a7b-8c9d-0e1f2a3b4005",
+      "external_title": "Table extensible 6/10 personnes - Finition chêne",
+      "url_website": "https://www.but.fr/",
+      "price": 199.99,
+      "updated_at": "2026-02-09T00:00:00.000Z",
+      "is_active": true,
+      "furniture_id": "a9b1c2d3-e4f5-4a6b-8c7d-9e0f1a2b3c4d",
+      "partner_id": "b3a1f9e6-0f5d-4d2b-9b3e-9d0d2c5b4e71"
+    },
+    {
+      "offer_id": "c5f4e3d2-7a1b-4c2d-9e3f-4a5b6c7d8006",
+      "external_title": "Table à manger extensible - 140/200 cm",
+      "url_website": "https://www.maisonsdumonde.com/",
+      "price": 249.0,
+      "updated_at": "2026-02-09T00:00:00.000Z",
+      "is_active": true,
+      "furniture_id": "a9b1c2d3-e4f5-4a6b-8c7d-9e0f1a2b3c4d",
+      "partner_id": "0c4b7f43-9e2a-4e18-8e9a-3b7f3a9d1c72"
+    },
+
+    {
+      "offer_id": "d6a5f4e3-2b1c-4d3e-8f7a-9b0c1d2e9007",
+      "external_title": "Bureau industriel 120 cm - Bois & métal",
+      "url_website": "https://www.but.fr/",
+      "price": 89.99,
+      "updated_at": "2026-02-09T00:00:00.000Z",
+      "is_active": true,
+      "furniture_id": "6d5c4b3a-2f1e-4d3c-8b7a-9c0d1e2f3a4b",
+      "partner_id": "b3a1f9e6-0f5d-4d2b-9b3e-9d0d2c5b4e71"
+    },
+    {
+      "offer_id": "e7b6a5f4-3c2d-4e5f-9a0b-1c2d3e4f0008",
+      "external_title": "Bureau compact 120 cm - Style industriel",
+      "url_website": "https://www.ikea.com/fr/fr/",
+      "price": 99.0,
+      "updated_at": "2026-02-09T00:00:00.000Z",
+      "is_active": true,
+      "furniture_id": "6d5c4b3a-2f1e-4d3c-8b7a-9c0d1e2f3a4b",
+      "partner_id": "8d2e3d7c-1f4a-4a2c-8c3f-0b9cf7f8e2a1"
+    },
+    {
+      "offer_id": "f8c7b6a5-4d3e-4f60-8a1b-2c3d4e5f1009",
+      "external_title": "Bureau industriel 120 cm - Console bureau",
+      "url_website": "https://www.amazon.fr/",
+      "price": 84.9,
+      "updated_at": "2026-02-09T00:00:00.000Z",
+      "is_active": true,
+      "furniture_id": "6d5c4b3a-2f1e-4d3c-8b7a-9c0d1e2f3a4b",
+      "partner_id": "f2c1a0b9-3d4e-4a5b-8c7d-1e2f3a4b5c6d"
+    },
+
+    {
+      "offer_id": "a9d8c7b6-5e4f-4a7b-8c9d-0e1f2a3b2010",
+      "external_title": "Chaise de bureau ergonomique - Accoudoirs réglables",
+      "url_website": "https://www.ikea.com/fr/fr/",
+      "price": 149.0,
+      "updated_at": "2026-02-09T00:00:00.000Z",
+      "is_active": true,
+      "furniture_id": "1b2c3d4e-5f60-4a7b-8c9d-0e1f2a3b4c5d",
+      "partner_id": "8d2e3d7c-1f4a-4a2c-8c3f-0b9cf7f8e2a1"
+    },
+    {
+      "offer_id": "b0e9d8c7-6f50-4b8c-9d0e-1f2a3b4c3011",
+      "external_title": "Fauteuil de bureau ergonomique - Soutien lombaire",
+      "url_website": "https://www.amazon.fr/",
+      "price": 129.99,
+      "updated_at": "2026-02-09T00:00:00.000Z",
+      "is_active": true,
+      "furniture_id": "1b2c3d4e-5f60-4a7b-8c9d-0e1f2a3b4c5d",
+      "partner_id": "f2c1a0b9-3d4e-4a5b-8c7d-1e2f3a4b5c6d"
+    },
+    {
+      "offer_id": "c1f0e9d8-7a61-4c9d-8e1f-2a3b4c5d4012",
+      "external_title": "Chaise de bureau - Ergonomique (mesh)",
+      "url_website": "https://www.but.fr/",
+      "price": 119.99,
+      "updated_at": "2026-02-09T00:00:00.000Z",
+      "is_active": true,
+      "furniture_id": "1b2c3d4e-5f60-4a7b-8c9d-0e1f2a3b4c5d",
+      "partner_id": "b3a1f9e6-0f5d-4d2b-9b3e-9d0d2c5b4e71"
+    },
+
+    {
+      "offer_id": "d2a1f0e9-8b72-4d0e-9f2a-3b4c5d6e5013",
+      "external_title": "Meuble TV 160 cm - Noyer (2 portes)",
+      "url_website": "https://www.maisonsdumonde.com/",
+      "price": 279.0,
+      "updated_at": "2026-02-09T00:00:00.000Z",
+      "is_active": true,
+      "furniture_id": "9f8e7d6c-5b4a-4c3d-2e1f-0a9b8c7d6e5f",
+      "partner_id": "0c4b7f43-9e2a-4e18-8e9a-3b7f3a9d1c72"
+    },
+    {
+      "offer_id": "e3b2a1f0-9c83-4e1f-8a3b-4c5d6e7f6014",
+      "external_title": "Meuble TV 160 cm - Rangement & passe-câbles",
+      "url_website": "https://www.but.fr/",
+      "price": 199.99,
+      "updated_at": "2026-02-09T00:00:00.000Z",
+      "is_active": true,
+      "furniture_id": "9f8e7d6c-5b4a-4c3d-2e1f-0a9b8c7d6e5f",
+      "partner_id": "b3a1f9e6-0f5d-4d2b-9b3e-9d0d2c5b4e71"
+    },
+    {
+      "offer_id": "f4c3b2a1-0d94-4f2a-9b4c-5d6e7f8a7015",
+      "external_title": "Meuble TV 160 cm - Style scandinave",
+      "url_website": "https://www.ikea.com/fr/fr/",
+      "price": 229.0,
+      "updated_at": "2026-02-09T00:00:00.000Z",
+      "is_active": true,
+      "furniture_id": "9f8e7d6c-5b4a-4c3d-2e1f-0a9b8c7d6e5f",
+      "partner_id": "8d2e3d7c-1f4a-4a2c-8c3f-0b9cf7f8e2a1"
+    },
+
+    {
+      "offer_id": "a5d4c3b2-1e05-4a3b-8c5d-6e7f8a9b8016",
+      "external_title": "Commode 6 tiroirs - Blanc mat",
+      "url_website": "https://www.ikea.com/fr/fr/",
+      "price": 169.0,
+      "updated_at": "2026-02-09T00:00:00.000Z",
+      "is_active": true,
+      "furniture_id": "7a6b5c4d-3e2f-4a1b-9c8d-6e5f4a3b2c1d",
+      "partner_id": "8d2e3d7c-1f4a-4a2c-8c3f-0b9cf7f8e2a1"
+    },
+    {
+      "offer_id": "b6e5d4c3-2f16-4b4c-9d6e-7f8a9b0c9017",
+      "external_title": "Commode 6 tiroirs - Design façade rainurée",
+      "url_website": "https://www.maisonsdumonde.com/",
+      "price": 199.0,
+      "updated_at": "2026-02-09T00:00:00.000Z",
+      "is_active": true,
+      "furniture_id": "7a6b5c4d-3e2f-4a1b-9c8d-6e5f4a3b2c1d",
+      "partner_id": "0c4b7f43-9e2a-4e18-8e9a-3b7f3a9d1c72"
+    },
+
+    {
+      "offer_id": "c7f6e5d4-3a27-4c5d-8e7f-8a9b0c1d0018",
+      "external_title": "Lit coffre 160x200 - Tête de lit rembourrée",
+      "url_website": "https://www.but.fr/",
+      "price": 399.99,
+      "updated_at": "2026-02-09T00:00:00.000Z",
+      "is_active": true,
+      "furniture_id": "2c1d0e9f-8d7c-4b6a-5f4e-3d2c1b0a9f8e",
+      "partner_id": "b3a1f9e6-0f5d-4d2b-9b3e-9d0d2c5b4e71"
+    },
+    {
+      "offer_id": "d8a7f6e5-4b38-4d6e-9f80-9b0c1d2e1019",
+      "external_title": "Lit coffre 160x200 - Sommier relevable",
+      "url_website": "https://www.ikea.com/fr/fr/",
+      "price": 449.0,
+      "updated_at": "2026-02-09T00:00:00.000Z",
+      "is_active": true,
+      "furniture_id": "2c1d0e9f-8d7c-4b6a-5f4e-3d2c1b0a9f8e",
+      "partner_id": "8d2e3d7c-1f4a-4a2c-8c3f-0b9cf7f8e2a1"
+    },
+
+    {
+      "offer_id": "e9b8a7f6-5c49-4e7f-8a91-0c1d2e3f2020",
+      "external_title": "Armoire 2 portes coulissantes - Miroir",
+      "url_website": "https://www.ikea.com/fr/fr/",
+      "price": 329.0,
+      "updated_at": "2026-02-09T00:00:00.000Z",
+      "is_active": true,
+      "furniture_id": "4e3d2c1b-0a9f-4e8d-7c6b-5a4f3e2d1c0b",
+      "partner_id": "8d2e3d7c-1f4a-4a2c-8c3f-0b9cf7f8e2a1"
+    },
+    {
+      "offer_id": "f0c9b8a7-6d5a-4f80-9b02-1d2e3f4a3021",
+      "external_title": "Armoire coulissante 2 portes - Miroir intégré",
+      "url_website": "https://www.but.fr/",
+      "price": 299.99,
+      "updated_at": "2026-02-09T00:00:00.000Z",
+      "is_active": true,
+      "furniture_id": "4e3d2c1b-0a9f-4e8d-7c6b-5a4f3e2d1c0b",
+      "partner_id": "b3a1f9e6-0f5d-4d2b-9b3e-9d0d2c5b4e71"
+    }
+  ]
+}
+

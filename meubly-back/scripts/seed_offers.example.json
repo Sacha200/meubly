@@ -1,0 +1,44 @@
+{
+  "Partner": [
+    {
+      "partner_id": "8d2e3d7c-1f4a-4a2c-8c3f-0b9cf7f8e2a1",
+      "name": "Ikea",
+      "website_base_url": "https://www.ikea.com",
+      "logo_url": "https://upload.wikimedia.org/wikipedia/commons/c/c5/Ikea_logo.svg",
+      "is_active": true
+    },
+    {
+      "partner_id": "0c4b7f43-9e2a-4e18-8e9a-3b7f3a9d1c72",
+      "name": "Maisons du Monde",
+      "website_base_url": "https://www.maisonsdumonde.com",
+      "logo_url": "https://upload.wikimedia.org/wikipedia/commons/7/76/Maisons_du_Monde_logo.svg",
+      "is_active": true
+    }
+  ],
+  "Furniture": [
+    {
+      "furniture_id": "3f4c8a12-7b6e-4c0f-9e8c-2b4b1a9d7c31",
+      "title": "Canapé Friheten",
+      "description": "Canapé convertible 3 places avec rangement.",
+      "cover_url": "https://www.ikea.com/fr/fr/images/products/friheten-canape-convertible-3-places-skiftebo-gris-fonce__0833831_pe778125_s5.jpg",
+      "size_width": null,
+      "size_height": null,
+      "size_depth": null,
+      "cached_min_price": null,
+      "cached_nb_offers": 0
+    }
+  ],
+  "offers": [
+    {
+      "offer_id": "c1b7a2a4-5f4f-4b0a-a3d2-8e3b0c4c9d01",
+      "external_title": "FRIHETEN Canapé convertible",
+      "url_website": "https://www.ikea.com/fr/fr/",
+      "price": 499.0,
+      "updated_at": "2026-02-09T00:00:00.000Z",
+      "is_active": true,
+      "furniture_id": "3f4c8a12-7b6e-4c0f-9e8c-2b4b1a9d7c31",
+      "partner_id": "8d2e3d7c-1f4a-4a2c-8c3f-0b9cf7f8e2a1"
+    }
+  ]
+}
+

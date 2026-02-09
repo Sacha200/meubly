@@ -9,15 +9,10 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "format": "prettier --write .",
-    "build": "npm install",
-    "seed": "node scripts/seedDatabase.js",
+    "seed": "node scripts/seed_database.js",
     "test": "vitest",
     "test:run": "vitest run",
-    "test:coverage": "vitest --coverage",
-    "test:watch": "vitest --watch"
+    "test:coverage": "vitest --coverage"
   },
   "dependencies": {
     "@prisma/client": "^6.5.0",
