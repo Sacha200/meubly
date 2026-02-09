@@ -28,7 +28,6 @@ export default {
     const furn = useFurnitureStore()
 
     onMounted(async () => {
-      // Charger les produits sans filtres pour la page d'accueil
       furn.q = ''
       furn.categoryId = null
       furn.minPrice = null
@@ -37,8 +36,6 @@ export default {
       furn.page = 1
       await furn.fetch()
     })
-
-    return { furn }
   }
 }
 </script>

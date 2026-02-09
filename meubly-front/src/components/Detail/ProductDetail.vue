@@ -32,12 +32,28 @@
             </div>
             <p class="text-[#3A3A3A] dark:text-white font-semibold text-lg md:text-xl font-['Poppins-SemiBold']">{{ product.cached_min_price }} €</p>
             <p class="text-[#767676] dark:text-gray-300 text-sm md:text-base font-medium font-['Poppins-Medium']">{{ product.description }}</p>
+
+            <!-- Dimensions (si disponibles) -->
+            <div v-if="hasAnyDimension" class="pt-2">
+                <p class="text-[#3A3A3A] dark:text-white font-semibold text-sm md:text-base">Dimensions</p>
+                <p class="text-[#767676] dark:text-gray-300 text-sm md:text-base font-medium">
+                    <span v-if="product.size_width != null">L {{ formatDim(product.size_width) }} cm</span>
+                    <span v-if="product.size_height != null"> · H {{ formatDim(product.size_height) }} cm</span>
+                    <span v-if="product.size_depth != null"> · P {{ formatDim(product.size_depth) }} cm</span>
+                </p>
+            </div>
+            <div v-else class="pt-2">
+                <p class="text-[#3A3A3A] dark:text-white font-semibold text-sm md:text-base">Dimensions</p>
+                <p class="text-[#767676] dark:text-gray-300 text-sm md:text-base font-medium">
+                    Non renseignées
+                </p>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
-import { addFavorite } from '../../api/favoritesApi';
+import { addFavorite, removeFavorite } from '../../api/favoritesApi';
 
 export default {
     name: 'ProductDetail',
@@ -52,38 +68,45 @@ export default {
             isFavorite: false
         }
     },
+    computed: {
+        hasAnyDimension() {
+            return this.product?.size_width != null || this.product?.size_height != null || this.product?.size_depth != null
+        }
+    },
     mounted() {
-        // Vérifier si le produit est déjà en favori au chargement
         this.checkIfFavorite();
     },
     methods: {
+        formatDim(v) {
+            const n = Number(v)
+            if (Number.isNaN(n)) return v
+            // affiche sans décimales si entier
+            return Number.isInteger(n) ? String(n) : n.toFixed(1)
+        },
         async toggleFavorite() {
             let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
             
             if (this.isFavorite) {
-                // Retirer des favoris
                 favorites = favorites.filter(fav => fav.furniture_id !== this.product.furniture_id);
                 this.isFavorite = false;
             } else {
-                // Ajouter aux favoris
-                favorites.push(this.product);
+                if (!favorites.some(fav => fav.furniture_id === this.product.furniture_id)) {
+                    favorites.push(this.product);
+                }
                 this.isFavorite = true;
             }
             
-            // Sauvegarder dans le localStorage
             localStorage.setItem('favorites', JSON.stringify(favorites));
-            
-            // Émettre un événement pour mettre à jour la vue des favoris si nécessaire
             this.$emit('favorite-updated');
 
-            // Ajout en base Supabase
             try {
-                await addFavorite(this.product.furniture_id);
-                // Optionnel : message de succès
+                if (this.isFavorite) {
+                    await addFavorite(this.product.furniture_id);
+                } else {
+                    await removeFavorite(this.product.furniture_id);
+                }
             } catch (e) {
-                console.error("Erreur lors de l'ajout en favoris :", e.message);
-                // Ne pas afficher d'alerte, juste logger l'erreur
-                // Le favori reste dans le localStorage même si l'ajout en base échoue
+                console.error("Erreur sync favoris:", e?.message ?? e);
             }
         },
         checkIfFavorite() {
@@ -95,5 +118,4 @@ export default {
 </script>
 
 <style scoped>
-/* Styles personnalisés si nécessaire */
 </style>

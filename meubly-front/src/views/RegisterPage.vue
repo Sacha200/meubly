@@ -72,7 +72,6 @@ export default {
     validateForm() {
       const errors = [];
 
-      // Validation du nom d'utilisateur
       if (this.formData.username.length < 3) {
         errors.push("Le nom d'utilisateur doit contenir au moins 3 caractères");
       }
@@ -83,7 +82,6 @@ export default {
         errors.push("Le nom d'utilisateur ne peut contenir que des lettres, chiffres, tirets et underscores");
       }
 
-      // Validation du nom de famille
       if (this.formData.lastname.length < 2) {
         errors.push("Le nom de famille doit contenir au moins 2 caractères");
       }
@@ -91,14 +89,11 @@ export default {
         errors.push("Le nom de famille ne peut contenir que des lettres et des tirets");
       }
 
-      // Validation plus stricte de l'email
       const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
       if (!emailRegex.test(this.formData.email)) {
         errors.push("L'adresse email n'est pas valide. Utilisez un format standard (exemple@domaine.com)");
       }
-      
 
-      // Validation du mot de passe
       if (this.formData.password.length < 8) {
         errors.push("Le mot de passe doit contenir au moins 8 caractères");
       }
@@ -111,7 +106,6 @@ export default {
       if (!/[0-9]/.test(this.formData.password)) {
         errors.push("Le mot de passe doit contenir au moins un chiffre");
       }
-  
 
       return errors;
     },
@@ -145,16 +139,10 @@ export default {
     },
 
     validateField(fieldName) {
-      // Validation en temps réel pour chaque champ
-      switch (fieldName) {
-        case 'username':
-          if (this.formData.username.length < 3) {
-            this.fieldErrors.username = "Le nom d'utilisateur doit contenir au moins 3 caractères";
-          } else {
-            this.fieldErrors.username = '';
-          }
-          break;
-        // Ajouter les autres cas...
+      if (fieldName === 'username') {
+        this.fieldErrors.username = this.formData.username.length < 3 
+          ? "Le nom d'utilisateur doit contenir au moins 3 caractères" 
+          : '';
       }
     },
     login() {

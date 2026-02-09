@@ -70,11 +70,7 @@ export default {
   },
   methods: {
     goToProductDetail() {
-      try {
-        this.$router.push({ name: 'ProductDetail', params: { id: this.product.furniture_id } });
-      } catch (error) {
-        console.error('Erreur navigation:', error);
-      }
+      this.$router.push({ name: 'ProductDetail', params: { id: this.product.furniture_id } });
     },
     async toggleFavorite() {
       // Optimistic UI update (Local Storage + Visual)
@@ -103,28 +99,17 @@ export default {
         }
       } catch (e) {
         console.error("Erreur sync favoris:", e);
-        // Rollback UI if failed? For now, just log.
-        // In real app, we might revert isFavorite and toast error.
       }
     },
     checkIfFavorite() {
       const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
       return favorites.some(item => item.furniture_id === this.product.furniture_id);
     }
-  },
-  watch: {
-    product: {
-      handler() {
-        this.isFavorite = this.checkIfFavorite();
-      },
-      immediate: true,
-    }
   }
 };
 </script>
 
 <style scoped>
-/* Ligne clamp pour le titre pour s'assurer qu'il ne dépasse pas */
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;

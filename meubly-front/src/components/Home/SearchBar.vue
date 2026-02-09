@@ -56,56 +56,37 @@ export default {
     async performSearch() {
       if (!this.isSearchValid) return;
 
-      // 1) alimente le store pour la recherche serveur
       this.furnitureStore.q = this.searchQuery.trim();
       this.furnitureStore.page = 1;
 
-      // (optionnel) tu peux fetch ici pour précharger avant d'arriver sur la page résultats
       try {
         await this.furnitureStore.fetch();
       } catch (e) {
-        // en cas d'erreur, tu peux afficher un toast ici
+        console.error('Erreur recherche:', e);
       }
 
-      // 2) navigue vers la page résultats (si tu veux rester sur Home, commente ce bloc)
       this.$router.push({
         name: 'ResultatRecherche',
         query: { q: this.furnitureStore.q }
       });
-    },
-
-    clearSearch() {
-      this.searchQuery = '';
-    },
+    }
   },
 
   mounted() {
-    // focus auto
     this.$nextTick(() => {
-      if (this.$refs.searchInput) {
-        this.$refs.searchInput.focus();
-      }
+      this.$refs.searchInput?.focus();
     });
 
-    // si l'URL contient déjà ?q=..., on initialise le champ
     const existingQ = this.$route?.query?.q;
     if (existingQ && typeof existingQ === 'string') {
       this.searchQuery = existingQ;
     }
-  },
+  }
 };
 </script>
 
 <style scoped>
-/* Search button styling */
 .button_search {
   cursor: pointer;
-}
-
-/* Responsive design adjustments */
-@media (max-width: 768px) {
-  .search-container {
-    width: 100%;
-  }
 }
 </style>

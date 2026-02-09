@@ -34,8 +34,9 @@
                                 :class="['h-auto flex items-center', isManomano(offer.company) ? 'w-9' : 'w-6']"
                                 @error="handleImageError" />
                         </div>
-                        <p :class="['font-medium text-sm', isDarkMode ? 'text-gray-200' : 'text-gray-800']">{{
-                            offer.external_title }}</p>
+                        <p :class="['font-medium text-sm', isDarkMode ? 'text-gray-200' : 'text-gray-800']">
+                            {{ offer.external_title || offer.link || 'Offre' }}
+                        </p>
                     </div>
                 </div>
                 <div class="flex items-center">
@@ -115,12 +116,12 @@ export default {
             try {
                 const data = await getFurnitureOffers(this.product.furniture_id || this.product.id);
                 this.allOffers = (data || []).map(offer => ({
-                    id: offer.offer_id, // L'ID brut
+                    id: offer.offer_id,
                     company: offer.Partner?.name || 'Inconnu',
                     logo: offer.Partner?.logo_url || '/assets/default-logo.svg',
-                    name: offer.external_title,
-                    price: offer.price,
-                    link: offer.url_website
+                    external_title: offer.external_title ?? offer.externalTitle ?? offer.title ?? null,
+                    price: offer.price ?? offer.Price ?? null,
+                    link: offer.url_website ?? offer.urlWebsite ?? offer.url ?? null
                 }));
                 this.$emit('offers-loaded', this.allOffers.length);
 
@@ -145,15 +146,6 @@ export default {
             }
         },
 
-        // getCompanyLogo n'est plus nécessaire car on a logo_url en DB
-        // On le supprime ou on laisse vide si utilisé ailleurs, mais ici on va juste utiliser offer.logo direct dans le template
-
-        openProductLink(link) {
-            if (link) {
-                window.open(link, '_blank');
-            }
-        },
-
         openProductLink(link) {
             if (link) {
                 window.open(link, '_blank');
@@ -161,7 +153,6 @@ export default {
         },
 
         handleImageError(event) {
-            // Gestion silencieuse des erreurs d'image
             event.target.style.display = 'none';
         },
 

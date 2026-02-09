@@ -47,17 +47,6 @@ export default {
     const totalPages = computed(() => Math.max(1, Math.ceil((total.value || 0) / (limit.value || 1))))
     const currentPage = computed(() => page.value)
 
-    const visiblePages = computed(() => {
-      const pages = []
-      const start = Math.max(1, currentPage.value - 1)
-      const end = Math.min(totalPages.value, currentPage.value + 1)
-      for (let i = start; i <= end; i++) pages.push(i)
-      return pages
-    })
-
-    const startIndex = computed(() => (page.value - 1) * limit.value)
-    const endIndex = computed(() => Math.min(startIndex.value + (items.value?.length || 0), total.value || 0))
-
     const scrollToTop = () => {
       nextTick(() => {
         const el = document.querySelector('[data-testid="products-section"]')
@@ -82,7 +71,6 @@ export default {
     return {
       items, loading, error,
       total, limit, currentPage, totalPages,
-      visiblePages, startIndex, endIndex,
       onPageChange
     }
   }
@@ -92,51 +80,6 @@ export default {
 <style scoped>
 h2 {
   font-family: 'Poppins-Bold';
-}
-
-/* (tes styles responsives existants) */
-.products-container {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 2rem;
-  padding: 2rem;
-}
-
-@media screen and (max-width: 1024px) {
-  .products-container {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-    padding: 1.5rem;
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .products-container {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-    padding: 1rem;
-  }
-
-  .section-title {
-    font-size: 1.8rem;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .products-container {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-    padding: 0.8rem;
-  }
-
-  .section-title {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .product-card {
-    width: 100%;
-  }
 }
 
 /* Styles pour Paginator avec support mode sombre */
