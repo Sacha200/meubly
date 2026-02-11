@@ -9,6 +9,7 @@ import LoginPage from '../views/LoginPage.vue';
 import AdminFurnituresView from '../views/Admin/furnitures/listView.vue';
 import AdminUpdateFurnitureView from '../views/Admin/furnitures/updateView.vue';
 import SupabaseAuthCallbackView from "../views/SupabaseAuthCallbackView.vue";
+import VerifyEmailCodeView from "../views/VerifyEmailCodeView.vue";
 
 
 const router = createRouter({
@@ -22,6 +23,7 @@ const router = createRouter({
     { path: '/favoris', name: 'Favorites', component: FavoritesView },
     { path: '/register', name: 'Register', component: RegisterPage },    
     { path: '/auth/callback', name: 'AuthCallback', component: SupabaseAuthCallbackView },
+    { path: '/verify-email', name: 'VerifyEmail', component: VerifyEmailCodeView },
     
     // Routes d'administration - Utilisateurs
     { path: '/admin/users', name: 'AdminUsers', meta: { roles: ['ADMIN']}, component: () => import('../views/Admin/user/listView.vue')},

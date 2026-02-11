@@ -192,14 +192,9 @@ export default {
         if (user) {
           console.log('User:', user);
           console.log('Profil créé:', profile);
-          this.$toast.add({
-            severity: 'success',
-            summary: 'Inscription réussie',
-            detail: "Email de confirmation envoyé. Ouvre Mailpit pour valider ton compte.",
-            life: 9000,
-            closable: false,
-            data: { actions: { mailpit: true } }
-          });
+          // Diriger vers l'écran de vérification (optionnel) :
+          // l'utilisateur peut soit coller le token, soit cliquer le lien dans l'email.
+          this.$router.push({ path: '/verify-email', query: { email: this.formData.email, sent: '1' } });
         }
 
       } catch (error) {

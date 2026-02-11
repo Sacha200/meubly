@@ -97,6 +97,14 @@
                                         Ouvrir Mailpit
                                     </a>
                                 </div>
+                                <div class="mt-2">
+                                    <router-link
+                                        :to="{ path: '/verify-email', query: { email: formData.email } }"
+                                        class="text-[#B88E2F] hover:underline"
+                                    >
+                                        J’ai un code de vérification
+                                    </router-link>
+                                </div>
                             </div>
                         </div>
                         <p class="text-sm text-gray-600 dark:text-gray-400">
