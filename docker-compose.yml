@@ -103,6 +103,8 @@ services:
         condition: service_healthy
       analytics:
         condition: service_healthy
+      mailpit:
+        condition: service_started
     environment:
       GOTRUE_API_HOST: 0.0.0.0
       GOTRUE_API_PORT: 9999
@@ -121,17 +123,31 @@ services:
       GOTRUE_EXTERNAL_ANONYMOUS_USERS_ENABLED: ${ENABLE_ANONYMOUS_USERS}
       GOTRUE_MAILER_AUTOCONFIRM: ${ENABLE_EMAIL_AUTOCONFIRM}
       GOTRUE_SMTP_ADMIN_EMAIL: ${SMTP_ADMIN_EMAIL}
-      GOTRUE_SMTP_HOST: ${SMTP_HOST}
-      GOTRUE_SMTP_PORT: ${SMTP_PORT}
-      GOTRUE_SMTP_USER: ${SMTP_USER}
-      GOTRUE_SMTP_PASS: ${SMTP_PASS}
-      GOTRUE_SMTP_SENDER_NAME: ${SMTP_SENDER_NAME}
+      # Dev-friendly defaults: route emails to Mailpit (no auth)
+      GOTRUE_SMTP_HOST: ${SMTP_HOST:-mailpit}
+      GOTRUE_SMTP_PORT: ${SMTP_PORT:-1025}
+      GOTRUE_SMTP_USER: ${SMTP_USER:-}
+      GOTRUE_SMTP_PASS: ${SMTP_PASS:-}
+      GOTRUE_SMTP_SENDER_NAME: ${SMTP_SENDER_NAME:-Meubly}
       GOTRUE_MAILER_URLPATHS_INVITE: ${MAILER_URLPATHS_INVITE}
       GOTRUE_MAILER_URLPATHS_CONFIRMATION: ${MAILER_URLPATHS_CONFIRMATION}
       GOTRUE_MAILER_URLPATHS_RECOVERY: ${MAILER_URLPATHS_RECOVERY}
       GOTRUE_MAILER_URLPATHS_EMAIL_CHANGE: ${MAILER_URLPATHS_EMAIL_CHANGE}
       GOTRUE_EXTERNAL_PHONE_ENABLED: ${ENABLE_PHONE_SIGNUP}
       GOTRUE_SMS_AUTOCONFIRM: ${ENABLE_PHONE_AUTOCONFIRM}
+
+  mailpit:
+    container_name: mailpit
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports:
+      - "${MAILPIT_PORT:-8025}:8025"
+      - "${MAILPIT_SMTP_PORT:-1025}:1025"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://localhost:8025/api/v1/messages >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   rest:
     container_name: supabase-rest
@@ -366,7 +382,8 @@ services:
       # Initialize the database settings with JWT_SECRET and JWT_EXP
       - ./volumes/db/jwt.sql:/docker-entrypoint-initdb.d/init-scripts/99-jwt.sql:Z
       # PGDATA directory is persisted between restarts
-      - ./volumes/db/data:/var/lib/postgresql/data:Z
+      # IMPORTANT (Windows): utiliser un volume nommé (perf + stabilité)
+      - supabase-db-data:/var/lib/postgresql/data
       # Changes required for internal supabase data such as _analytics
       - ./volumes/db/_supabase.sql:/docker-entrypoint-initdb.d/migrations/97-_supabase.sql:Z
       # Changes required for Analytics support
@@ -532,7 +549,9 @@ services:
   ingestion:
     container_name: ingestion
     profiles:
-      - app
+      # Ne pas démarrer automatiquement avec le front/back.
+      # Lance-le explicitement avec: --profile ingestion
+      - ingestion
     build:
       context: ./bd/ingestion
     restart: unless-stopped
@@ -555,3 +574,4 @@ services:
 
 volumes:
   db-config:
+  supabase-db-data:

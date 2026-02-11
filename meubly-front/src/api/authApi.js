@@ -9,8 +9,7 @@ export async function registerUser(userData) {
             password: userData.password,
             options: {
                 data: {
-                    username: userData.username,
-                    lastname: userData.lastname
+                    username: userData.username
                 },
                 emailRedirectTo: `${window.location.origin}/auth/callback`,
                 shouldCreateUser: true
@@ -22,16 +21,14 @@ export async function registerUser(userData) {
         }
 
         // 2. Si l'inscription Auth réussit, on ajoute l'utilisateur dans la table User
-        if (authData) {
+        if (authData?.user) {
             const { data: userProfile, error: userError } = await supabase
                 .from('User')
                 .insert([
                     {
                         user_id: authData.user.id,
                         username: authData.user.user_metadata.username,
-                        lastname: authData.user.user_metadata.lastname,
-                        email: authData.user.user_metadata.email,
-                        created_at: new Date().toISOString().split('T')[0]
+                        email: authData.user.email
                     }
                 ])
                 .select();
@@ -40,11 +37,8 @@ export async function registerUser(userData) {
                 throw userError;
             }
 
-            // 3. Envoyer explicitement l'email de confirmation si nécessaire
-            await supabase.auth.resend({
-                type: 'signup',
-                email: authData.user.email
-            });
+            // Note: Supabase envoie déjà l'email de confirmation (si autoconfirm=false).
+            // Éviter un resend immédiat pour ne pas déclencher d'erreurs SMTP/rate-limit.
 
             return {
                 user: authData.user,
