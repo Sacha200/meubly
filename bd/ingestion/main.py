@@ -14,6 +14,21 @@ def utc_now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def parse_float(value: Any) -> Optional[float]:
+    if value is None:
+        return None
+    if isinstance(value, (int, float)):
+        return float(value)
+    s = str(value).strip()
+    if not s:
+        return None
+    s = s.replace(",", ".")
+    try:
+        return float(s)
+    except Exception:
+        return None
+
+
 def normalize_title(s: str) -> str:
     s = (s or "").strip().lower()
     s = re.sub(r"\s+", " ", s)
@@ -217,6 +232,192 @@ def upsert_offer(
         pass
 
     supabase.table("offers").insert(payload).execute()
+
+
+def ingest_competitors_csv(supabase, csv_path: str) -> Tuple[int, int, int]:
+    """
+    Ingestion depuis un CSV déjà francisé (ex: data/competitors_fr.csv).
+
+    Colonnes attendues (FR):
+    - Titre, Prix, Chemin_categorie, Note, Nb_avis, Caractéristiques (JSON string), Image_URL, Produit_URL
+    """
+    import csv
+    from urllib.parse import urlparse
+
+    partner_override = (os.getenv("COMPETITORS_PARTNER_NAME") or "").strip()
+    limit = int(os.getenv("COMPETITORS_LIMIT", "0") or "0")
+
+    def partner_from_url(u: str) -> Tuple[str, Optional[str]]:
+        try:
+            p = urlparse(u)
+            host = (p.netloc or "").lower()
+            base = f"{p.scheme}://{p.netloc}" if p.scheme and p.netloc else None
+        except Exception:
+            host = ""
+            base = None
+        if partner_override:
+            return partner_override, base
+        if host:
+            name = host.replace("www.", "").split(":")[0]
+            name = re.sub(r"[^a-z0-9.-]", "", name, flags=re.IGNORECASE)
+            return name, base
+        return "Competitor", base
+
+    with open(csv_path, "r", encoding="utf-8-sig", newline="") as f:
+        reader = csv.DictReader(f)
+        rows = list(reader)
+
+    inserted_pp = 0
+    created_furn = 0
+    processed_offers = 0
+
+    category_cache: Dict[str, str] = {}
+
+    def get_or_create_category_leaf(label: str) -> Optional[str]:
+        label = (label or "").strip()
+        if not label:
+            return None
+        if label in category_cache:
+            return category_cache[label]
+        try:
+            sel = supabase.table("Category").select("category_id").eq("label", label).limit(1).execute()
+            if sel.data:
+                cid = sel.data[0]["category_id"]
+                category_cache[label] = cid
+                return cid
+            ins = supabase.table("Category").insert({"label": label}).select("category_id").single().execute()
+            cid = ins.data["category_id"]
+            category_cache[label] = cid
+            return cid
+        except Exception:
+            return None
+
+    def link_furniture_category(furniture_id: str, category_id: str) -> None:
+        try:
+            supabase.table("FurnitureCategory").upsert(
+                {"furniture_id": furniture_id, "category_id": category_id},
+                on_conflict="furniture_id,category_id",
+            ).execute()
+        except Exception:
+            pass
+
+    for idx, r in enumerate(rows):
+        if limit and idx >= limit:
+            break
+
+        title = (r.get("Titre") or r.get("Title") or "").strip()
+        price = parse_float(r.get("Prix") or r.get("Price"))
+        category_path = (r.get("Chemin_categorie") or r.get("Category_path") or "").strip()
+        image_url = (r.get("Image_URL") or r.get("Image_Url") or "").strip() or None
+        product_url = (r.get("Produit_URL") or r.get("Item_Url") or "").strip()
+        if not product_url:
+            continue
+
+        partner_name, base_url = partner_from_url(product_url)
+        partner = get_or_create_partner_by_name(supabase, partner_name, website_base_url=base_url, logo_url=None)
+        partner_id = partner["partner_id"]
+
+        external_id = product_url
+        external_title = title or external_id
+
+        leaf = ""
+        if category_path:
+            parts = [p.strip() for p in category_path.split(">") if p.strip()]
+            if parts:
+                leaf = parts[-1]
+
+        features_raw = r.get("Caractéristiques") or r.get("Features_JSON_format") or "{}"
+        features_obj: Dict[str, Any] = {}
+        if isinstance(features_raw, str) and features_raw.strip() and features_raw.strip() != "{}":
+            try:
+                features_obj = json.loads(features_raw)
+                if not isinstance(features_obj, dict):
+                    features_obj = {}
+            except Exception:
+                features_obj = {}
+
+        raw_payload: Dict[str, Any] = {**r, "features": features_obj}
+
+        furniture_id: Optional[str] = None
+        try:
+            existing = (
+                supabase.table("PartnerProduct")
+                .select("furniture_id")
+                .eq("partner_id", partner_id)
+                .eq("external_id", external_id)
+                .limit(1)
+                .execute()
+            )
+            if existing.data:
+                furniture_id = existing.data[0].get("furniture_id")
+        except Exception:
+            pass
+
+        if not furniture_id:
+            furniture = create_furniture_from_partner(
+                supabase,
+                title=external_title,
+                description=None,
+                cover_url=image_url,
+                cached_min_price=price,
+                cached_nb_offers=1,
+            )
+            furniture_id = furniture["furniture_id"]
+            created_furn += 1
+        else:
+            patch: Dict[str, Any] = {}
+            try:
+                current = (
+                    supabase.table("Furniture")
+                    .select("cover_url,cached_min_price,cached_nb_offers")
+                    .eq("furniture_id", furniture_id)
+                    .single()
+                    .execute()
+                    .data
+                )
+                if isinstance(current, dict):
+                    if (not current.get("cover_url")) and image_url:
+                        patch["cover_url"] = image_url
+                    if current.get("cached_min_price") is None and price is not None:
+                        patch["cached_min_price"] = price
+                    if not current.get("cached_nb_offers"):
+                        patch["cached_nb_offers"] = 1
+            except Exception:
+                pass
+            if patch:
+                try:
+                    supabase.table("Furniture").update(patch).eq("furniture_id", furniture_id).execute()
+                except Exception:
+                    pass
+
+        upsert_partner_product(
+            supabase,
+            partner_id=partner_id,
+            external_id=external_id,
+            external_url=product_url,
+            external_title=external_title,
+            raw_payload=raw_payload,
+            furniture_id=furniture_id,
+        )
+        inserted_pp += 1
+
+        upsert_offer(
+            supabase,
+            partner_id=partner_id,
+            furniture_id=furniture_id,
+            external_title=external_title,
+            url_website=product_url,
+            price=price,
+            is_active=True,
+        )
+        processed_offers += 1
+
+        if leaf and furniture_id:
+            cid = get_or_create_category_leaf(leaf)
+            if cid:
+                link_furniture_category(furniture_id, cid)
+
+    return inserted_pp, created_furn, processed_offers
 
 
 def mock_catalog() -> List[Dict[str, Any]]:
@@ -907,8 +1108,13 @@ def main() -> None:
     pp_mock, furn_mock = ingest_mock(supabase)
     print(f"[mock] partner_products={pp_mock} furnitures_created={furn_mock}")
 
-    pp_ikea, furn_ikea = ingest_ikea_best_effort(supabase)
-    print(f"[ikea] partner_products={pp_ikea} furnitures_created={furn_ikea}")
+    competitors_csv = (os.getenv("COMPETITORS_CSV_PATH") or "").strip()
+    if competitors_csv:
+        pp_c, furn_c, offers_c = ingest_competitors_csv(supabase, competitors_csv)
+        print(f"[competitors] partner_products={pp_c} furnitures_created={furn_c} offers={offers_c}")
+    else:
+        pp_ikea, furn_ikea = ingest_ikea_best_effort(supabase)
+        print(f"[ikea] partner_products={pp_ikea} furnitures_created={furn_ikea}")
 
     print(f"[ingestion] done {utc_now_iso()}")
 
