@@ -528,6 +528,7 @@ services:
       SUPABASE_URL: http://kong:8000
       SUPABASE_ANON_KEY: ${ANON_KEY}
       SUPABASE_SERVICE_ROLE_KEY: ${SERVICE_ROLE_KEY}
+      REPLICATE_API_TOKEN: ${REPLICATE_API_TOKEN}
     depends_on:
       kong:
         condition: service_started
@@ -555,12 +556,17 @@ services:
     build:
       context: ./bd/ingestion
     restart: unless-stopped
+    volumes:
+      # Datasets locaux (CSV/JSON) pour ingestion
+      - ./data:/data:ro
     environment:
       # Supabase local (via Kong)
       SUPABASE_URL: http://kong:8000
       SUPABASE_SERVICE_ROLE_KEY: ${SERVICE_ROLE_KEY}
       # Batch schedule
       BATCH_CRON: ${BATCH_CRON:-0 3 * * *}
+      # Import competitors (CSV déjà en français)
+      COMPETITORS_CSV_PATH: /data/competitors_fr.csv
       # IKEA adapter
       IKEA_COUNTRY: ${IKEA_COUNTRY:-fr}
       IKEA_LANGUAGE: ${IKEA_LANGUAGE:-fr}

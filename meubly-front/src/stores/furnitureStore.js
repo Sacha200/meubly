@@ -109,6 +109,28 @@ export const useFurnitureStore = defineStore('furniture', {
         const dateB = new Date(b.created_at || 0);
         return dateB - dateA;
       });
+    },
+
+    async generateLifestyleImage(imageUrl, prompt) {
+      try {
+        const res = await fetch(`${API_BASE}/ai/generate-scene`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ imageUrl, prompt }),
+        });
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.error || `HTTP ${res.status}`);
+        }
+
+        return await res.json();
+      } catch (e) {
+        console.error('Error generating lifestyle image:', e);
+        throw e;
+      }
     }
   },
 });

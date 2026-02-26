@@ -10,6 +10,7 @@
     "start": "node app.js",
     "dev": "nodemon app.js",
     "seed": "node scripts/seed_database.js",
+    "import:external": "node scripts/import_external_furniture.js",
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest --coverage"
@@ -25,6 +26,8 @@
     "express-validator": "^7.2.1",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
+    "replicate": "^1.4.0",
+    "sharp": "^0.34.5",
     "zod": "^3.24.2"
   },
   "devDependencies": {
