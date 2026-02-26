@@ -1,5 +1,5 @@
 <template>
-  <header class="bg-white dark:bg-gray-800 shadow-lg dark:shadow-gray-900/30 border-b border-gray-200 dark:border-gray-700">
+  <header class="bg-white dark:bg-surface shadow-lg dark:shadow-gray-900/30 border-b border-gray-200 dark:border-gray-700">
     <div class="container mx-auto flex justify-between items-center p-4">
       <!-- Logo -->
       <div class="text-3xl font-bold text-primary-500 dark:text-primary-400">
@@ -42,7 +42,7 @@
           <div
             v-if="isAdminMenuOpen"
             ref="adminMenu"
-            class="absolute top-full right-0 mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg dark:shadow-gray-900/50 z-50 min-w-[220px] animate-fadeInDown"
+            class="absolute top-full right-0 mt-2 bg-white dark:bg-surface border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg dark:shadow-gray-900/50 z-50 min-w-[220px] animate-fadeInDown"
           >
             <div class="p-3">
               <h3 class="text-base font-semibold mb-3 text-gray-700 dark:text-gray-200 px-2">Gestion</h3>
@@ -86,7 +86,7 @@
             {{ roleLabel }}
           </span>
           <span class="mr-2 px-4 py-2 bg-primary-500 text-white rounded-lg font-medium text-sm">Connecté</span>
-          <button @click="logout" class="px-2 py-1 ml-2 border border-red-500 rounded text-red-500 font-semibold text-xs cursor-pointer transition-all duration-300 hover:bg-red-500 hover:text-white">
+          <button @click="logout" class="px-4 py-2 ml-2 border border-red-500 rounded-lg text-red-500 font-medium text-sm cursor-pointer transition-all duration-300 hover:bg-red-500 hover:text-white">
             Se déconnecter
           </button>
         </div>
@@ -132,7 +132,7 @@ export default {
     roleBadgeClass() {
       return this.role === 'ADMIN'
         ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-200'
-        : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
+        : 'bg-gray-100 text-gray-800 dark:bg-neutral-800 dark:text-gray-200';
     }
   },
 

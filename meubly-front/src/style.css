@@ -11,8 +11,8 @@ body {
 
 /* Mode sombre avec couleurs dynamiques */
 .dark body {
-  background-color: var(--dark-bg, #052e16);
-  color: var(--dark-text, #dcfce7);
+  background-color: var(--dark-bg, #0a0a0a);
+  color: var(--dark-text, #fafafa);
 }
 
 /* Transitions fluides pour tous les éléments */

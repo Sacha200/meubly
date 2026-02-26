@@ -2,7 +2,7 @@
     <div class="w-full">
       <label class="block text-sm font-medium text-[#3A3A3A] dark:text-white mb-1">Catégorie</label>
       <select
-        class="w-full rounded-xl border border-[#DBDBDB] dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#B88E2F] dark:focus:ring-[#B88E2F]"
+        class="w-full rounded-xl border border-[#DBDBDB] dark:border-gray-600 px-3 py-2 bg-white dark:bg-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#B88E2F] dark:focus:ring-[#B88E2F]"
         :value="modelValue"
         @change="onChange"
       >

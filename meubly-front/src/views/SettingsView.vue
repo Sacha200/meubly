@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
+  <div class="min-h-screen bg-white dark:bg-background transition-colors duration-300">
     <div class="container mx-auto px-4 py-8">
       <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8">
         Paramètres
@@ -7,7 +7,7 @@
       
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Section Thème -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <div class="bg-white dark:bg-surface rounded-lg shadow-lg p-6">
           <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-6">
             Apparence
           </h2>
@@ -30,7 +30,7 @@
         </div>
         
         <!-- Section Informations -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+        <div class="bg-white dark:bg-surface rounded-lg shadow-lg p-6">
           <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-6">
             Informations
           </h2>
@@ -60,7 +60,7 @@
                   :class="[
                     themeStore.colorTheme === theme
                       ? 'bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200'
-                      : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
+                      : 'bg-gray-100 text-gray-600 dark:bg-neutral-800 dark:text-gray-300'
                   ]"
                 >
                   {{ THEME_COLORS[theme].name }}
@@ -72,13 +72,13 @@
       </div>
       
       <!-- Aperçu en temps réel -->
-      <div class="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+      <div class="mt-8 bg-white dark:bg-surface rounded-lg shadow-lg p-6">
         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-6">
           Aperçu en temps réel
         </h2>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4">
+          <div class="bg-gray-100 dark:bg-neutral-800 rounded-lg p-4">
             <h3 class="font-medium text-gray-800 dark:text-gray-200 mb-2">
               Carte exemple
             </h3>
@@ -90,7 +90,7 @@
             </button>
           </div>
           
-          <div class="bg-gray-50 dark:bg-gray-600 rounded-lg p-4">
+          <div class="bg-gray-50 dark:bg-neutral-700 rounded-lg p-4">
             <h3 class="font-medium text-gray-800 dark:text-gray-200 mb-2">
               Autre carte
             </h3>
@@ -99,7 +99,7 @@
             </p>
           </div>
           
-          <div class="bg-white dark:bg-gray-500 rounded-lg p-4 border border-gray-200 dark:border-gray-400">
+          <div class="bg-white dark:bg-neutral-600 rounded-lg p-4 border border-gray-200 dark:border-gray-400">
             <h3 class="font-medium text-gray-800 dark:text-gray-200 mb-2">
               Carte avec bordure
             </h3>

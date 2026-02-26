@@ -87,7 +87,7 @@
                     <select
                         id="rating"
                         v-model.number="form.rating"
-                        class="mt-2 md:mt-0 w-full md:w-auto border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-800 text-[#3A3A3A] dark:text-white"
+                        class="mt-2 md:mt-0 w-full md:w-auto border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-surface text-[#3A3A3A] dark:text-white"
                     >
                         <option v-for="n in [5,4,3,2,1]" :key="n" :value="n">{{ n }} étoile{{ n > 1 ? 's' : '' }}</option>
                     </select>
@@ -100,7 +100,7 @@
                         v-model="form.comment"
                         rows="4"
                         maxlength="1000"
-                        class="mt-2 w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-800 text-[#3A3A3A] dark:text-white"
+                        class="mt-2 w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-surface text-[#3A3A3A] dark:text-white"
                         placeholder="Partagez votre expérience..."
                     ></textarea>
                 </div>

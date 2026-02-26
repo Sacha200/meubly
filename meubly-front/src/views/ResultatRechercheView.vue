@@ -19,7 +19,7 @@
           </p>
         </div>
         <select
-          class="rounded-xl border border-[#DBDBDB] dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#B88E2F] dark:focus:ring-[#B88E2F]"
+          class="rounded-xl border border-[#DBDBDB] dark:border-gray-600 px-3 py-2 bg-white dark:bg-surface text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#B88E2F] dark:focus:ring-[#B88E2F]"
           v-model="furnitureStore.sort"
           @change="applyFilters"
           title="Trier"
@@ -33,7 +33,7 @@
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <!-- Sidebar filtres -->
         <aside class="lg:col-span-3">
-          <div class="rounded-2xl border border-[#DBDBDB] dark:border-gray-600 p-4 bg-white dark:bg-gray-800 shadow-sm dark:shadow-gray-900/30">
+          <div class="rounded-2xl border border-[#DBDBDB] dark:border-gray-600 p-4 bg-white dark:bg-surface shadow-sm dark:shadow-gray-900/30">
             <h2 class="text-lg font-semibold text-[#3A3A3A] dark:text-white mb-3">Filtres</h2>
             <div class="space-y-4">
               <CategoryFilter v-model="furnitureStore.categoryId" />
@@ -43,7 +43,7 @@
                 style="background-color:#B88E2F"
                 @click="applyFilters"
               >Appliquer</button>
-              <button class="w-full rounded-2xl py-2 font-medium border border-[#DBDBDB] dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors" @click="resetFilters">
+              <button class="w-full rounded-2xl py-2 font-medium border border-[#DBDBDB] dark:border-gray-600 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors" @click="resetFilters">
                 Réinitialiser
               </button>
             </div>

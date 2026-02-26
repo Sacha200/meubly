@@ -4,7 +4,7 @@
 
     <Header />
     <div class="container mx-auto px-4 py-8">
-      <div class="max-w-md mx-auto bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md">
+      <div class="max-w-md mx-auto bg-white dark:bg-surface p-8 rounded-lg shadow-md">
         <h1 class="text-center mb-6">Vérification email</h1>
 
         <p class="text-sm text-gray-600 dark:text-gray-300 mb-6">

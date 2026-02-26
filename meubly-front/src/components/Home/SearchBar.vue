@@ -3,7 +3,7 @@
   <div class="w-full mb-8" data-testid="search-bar">
     <!-- Search Input Container -->
     <div
-      class="flex items-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl w-full h-[72px] shadow-sm hover:shadow-md transition-shadow duration-300 focus-within:ring-2 focus-within:ring-primary-500/20">
+      class="flex items-center bg-white dark:bg-surface border border-gray-100 dark:border-gray-700 rounded-xl w-full h-[72px] shadow-sm hover:shadow-md transition-shadow duration-300 focus-within:ring-2 focus-within:ring-primary-500/20">
       <!-- Input Section -->
       <div class="flex-1 px-6">
         <!-- Label -->

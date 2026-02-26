@@ -46,7 +46,7 @@
 
     <Header />
     <div class="container mx-auto px-4 py-8">
-      <div class="max-w-md mx-auto bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md">
+      <div class="max-w-md mx-auto bg-white dark:bg-surface p-8 rounded-lg shadow-md">
         <h1 class="text-center mb-8">Inscription</h1>
 
         <form @submit.prevent="handleRegister" class="space-y-6">

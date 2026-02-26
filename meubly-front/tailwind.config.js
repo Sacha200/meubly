@@ -28,6 +28,10 @@ export default {
         sans: ['Poppins', 'sans-serif'],
       },
       colors: {
+        // Couleurs sémantiques mappées aux variables CSS
+        surface: 'var(--dark-surface)',
+        background: 'var(--dark-bg)',
+        
         // Couleurs personnalisées pour le thème
         primary: {
           50: '#fefce8',

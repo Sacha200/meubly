@@ -1,14 +1,14 @@
 <template>
   <div
-    class="group relative flex flex-col h-full bg-white dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 w-full">
+    class="group relative flex flex-col h-full bg-white dark:bg-surface rounded-xl overflow-hidden border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 w-full">
     <!-- Image Section -->
-    <div class="relative h-48 sm:h-64 overflow-hidden bg-gray-100 dark:bg-gray-700">
+    <div class="relative h-48 sm:h-64 overflow-hidden bg-gray-100 dark:bg-neutral-800">
       <img :src="product.cover_url" :alt="product.title"
         class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out" />
 
       <!-- Favorite Button -->
       <button
-        class="absolute top-3 right-3 p-2.5 rounded-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm shadow-md hover:scale-110 transition-all duration-300 group/btn"
+        class="absolute top-3 right-3 p-2.5 rounded-full bg-white/90 dark:bg-surface/90 backdrop-blur-sm shadow-md hover:scale-110 transition-all duration-300 group/btn"
         :class="{ 'ring-2 ring-primary-500': isFavorite }" @click.stop="toggleFavorite">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
           class="transition-colors duration-300">
@@ -21,7 +21,7 @@
     </div>
 
     <!-- Content Section -->
-    <div class="flex flex-col flex-grow p-4 bg-white dark:bg-gray-800 pointer-events-none">
+    <div class="flex flex-col flex-grow p-4 bg-white dark:bg-surface pointer-events-none">
       <!-- Title -->
       <h3
         class="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-100 line-clamp-2 mb-2 leading-tight min-h-[3rem] pointer-events-auto">
@@ -32,7 +32,7 @@
       <div class="mt-auto pointer-events-auto">
         <div class="flex items-center justify-center gap-3 mb-4">
           <span
-            class="text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-widest bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
+            class="text-[10px] font-medium text-gray-500 dark:text-gray-400 uppercase tracking-widest bg-gray-100 dark:bg-neutral-800 px-2 py-1 rounded">
             {{ product.cached_nb_offers || product.nb_offers || 'Plusieurs' }} offres
           </span>
           <div class="flex items-baseline gap-1.5 text-gray-900 dark:text-white">
@@ -45,7 +45,7 @@
 
         <!-- Action Button -->
         <button @click="goToProductDetail()"
-          class="w-full py-2.5 px-4 rounded-lg bg-white dark:bg-gray-700 border-2 border-gray-100 dark:border-gray-600 text-gray-700 dark:text-gray-200 font-medium text-sm sm:text-base hover:border-primary-500 hover:text-primary-500 dark:hover:border-primary-500 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/10 transition-all duration-300 flex items-center justify-center group-hover:shadow-md active:scale-95">
+          class="w-full py-2.5 px-4 rounded-lg bg-white dark:bg-neutral-800 border-2 border-gray-100 dark:border-gray-600 text-gray-700 dark:text-gray-200 font-medium text-sm sm:text-base hover:border-primary-500 hover:text-primary-500 dark:hover:border-primary-500 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/10 transition-all duration-300 flex items-center justify-center group-hover:shadow-md active:scale-95">
           Comparer les prix
         </button>
       </div>

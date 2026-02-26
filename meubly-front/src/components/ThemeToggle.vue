@@ -61,12 +61,12 @@ export default {
     const themeStore = useThemeStore();
 
     const fallbackTheme = {
-      background: '#052e16',
-      surface: '#14532d',
-      text: '#dcfce7',
-      accent: '#4ade80',
-      accentHover: '#22c55e',
-      shadow: '#052e16'
+      background: '#0a0a0a', // neutral-950
+      surface: '#171717', // neutral-900
+      text: '#fafafa', // neutral-50
+      accent: '#3b82f6', // blue-500
+      accentHover: '#2563eb', // blue-600
+      shadow: '#0a0a0a'
     };
 
     const currentColors = computed(() => themeStore.currentColorTheme || fallbackTheme);

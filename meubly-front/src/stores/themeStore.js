@@ -4,7 +4,7 @@ import { setThemeColor, getCurrentThemeColors, THEME_COLORS } from '../config/th
 export const useThemeStore = defineStore('theme', {
   state: () => ({
     isDarkMode: false,
-    colorTheme: 'green' // Thème de couleur pour le mode sombre
+    colorTheme: 'neutral' // Thème de couleur pour le mode sombre
   }),
 
   getters: {

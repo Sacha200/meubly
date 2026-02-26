@@ -30,9 +30,6 @@
                         <div class="flex items-center gap-3 mb-1">
                             <p :class="['font-bold text-base', isDarkMode ? 'text-gray-100' : 'text-gray-800']">{{
                                 offer.company }}</p>
-                            <img :src="offer.logo" :alt="`Logo de ${offer.company}`"
-                                :class="['h-auto flex items-center', isManomano(offer.company) ? 'w-9' : 'w-6']"
-                                @error="handleImageError" />
                         </div>
                         <p :class="['font-medium text-sm', isDarkMode ? 'text-gray-200' : 'text-gray-800']">
                             {{ offer.external_title || offer.link || 'Offre' }}
@@ -115,14 +112,15 @@ export default {
 
             try {
                 const data = await getFurnitureOffers(this.product.furniture_id || this.product.id);
-                this.allOffers = (data || []).map(offer => ({
-                    id: offer.offer_id,
-                    company: offer.Partner?.name || 'Inconnu',
-                    logo: offer.Partner?.logo_url || '/assets/default-logo.svg',
-                    external_title: offer.external_title ?? offer.externalTitle ?? offer.title ?? null,
-                    price: offer.price ?? offer.Price ?? null,
-                    link: offer.url_website ?? offer.urlWebsite ?? offer.url ?? null
-                }));
+                this.allOffers = (data || [])
+                    .map(offer => ({
+                        id: offer.offer_id,
+                        company: offer.Partner?.name || 'Inconnu',
+                        external_title: offer.external_title ?? offer.externalTitle ?? offer.title ?? null,
+                        price: offer.price ?? offer.Price ?? null,
+                        link: offer.url_website ?? offer.urlWebsite ?? offer.url ?? null
+                    }))
+                    .sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
                 this.$emit('offers-loaded', this.allOffers.length);
 
                 // Respecter la durée minimale de chargement
@@ -150,15 +148,6 @@ export default {
             if (link) {
                 window.open(link, '_blank');
             }
-        },
-
-        handleImageError(event) {
-            event.target.style.display = 'none';
-        },
-
-        isManomano(companyName) {
-            const manomanoNames = ['manomano', 'manomano.fr', 'manomano.com'];
-            return manomanoNames.includes(companyName ? companyName.toLowerCase().trim() : '');
         },
 
         onPageChange(event) {

@@ -1,6 +1,17 @@
 // Configuration des couleurs de thème pour le mode sombre
 export const THEME_COLORS = {
-  // Thème vert (par défaut)
+  // Thème neutre (par défaut)
+  neutral: {
+    name: 'Neutre',
+    background: '#0a0a0a', // neutral-950
+    surface: '#171717', // neutral-900
+    text: '#fafafa', // neutral-50
+    accent: '#3b82f6', // blue-500
+    accentHover: '#2563eb', // blue-600
+    shadow: '#0a0a0a'
+  },
+
+  // Thème vert
   green: {
     name: 'Vert',
     background: '#052e16',
@@ -35,7 +46,7 @@ export const THEME_COLORS = {
 };
 
 // Thème actuel (peut être modifié dynamiquement)
-export let currentTheme = 'green';
+export let currentTheme = 'neutral';
 
 // Fonction pour changer le thème
 export function setThemeColor(themeName) {

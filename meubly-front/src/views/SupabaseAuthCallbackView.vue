@@ -1,6 +1,6 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
-    <div class="max-w-md w-full bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 text-center">
+  <div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-background px-4">
+    <div class="max-w-md w-full bg-white dark:bg-surface rounded-xl shadow-lg p-8 text-center">
       <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-3">Connexion…</h2>
       <p class="text-sm text-gray-600 dark:text-gray-300">
         Finalisation de l’authentification Supabase en cours. Tu vas être redirigé automatiquement.
