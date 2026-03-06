@@ -18,14 +18,10 @@ export const furnitureService = {
   },
 
   async getOffers(furnitureId) {
-    // Récupérer les offres triées par prix
     const offers = await offerRepository.findByFurnitureId(furnitureId);
-    
-    // Enrichir les données : Identifier la meilleure offre (et autres stats si besoin)
     if (offers && offers.length > 0) {
-        offers[0].is_best_price = true; // Le premier est le moins cher grâce au tri SQL
+      offers[0].is_best_price = true;
     }
-    
     return offers;
   },
 
@@ -62,7 +58,7 @@ export const furnitureService = {
 
         const items = (data || []).map(item => ({
             ...item,
-            nb_offers: item.cached_nb_offers || 1 // Mapping vers le front qui attend peut-être encore nb_offers
+            nb_offers: item.cached_nb_offers || 1
         }));
 
         return {
@@ -98,11 +94,10 @@ export const furnitureService = {
 
   
   async cacheFurniture(furniture) {
-       try {
-          await furnitureRepository.upsert(furniture);
-      } catch (error) {
-           console.error("Erreur cache:", error);
-           // Non-blocking error ?
-      }
+    try {
+      await furnitureRepository.upsert(furniture);
+    } catch (error) {
+      console.error("Erreur cache:", error);
+    }
   }
 };

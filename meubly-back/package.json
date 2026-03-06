@@ -10,12 +10,17 @@
     "start": "node app.js",
     "dev": "nodemon app.js",
     "seed": "node scripts/seed_database.js",
+    "enrich": "node scripts/enrich_furnitures.js",
+    "enrich:force": "node scripts/enrich_furnitures.js --force",
+    "fix:images": "node scripts/fix_furniture_images.js",
+    "fix:images:dry": "node scripts/fix_furniture_images.js --dry-run",
     "import:external": "node scripts/import_external_furniture.js",
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest --coverage"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@prisma/client": "^6.5.0",
     "@supabase/supabase-js": "^2.49.4",
     "axios": "^1.8.4",

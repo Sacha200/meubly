@@ -1,23 +1,18 @@
 <template>
-  <div>
-    <button @click="logout">Se déconnecter</button>
-  </div>
+  <div></div>
 </template>
 
 <script>
-import { useAuth0 } from '@auth0/auth0-vue';
+import { supabase } from '../supabase';
+import { useAuthStore } from '../stores/authStore';
 
 export default {
-  async setup() {
-    let { error } = await supabase.auth.signOut();
-    if(!error){
-      this.$router.push('/');
-    }
-
-
+  name: 'LogoutView',
+  async mounted() {
+    const authStore = useAuthStore();
+    authStore.clearRole();
+    await supabase.auth.signOut();
+    this.$router.push('/');
   }
-
-
-
 };
 </script>

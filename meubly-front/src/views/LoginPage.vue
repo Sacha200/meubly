@@ -124,6 +124,7 @@
 <script>
 import { loginUser } from '../api/authApi';
 import { supabase } from '../supabase';
+import { useAuthStore } from '../stores/authStore';
 import Toast from 'primevue/toast';
 import Header from '../components/Header.vue';
 import Footer from '../components/Footer.vue';
@@ -192,8 +193,8 @@ export default {
                 const { user, profile } = await loginUser(this.formData);
 
                 if (user) {
-                    console.log('Connexion réussie:', profile);
-                    sessionStorage.setItem('role', profile.role);
+                    const authStore = useAuthStore();
+                    authStore.setRole(profile.role);
 
                     // Si l'utilisateur demande une connexion "admin", vérifier le rôle
                     if (this.loginAsAdmin && profile?.role !== 'ADMIN') {
@@ -204,8 +205,7 @@ export default {
                             life: 5000,
                             closable: false
                         });
-                        sessionStorage.removeItem('role');
-                        localStorage.removeItem('userProfile');
+                        authStore.clearRole();
                         await supabase.auth.signOut();
                         return;
                     }

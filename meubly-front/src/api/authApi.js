@@ -1,9 +1,15 @@
+import bcrypt from 'bcryptjs';
 import { supabase } from '../supabase';
+
+const SALT_ROUNDS = 12;
 
 // Fonction pour l'inscription avec Supabase
 export async function registerUser(userData) {
     try {
-        // 1. Inscription de l'utilisateur via Supabase Auth
+        // 1. Hash du mot de passe pour notre table User
+        const password_hash = await bcrypt.hash(userData.password, SALT_ROUNDS);
+
+        // 2. Inscription de l'utilisateur via Supabase Auth (gère son propre hash)
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email: userData.email,
             password: userData.password,
@@ -20,7 +26,7 @@ export async function registerUser(userData) {
             throw authError;
         }
 
-        // 2. Si l'inscription Auth réussit, on ajoute l'utilisateur dans la table User
+        // 3. Si l'inscription Auth réussit, on ajoute l'utilisateur dans la table User
         if (authData?.user) {
             const { data: userProfile, error: userError } = await supabase
                 .from('User')
@@ -28,7 +34,8 @@ export async function registerUser(userData) {
                     {
                         user_id: authData.user.id,
                         username: authData.user.user_metadata.username,
-                        email: authData.user.email
+                        email: authData.user.email,
+                        password_hash
                     }
                 ])
                 .select();

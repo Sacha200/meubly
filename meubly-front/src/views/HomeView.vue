@@ -28,12 +28,7 @@ export default {
     const furn = useFurnitureStore()
 
     onMounted(async () => {
-      furn.q = ''
-      furn.categoryId = null
-      furn.minPrice = null
-      furn.maxPrice = null
-      furn.sort = 'created_at:desc'
-      furn.page = 1
+      furn.resetFilters()
       await furn.fetch()
     })
   }

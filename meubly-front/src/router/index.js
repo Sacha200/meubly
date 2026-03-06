@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { useAuthStore } from "../stores/authStore.js";
 import HomeView from "../views/HomeView.vue";
 import ResultatRechercheView from "../views/ResultatRechercheView.vue";
 import ProductDetailView from "../views/ProductDetailView.vue";
@@ -42,23 +43,15 @@ const router = createRouter({
 });
 
 router.beforeEach((to, _from, next) => {
-  let role = sessionStorage.getItem('role')
-  if (!role) {
-    try {
-      role = JSON.parse(localStorage.getItem('userProfile') || '{}')?.role || null
-      if (role) sessionStorage.setItem('role', role)
-    } catch {
-      role = null
-    }
-  }
-  if (to.meta.roles) {
-    if (role && Array.isArray(to.meta.roles) && to.meta.roles.includes(role)) {
-      next()
-    } else {
-      next('/')     
-    }
+  if (!to.meta.roles) return next();
+
+  const authStore = useAuthStore();
+  authStore._loadRole();
+
+  if (authStore.role && Array.isArray(to.meta.roles) && to.meta.roles.includes(authStore.role)) {
+    next();
   } else {
-    next()
+    next('/');
   }
 })
 

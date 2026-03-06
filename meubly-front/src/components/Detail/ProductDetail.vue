@@ -31,7 +31,21 @@
                 </svg>
             </div>
             <p class="text-[#3A3A3A] dark:text-white font-semibold text-lg md:text-xl font-['Poppins-SemiBold']">{{ product.cached_min_price }} €</p>
-            <p class="text-[#767676] dark:text-gray-300 text-sm md:text-base font-medium font-['Poppins-Medium']">{{ product.description }}</p>
+            <!-- Description : enrichie IA si disponible, sinon brute -->
+            <p class="text-[#767676] dark:text-gray-300 text-sm md:text-base font-medium font-['Poppins-Medium']">
+                {{ product.ai_description || product.description }}
+            </p>
+
+            <!-- Tags IA -->
+            <div v-if="product.ai_tags && product.ai_tags.length" class="flex flex-wrap gap-2 pt-1">
+                <span
+                    v-for="tag in product.ai_tags"
+                    :key="tag"
+                    class="ai-tag"
+                >{{ tag }}</span>
+                <span v-if="product.ai_style" class="ai-tag ai-tag--style">{{ product.ai_style }}</span>
+                <span v-if="product.ai_material" class="ai-tag ai-tag--material">{{ product.ai_material }}</span>
+            </div>
 
             <!-- Dimensions (si disponibles) -->
             <div v-if="hasAnyDimension" class="pt-2">
@@ -64,7 +78,13 @@
                 <!-- Formulaire de génération -->
                 <div v-if="!generatedImage">
                     <div class="ai-input-group">
-                        <label class="ai-label">Description de la scène</label>
+                        <label class="ai-label">
+                            Description de la scène
+                            <span v-if="product.ai_scene_prompt" class="ai-label-auto" title="Pré-rempli automatiquement par l'IA">
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+                                Suggéré par l'IA
+                            </span>
+                        </label>
                         <input
                             v-model="aiPrompt"
                             type="text"
@@ -135,7 +155,7 @@ export default {
     data() {
         return {
             isFavorite: false,
-            aiPrompt: 'salon moderne et lumineux, parquet bois clair, plantes vertes',
+            aiPrompt: '',
             aiLoading: false,
             generatedImage: null
         }
@@ -147,9 +167,20 @@ export default {
     },
     mounted() {
         this.checkIfFavorite();
+        this.initAiPrompt();
+    },
+    watch: {
+        'product.furniture_id'() {
+            this.initAiPrompt();
+            this.generatedImage = null;
+        }
     },
     methods: {
         ...mapActions(useFurnitureStore, ['generateLifestyleImage']),
+
+        initAiPrompt() {
+            this.aiPrompt = this.product?.ai_scene_prompt || 'salon moderne et lumineux, parquet bois clair, plantes vertes';
+        },
         
         async handleGenerateScene() {
             if (!this.aiPrompt) return;
@@ -206,6 +237,49 @@ export default {
 </script>
 
 <style scoped>
+/* Tags IA */
+.ai-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    font-family: 'Poppins-Medium', sans-serif;
+    font-size: 0.72rem;
+    background: rgba(184, 142, 47, 0.08);
+    color: #B88E2F;
+    border: 1px solid rgba(184, 142, 47, 0.25);
+    white-space: nowrap;
+}
+
+.ai-tag--style {
+    background: rgba(99, 102, 241, 0.08);
+    color: #6366f1;
+    border-color: rgba(99, 102, 241, 0.25);
+}
+
+.ai-tag--material {
+    background: rgba(16, 185, 129, 0.08);
+    color: #059669;
+    border-color: rgba(16, 185, 129, 0.25);
+}
+
+:global(.dark) .ai-tag {
+    background: rgba(184, 142, 47, 0.15);
+    border-color: rgba(184, 142, 47, 0.35);
+}
+
+:global(.dark) .ai-tag--style {
+    background: rgba(99, 102, 241, 0.15);
+    border-color: rgba(99, 102, 241, 0.35);
+    color: #818cf8;
+}
+
+:global(.dark) .ai-tag--material {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: rgba(16, 185, 129, 0.35);
+    color: #34d399;
+}
+
 .ai-scene-section {
     margin-top: 1.5rem;
     padding-top: 1.5rem;
@@ -248,11 +322,22 @@ export default {
 }
 
 .ai-label {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
     font-family: 'Poppins-Medium', sans-serif;
     font-size: 0.8rem;
     color: #767676;
     margin-bottom: 0.35rem;
+}
+
+.ai-label-auto {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.68rem;
+    color: #B88E2F;
+    font-family: 'Poppins-Regular', sans-serif;
 }
 
 .ai-input {

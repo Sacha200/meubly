@@ -10,11 +10,14 @@
           <h1 class="text-2xl font-semibold text-[#3A3A3A] dark:text-white">Résultats de recherche</h1>
           <p class="text-gray-600 dark:text-gray-300 mt-1">
             <span v-if="total > 0">
-              {{ total }} résultat{{ total > 1 ? 's' : '' }} pour
-              <span class="font-semibold">"{{ q || '' }}"</span>
+              {{ total }} résultat{{ total > 1 ? 's' : '' }}
+              <template v-if="q">pour <span class="font-semibold">"{{ q }}"</span></template>
+              <template v-else-if="categoryLabel">dans <span class="font-semibold">{{ categoryLabel }}</span></template>
             </span>
             <span v-else>
-              Aucun résultat pour <span class="font-semibold">"{{ q || '' }}"</span>
+              Aucun résultat
+              <template v-if="q">pour <span class="font-semibold">"{{ q }}"</span></template>
+              <template v-else-if="categoryLabel">dans <span class="font-semibold">{{ categoryLabel }}</span></template>
             </span>
           </p>
         </div>
@@ -39,8 +42,7 @@
               <CategoryFilter v-model="furnitureStore.categoryId" />
               <PriceFilter v-model:min="furnitureStore.minPrice" v-model:max="furnitureStore.maxPrice" />
               <button
-                class="w-full mt-2 rounded-2xl py-2 font-medium text-white hover:bg-[#A67B1F] transition-colors"
-                style="background-color:#B88E2F"
+                class="w-full mt-2 rounded-2xl py-2 font-medium text-white bg-primary-500 hover:bg-primary-600 transition-colors"
                 @click="applyFilters"
               >Appliquer</button>
               <button class="w-full rounded-2xl py-2 font-medium border border-[#DBDBDB] dark:border-gray-600 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors" @click="resetFilters">
@@ -104,7 +106,6 @@
 </template>
   
   <script>
-  import { onMounted } from 'vue'
   import Header from '../components/Header.vue'
   import ProductCard from '../components/Home/ProductCard.vue'
   import Footer from '../components/Footer.vue'
@@ -114,67 +115,42 @@
   
   import { mapStores, mapState, mapWritableState } from 'pinia'
   import { useFurnitureStore } from '@/stores/furnitureStore'
-  import { useCategoryStore } from '@/stores/categoryStore'
   
   export default {
     name: 'ResultatRechercheView',
     components: { Header, ProductCard, Footer, CategoryFilter, PriceFilter, Paginator },
   
     computed: {
-      // Accès au store
-      ...mapStores(useFurnitureStore), // this.furnitureStore
-  
-      // Lecture des états
+      ...mapStores(useFurnitureStore),
       ...mapState(useFurnitureStore, ['items', 'loading', 'error', 'total', 'limit']),
-  
-      // Écriture/lecture de ces états (page, q)
       ...mapWritableState(useFurnitureStore, ['page', 'q']),
-  
-      // Dérivés pour la pagination
       totalPages() {
         return Math.max(1, Math.ceil((this.total || 0) / (this.limit || 1)))
       },
-      startIndex() {
-        return (this.page - 1) * this.limit
+      categoryLabel() {
+        return this.$route.query.categoryLabel || null;
       },
-      endIndex() {
-        return Math.min(this.startIndex + (this.items?.length || 0), this.total || 0)
-      },
-      visiblePages() {
-        const arr = []
-        const start = Math.max(1, this.page - 1)
-        const end = Math.min(this.totalPages, this.page + 1)
-        for (let i = start; i <= end; i++) arr.push(i)
-        return arr
-      }
     },
   
     watch: {
-      '$route.query.q': {
+      '$route.query': {
         async handler() {
           await this.fetchProducts()
         },
-        immediate: true
+        immediate: true,
+        deep: true,
       }
     },
 
-    async mounted() {
-      // Charger les catégories si pas déjà fait
-      const categoryStore = useCategoryStore()
-      if (!categoryStore.categories.length) {
-        await categoryStore.fetchCategories()
-      }
-    },
-  
     methods: {
       async fetchProducts() {
-        // récupère q depuis l'URL et déclenche la recherche serveur
-        const qFromRoute = typeof this.$route.query.q === 'string' ? this.$route.query.q : ''
-        this.q = qFromRoute.trim()
-        this.page = 1
-        await this.furnitureStore.fetch()
-        // Optionnel : scroll en haut
-        this.$nextTick(() => window.scrollTo({ top: 0, behavior: 'smooth' }))
+        const qFromRoute = typeof this.$route.query.q === 'string' ? this.$route.query.q : '';
+        const catFromRoute = this.$route.query.categoryId || null;
+        this.q = qFromRoute.trim();
+        this.furnitureStore.categoryId = catFromRoute;
+        this.page = 1;
+        await this.furnitureStore.fetch();
+        this.$nextTick(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
       },
 
       async applyFilters() {
@@ -183,11 +159,7 @@
       },
 
       async resetFilters() {
-        this.furnitureStore.categoryId = null
-        this.furnitureStore.minPrice = null
-        this.furnitureStore.maxPrice = null
-        this.furnitureStore.sort = 'created_at:desc'
-        this.furnitureStore.page = 1
+        this.furnitureStore.resetFilters()
         await this.furnitureStore.fetch()
       },
   

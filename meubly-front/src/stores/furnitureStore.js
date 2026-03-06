@@ -111,6 +111,30 @@ export const useFurnitureStore = defineStore('furniture', {
       });
     },
 
+    async suggest(q) {
+      if (!q || q.trim().length < 2) return [];
+      try {
+        const url = new URL(`${API_BASE}/furnitures`);
+        url.searchParams.set('q', q.trim());
+        url.searchParams.set('limit', '6');
+        const res = await fetch(url.toString());
+        if (!res.ok) return [];
+        const data = await res.json();
+        return data.items || [];
+      } catch {
+        return [];
+      }
+    },
+
+    resetFilters() {
+      this.q = '';
+      this.categoryId = null;
+      this.minPrice = null;
+      this.maxPrice = null;
+      this.sort = 'created_at:desc';
+      this.page = 1;
+    },
+
     async generateLifestyleImage(imageUrl, prompt) {
       try {
         const res = await fetch(`${API_BASE}/ai/generate-scene`, {

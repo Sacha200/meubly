@@ -1,5 +1,8 @@
+import bcrypt from "bcrypt";
 import { supabase } from "../supabase.js";
 import { userRepository } from "../repositories/userRepository.js";
+
+const SALT_ROUNDS = 12;
 
 export const authService = {
   async register({ username, lastname, email, password }) {
@@ -9,7 +12,10 @@ export const authService = {
          throw new Error("Un compte existe déjà avec cet email");
      }
 
-     // 2. Auth SignUp
+     // 2. Hash the password for our custom User table
+     const password_hash = await bcrypt.hash(password, SALT_ROUNDS);
+
+     // 3. Auth SignUp (Supabase gère son propre hash en interne)
      const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
@@ -18,12 +24,13 @@ export const authService = {
 
      if (authError) throw authError;
 
-     // 3. Create Public User
+     // 4. Create Public User with hashed password
      if (authData.user) {
          await userRepository.create({
              user_id: authData.user.id,
              username,
              email,
+             password_hash,
              created_at: new Date()
          });
      }
