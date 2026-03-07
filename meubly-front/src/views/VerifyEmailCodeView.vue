@@ -9,7 +9,8 @@
 
         <p class="text-sm text-gray-600 dark:text-gray-300 mb-6">
           On t’a envoyé un email de confirmation.
-          Ouvre Mailpit, copie le <strong>code</strong>, colle-le ici, puis clique sur <strong>Vérifier</strong>.
+          <template v-if="isLocal">Ouvre Mailpit, copie le <strong>code</strong>, colle-le ici, puis clique sur <strong>Vérifier</strong>.</template>
+          <template v-else>Consulte ta boîte mail, copie le <strong>code à 6 chiffres</strong>, colle-le ici, puis clique sur <strong>Vérifier</strong>.</template>
         </p>
 
         <div class="flex flex-col gap-4">
@@ -40,6 +41,7 @@
               {{ loading ? 'Vérification...' : 'Vérifier' }}
             </button>
             <a
+              v-if="isLocal"
               :href="mailpitUrl"
               target="_blank"
               rel="noreferrer"
@@ -73,18 +75,21 @@ export default {
       token: '',
       loading: false,
       mailpitUrl: import.meta.env.VITE_MAILPIT_URL || 'http://localhost:8025',
+      isLocal: !!import.meta.env.VITE_MAILPIT_URL || import.meta.env.DEV,
     }
   },
   mounted() {
     // Feedback quand on arrive juste après l'inscription
-    if (this.$route?.query?.sent === '1') {
-      this.$toast.add({
-        severity: 'success',
-        summary: 'Email envoyé',
-        detail: "Email de confirmation envoyé. Ouvre Mailpit pour récupérer le code.",
-        life: 6500,
-        closable: false,
-      })
+      if (this.$route?.query?.sent === '1') {
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Email envoyé',
+          detail: this.isLocal
+            ? "Email de confirmation envoyé. Ouvre Mailpit pour récupérer le code."
+            : "Email de confirmation envoyé. Consulte ta boîte mail pour récupérer le code.",
+          life: 6500,
+          closable: false,
+        })
     }
   },
   methods: {
