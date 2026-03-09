@@ -1,5 +1,6 @@
 // src/stores/furnitureStore.js
 import { defineStore } from 'pinia';
+import { supabase } from '../supabase';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1';
 
@@ -137,10 +138,14 @@ export const useFurnitureStore = defineStore('furniture', {
 
     async generateLifestyleImage(imageUrl, prompt) {
       try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) throw new Error('Vous devez être connecté pour générer une mise en scène');
+
         const res = await fetch(`${API_BASE}/ai/generate-scene`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({ imageUrl, prompt }),
         });
