@@ -3,9 +3,10 @@ import { supabase } from "../supabase.js";
 export const furnitureRepository = {
   async findById(id) {
     const { data, error } = await supabase
-      .from("Furniture")
-      .select("*")
+      .from("furniture")
+      .select("*, furniture_image(image_id, url, alt_text, type, position, source, is_cover)")
       .eq("furniture_id", id)
+      .order("position", { referencedTable: "furniture_image", ascending: true })
       .single();
 
     if (error) throw error;
@@ -13,7 +14,7 @@ export const furnitureRepository = {
   },
 
   async create(furniture) {
-    const { data, error } = await supabase.from("Furniture").insert([
+    const { data, error } = await supabase.from("furniture").insert([
       {
         ...furniture,
         created_at: new Date(),
@@ -26,14 +27,14 @@ export const furnitureRepository = {
 
   async search({ q, categoryId, minPrice, maxPrice, sort, from, to }) {
     let selectClause = "furniture_id, title, description, cover_url, cached_min_price, cached_nb_offers, size_width, size_height, size_depth, created_at, ai_description, ai_tags, ai_style, ai_material, ai_category_suggestion, ai_scene_prompt, ai_enriched_at";
-    if (categoryId) selectClause += ", FurnitureCategory!inner(category_id)";
+    if (categoryId) selectClause += ", furniture_category!inner(category_id)";
 
     let queryFurniture = supabase
-      .from("Furniture")
+      .from("furniture")
       .select(selectClause, { count: "exact" });
 
     if (q) queryFurniture = queryFurniture.ilike("title", `%${q}%`);
-    if (categoryId) queryFurniture = queryFurniture.eq("FurnitureCategory.category_id", categoryId);
+    if (categoryId) queryFurniture = queryFurniture.eq("furniture_category.category_id", categoryId);
     if (minPrice) queryFurniture = queryFurniture.gte("cached_min_price", minPrice);
     if (maxPrice) queryFurniture = queryFurniture.lte("cached_min_price", maxPrice);
 
@@ -56,7 +57,7 @@ export const furnitureRepository = {
 
   async update(id, updates) {
     const { data, error } = await supabase
-      .from("Furniture")
+      .from("furniture")
       .update(updates)
       .eq("furniture_id", id)
       .select();
@@ -67,7 +68,7 @@ export const furnitureRepository = {
 
   async delete(id) {
     const { error } = await supabase
-      .from("Furniture")
+      .from("furniture")
       .delete()
       .eq("furniture_id", id);
     
@@ -76,7 +77,7 @@ export const furnitureRepository = {
 
   async upsert(furniture) {
       const { error } = await supabase
-      .from("Furniture")
+      .from("furniture")
       .upsert(furniture);
       if (error) throw error;
   }

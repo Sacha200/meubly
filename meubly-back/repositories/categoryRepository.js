@@ -3,7 +3,7 @@ import { supabase } from "../supabase.js";
 export const categoryRepository = {
   async findAll(search, limit = 100) {
     let query = supabase
-      .from('Category')
+      .from('category')
       .select('category_id, label, cover_url, parent_id')
       .order('label', { ascending: true })
       .limit(Number(limit) || 100);
@@ -19,7 +19,7 @@ export const categoryRepository = {
 
   async findById(id) {
     const { data, error } = await supabase
-      .from('Category')
+      .from('category')
       .select('category_id, label, cover_url, parent_id')
       .eq('category_id', id)
       .single();
@@ -30,7 +30,7 @@ export const categoryRepository = {
 
   async create(category) {
     const { data, error } = await supabase
-      .from('Category')
+      .from('category')
       .insert(category)
       .select('category_id, label, cover_url, parent_id')
       .single();
@@ -41,7 +41,7 @@ export const categoryRepository = {
 
   async update(id, updates) {
     const { data, error } = await supabase
-      .from('Category')
+      .from('category')
       .update(updates)
       .eq('category_id', id)
       .select('category_id, label, cover_url, parent_id')
@@ -52,7 +52,7 @@ export const categoryRepository = {
   },
 
   async delete(id) {
-    const { error } = await supabase.from('Category').delete().eq('category_id', id);
+    const { error } = await supabase.from('category').delete().eq('category_id', id);
     if (error) throw error;
   }
 };

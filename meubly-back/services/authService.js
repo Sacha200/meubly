@@ -62,7 +62,7 @@ export const authService = {
       
       // Let's rely on what we know: auth.js selects by user_id to get profile.
       
-      const { data: profile } = await supabase.from('User').select('*').eq('user_id', data.user.id).single();
+      const { data: profile } = await supabase.from('profile').select('*').eq('user_id', data.user.id).single();
       
       return {
           session: data.session,

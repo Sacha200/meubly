@@ -6,9 +6,13 @@ export const furnitureService = {
   async getFurnitureById(id) {
     try {
       const furniture = await furnitureRepository.findById(id);
-      // Clean up nb_offers
       if (furniture) {
-          furniture.nb_offers = furniture.cached_nb_offers || 1;
+        furniture.nb_offers = furniture.cached_nb_offers || 1;
+        // Normalise le nom de la relation Supabase vers "images"
+        furniture.images = (furniture.FurnitureImage || []).sort(
+          (a, b) => a.position - b.position
+        );
+        delete furniture.FurnitureImage;
       }
       return furniture;
     } catch (error) {

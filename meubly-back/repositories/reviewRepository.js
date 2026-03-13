@@ -9,7 +9,7 @@ export const reviewRepository = {
   async findReviewsByProduct(productId, from, to) {
     try {
       const { data, error, count } = await supabase
-        .from("Reviews")
+        .from("review")
         .select(
           "review_id, product_id, user_id, rating, comment, author_name, created_at, updated_at",
           { count: "exact" }
@@ -22,7 +22,7 @@ export const reviewRepository = {
       return { data, count };
     } catch (error) {
        if (isRelationMissing(error)) {
-        console.warn("[ReviewRepository] Table Reviews missing - returning empty.");
+        console.warn("[ReviewRepository] Table review missing - returning empty.");
         return { data: [], count: 0 };
       }
       throw error;
@@ -32,7 +32,7 @@ export const reviewRepository = {
   async getAllRatings(productId) {
     try {
       const { data, error } = await supabase
-        .from("Reviews")
+        .from("review")
         .select("rating")
         .eq("product_id", productId);
 
@@ -48,7 +48,7 @@ export const reviewRepository = {
 
   async findByProductAndUser(productId, userId) {
     const { data, error } = await supabase
-      .from("Reviews")
+      .from("review")
       .select("review_id")
       .eq("product_id", productId)
       .eq("user_id", userId)
@@ -60,7 +60,7 @@ export const reviewRepository = {
 
   async update(reviewId, payload) {
     const { data, error } = await supabase
-      .from("Reviews")
+      .from("review")
       .update(payload)
       .eq("review_id", reviewId)
       .select()
@@ -72,7 +72,7 @@ export const reviewRepository = {
 
   async create(payload) {
     const { data, error } = await supabase
-      .from("Reviews")
+      .from("review")
       .insert([payload])
       .select()
       .single();

@@ -2,37 +2,37 @@ import { supabase } from "../supabase.js";
 
 export const userRepository = {
   async findAll() {
-    const { data, error } = await supabase.from('User').select('*');
+    const { data, error } = await supabase.from('profile').select('*');
     if (error) throw error;
     return data;
   },
 
   async findById(id) {
-    const { data, error } = await supabase.from('User').select('*').eq('user_id', id).maybeSingle();
+    const { data, error } = await supabase.from('profile').select('*').eq('user_id', id).maybeSingle();
     if (error) throw error;
     return data;
   },
 
   async findByEmail(email) {
-      const { data, error } = await supabase.from('User').select('*').eq('email', email).maybeSingle();
+      const { data, error } = await supabase.from('profile').select('*').eq('email', email).maybeSingle();
       if (error) throw error;
       return data;
   },
 
   async create(user) {
-    const { data, error } = await supabase.from('User').insert([user]).select().single();
+    const { data, error } = await supabase.from('profile').insert([user]).select().single();
     if (error) throw error;
     return data;
   },
 
   async update(id, updates) {
-    const { data, error } = await supabase.from('User').update(updates).eq('user_id', id).select().single();
+    const { data, error } = await supabase.from('profile').update(updates).eq('user_id', id).select().single();
     if (error) throw error;
     return data;
   },
 
   async delete(id) {
-    const { data, error } = await supabase.from('User').delete().eq('user_id', id);
+    const { data, error } = await supabase.from('profile').delete().eq('user_id', id);
     if (error) throw error;
     return data;
   }

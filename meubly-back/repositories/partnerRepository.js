@@ -3,7 +3,7 @@ import { supabase } from "../supabase.js";
 export const partnerRepository = {
   // async findAll() {
   //   const { data, error } = await supabase
-  //     .from("Partner")
+  //     .from("partner")
   //     .select("*")
   //     .order("name", { ascending: true });
 
@@ -13,7 +13,7 @@ export const partnerRepository = {
 
   // async findById(id) {
   //   const { data, error } = await supabase
-  //     .from("Partner")
+  //     .from("partner")
   //     .select("*")
   //     .eq("partner_id", id)
   //     .single();
@@ -24,7 +24,7 @@ export const partnerRepository = {
 
   // async create(partner) {
   //   const { data, error } = await supabase
-  //     .from("Partner")
+  //     .from("partner")
   //     .insert(partner)
   //     .select()
   //     .single();
@@ -35,7 +35,7 @@ export const partnerRepository = {
 
   // async update(id, updates) {
   //   const { data, error } = await supabase
-  //     .from("Partner")
+  //     .from("partner")
   //     .update(updates)
   //     .eq("partner_id", id)
   //     .select()
@@ -47,7 +47,7 @@ export const partnerRepository = {
 
   // async delete(id) {
   //   const { error } = await supabase
-  //     .from("Partner")
+  //     .from("partner")
   //     .delete()
   //     .eq("partner_id", id);
 
