@@ -171,7 +171,7 @@ export default {
     async loadRoleFromDb(userId) {
       try {
         const { data, error } = await supabase
-          .from('User')
+          .from('profile')
           .select('role, username')
           .eq('user_id', userId)
           .single();

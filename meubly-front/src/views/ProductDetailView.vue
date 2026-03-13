@@ -1,7 +1,7 @@
 <template>
     <div>
         <Header />
-        <div class="container d-flex justify-content-center m-auto">
+        <div class="container mx-auto px-4">
             <div v-if="loading" class="loading">
                 Chargement...
             </div>
@@ -12,7 +12,7 @@
                 <ProductDetail :product="product" />
                 <TableComparison :product="product" :currentPage="currentPage" :rowsPerPage="rowsPerPage"
                     @offers-loaded="handleOffersLoaded" @page-change="handlePageChange" />
-                <ProductReviews :product-id="product.furniture_id" />
+                <!-- <ProductReviews :product-id="product.furniture_id" /> -->
                 <div class="" v-if="totalOffers > 0">
                     
                 </div>

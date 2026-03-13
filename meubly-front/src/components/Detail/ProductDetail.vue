@@ -1,10 +1,77 @@
 <template>
-    <div class="flex flex-col md:flex-row my-5 md:my-10 gap-4 md:gap-8 lg:gap-20 px-4 md:px-8">
-        <!-- Image container -->
-        <div class="w-full md:w-1/2 lg:w-1/3">
-            <img :src="product.cover_url" :alt="product.title"
-                class="w-full h-[250px] md:h-[358px] object-cover rounded-lg"
-            />
+    <div class="flex flex-col md:flex-row my-5 md:my-10 gap-4 md:gap-8 lg:gap-12">
+        <!-- Galerie d'images -->
+        <div class="w-full md:w-1/2 lg:w-[45%] flex gap-3 self-start">
+
+            <!-- Miniatures verticales (si plusieurs images) -->
+            <div
+                v-if="galleryImages.length > 1"
+                class="flex flex-col gap-2 overflow-y-auto max-h-[460px] scrollbar-hide flex-shrink-0"
+            >
+                <button
+                    v-for="(img, idx) in galleryImages"
+                    :key="img.image_id || idx"
+                    @click="activeIndex = idx"
+                    class="w-[72px] h-[72px] flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all duration-200"
+                    :class="activeIndex === idx
+                        ? 'border-primary-500 shadow-md'
+                        : 'border-transparent hover:border-gray-300 dark:hover:border-gray-500'"
+                >
+                    <img
+                        :src="img.url"
+                        :alt="img.alt_text || product.title"
+                        class="w-full h-full object-cover"
+                        loading="lazy"
+                    />
+                </button>
+            </div>
+
+            <!-- Image principale -->
+            <div class="relative flex-1 group">
+                <img
+                    :src="currentImage.url"
+                    :alt="currentImage.alt_text || product.title"
+                    class="w-full h-[300px] md:h-[460px] object-cover rounded-lg"
+                />
+
+                <!-- Badge type d'image -->
+                <span
+                    v-if="currentImage.type && imageTypeLabel"
+                    class="absolute bottom-2 left-2 text-[10px] font-medium bg-black/50 text-white px-2 py-0.5 rounded-full backdrop-blur-sm"
+                >
+                    {{ imageTypeLabel }}
+                </span>
+
+                <!-- Flèches navigation (si plusieurs images) -->
+                <template v-if="galleryImages.length > 1">
+                    <button
+                        @click="activeIndex = (activeIndex - 1 + galleryImages.length) % galleryImages.length"
+                        class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/90 dark:bg-surface/90 shadow flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                        aria-label="Image précédente"
+                    >
+                        <svg class="w-4 h-4 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    <button
+                        @click="activeIndex = (activeIndex + 1) % galleryImages.length"
+                        class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/90 dark:bg-surface/90 shadow flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                        aria-label="Image suivante"
+                    >
+                        <svg class="w-4 h-4 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </template>
+
+                <!-- Compteur -->
+                <span
+                    v-if="galleryImages.length > 1"
+                    class="absolute bottom-2 right-2 text-[10px] bg-black/50 text-white px-2 py-0.5 rounded-full"
+                >
+                    {{ activeIndex + 1 }} / {{ galleryImages.length }}
+                </span>
+            </div>
         </div>
 
         <!-- Détails du produit -->
@@ -72,7 +139,6 @@
                         </svg>
                         Mise en scène IA
                     </span>
-                    <span class="ai-badge">Bêta</span>
                 </div>
 
                 <!-- Formulaire de génération -->
@@ -85,12 +151,14 @@
                                 Suggéré par l'IA
                             </span>
                         </label>
-                        <input
+                        <textarea
                             v-model="aiPrompt"
-                            type="text"
-                            class="ai-input"
-                            placeholder="Ex: salon scandinave lumineux, parquet chêne..."
+                            ref="aiTextarea"
+                            rows="1"
+                            class="ai-input ai-input--textarea"
+                            placeholder="Décrivez votre intérieur : style, couleurs, matières…"
                             :disabled="aiLoading"
+                            @input="autoResize"
                         />
                     </div>
 
@@ -157,13 +225,34 @@ export default {
             isFavorite: false,
             aiPrompt: '',
             aiLoading: false,
-            generatedImage: null
+            generatedImage: null,
+            activeIndex: 0,
         }
     },
     computed: {
         hasAnyDimension() {
             return this.product?.size_width != null || this.product?.size_height != null || this.product?.size_depth != null
-        }
+        },
+        galleryImages() {
+            if (this.product?.images?.length) return this.product.images;
+            if (this.product?.furniture_image?.length) return this.product.furniture_image;
+            if (this.product?.cover_url) {
+                return [{ url: this.product.cover_url, alt_text: this.product.title, type: null }];
+            }
+            return [];
+        },
+        currentImage() {
+            return this.galleryImages[this.activeIndex] || { url: '', alt_text: '' };
+        },
+        imageTypeLabel() {
+            const labels = {
+                MAIN_PRODUCT_IMAGE: 'Vue principale',
+                CONTEXT_PRODUCT_IMAGE: 'Mise en scène',
+                FUNCTIONAL_PRODUCT_IMAGE: 'Vue détaillée',
+                QUALITY_PRODUCT_IMAGE: 'Qualité',
+            };
+            return labels[this.currentImage?.type] || null;
+        },
     },
     mounted() {
         this.checkIfFavorite();
@@ -173,13 +262,22 @@ export default {
         'product.furniture_id'() {
             this.initAiPrompt();
             this.generatedImage = null;
+            this.activeIndex = 0;
         }
     },
     methods: {
         ...mapActions(useFurnitureStore, ['generateLifestyleImage']),
 
         initAiPrompt() {
-            this.aiPrompt = this.product?.ai_scene_prompt || 'salon moderne et lumineux, parquet bois clair, plantes vertes';
+            this.aiPrompt = this.product?.ai_scene_prompt;
+            this.$nextTick(() => this.autoResize());
+        },
+
+        autoResize() {
+            const el = this.$refs.aiTextarea;
+            if (!el) return;
+            el.style.height = 'auto';
+            el.style.height = el.scrollHeight + 'px';
         },
         
         async handleGenerateScene() {
@@ -237,6 +335,14 @@ export default {
 </script>
 
 <style scoped>
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
 /* Tags IA */
 .ai-tag {
     display: inline-flex;
@@ -351,6 +457,13 @@ export default {
     background: #faf8f4;
     transition: border-color 0.2s, box-shadow 0.2s;
     outline: none;
+}
+
+.ai-input--textarea {
+    resize: none;
+    overflow: hidden;
+    min-height: 40px;
+    line-height: 1.5;
 }
 
 .ai-input:focus {

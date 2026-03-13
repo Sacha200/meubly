@@ -29,7 +29,7 @@ export async function registerUser(userData) {
         // 3. Si l'inscription Auth réussit, on ajoute l'utilisateur dans la table User
         if (authData?.user) {
             const { data: userProfile, error: userError } = await supabase
-                .from('User')
+                .from('profile')
                 .insert([
                     {
                         user_id: authData.user.id,
@@ -87,7 +87,7 @@ export async function loginUser(credentials) {
 
         // Récupérer le profil utilisateur
         const { data: userProfile, error: profileError } = await supabase
-            .from('User')
+            .from('profile')
             .select('*')
             .eq('user_id', data.user.id)
             .single();
@@ -100,7 +100,7 @@ export async function loginUser(credentials) {
             ...data,
             profile: (() => {
                 localStorage.setItem('userProfile', JSON.stringify({
-                    id: userProfile.id,
+                    id: userProfile.user_id,
                     role: userProfile.role
                 }));
                 return userProfile;

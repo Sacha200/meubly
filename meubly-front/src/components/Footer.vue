@@ -34,8 +34,8 @@
           <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Navigation</h3>
           <ul class="space-y-2">
             <li><router-link to="/" class="footer-link">Accueil</router-link></li>
-            <li><router-link to="/search" class="footer-link">Rechercher</router-link></li>
-            <li><router-link to="/favorites" class="footer-link">Favoris</router-link></li>
+            <li><router-link to="/resultat-recherche" class="footer-link">Rechercher</router-link></li>
+            <li><router-link to="/favoris" class="footer-link">Favoris</router-link></li>
             <li><a href="#" class="footer-link">À propos</a></li>
           </ul>
         </div>

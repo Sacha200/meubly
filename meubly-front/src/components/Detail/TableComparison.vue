@@ -115,7 +115,7 @@ export default {
                 this.allOffers = (data || [])
                     .map(offer => ({
                         id: offer.offer_id,
-                        company: offer.Partner?.name || 'Inconnu',
+                        company: offer.partner?.name || 'Inconnu',
                         external_title: offer.external_title ?? offer.externalTitle ?? offer.title ?? null,
                         price: offer.price ?? offer.Price ?? null,
                         link: offer.url_website ?? offer.urlWebsite ?? offer.url ?? null
