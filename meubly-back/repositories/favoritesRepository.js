@@ -8,7 +8,7 @@ export const favoritesRepository = {
   async add(userId, furnitureId) {
     // On utilise upsert ou insert avec ignoreDuplicates si la contrainte UNIQUE est en place
     const { data, error } = await supabase
-      .from('favorites')
+      .from('favorite')
       .insert([{ user_id: userId, furniture_id: furnitureId }])
       .select()
       .maybeSingle();
@@ -29,7 +29,7 @@ export const favoritesRepository = {
    */
   async remove(userId, furnitureId) {
     const { error } = await supabase
-      .from('favorites')
+      .from('favorite')
       .delete()
       .eq('user_id', userId)
       .eq('furniture_id', furnitureId);
@@ -42,10 +42,10 @@ export const favoritesRepository = {
    */
   async findByUser(userId) {
     const { data, error } = await supabase
-      .from('favorites')
+      .from('favorite')
       .select(`
-        created_at,
-        furniture:Furniture (
+        added_at,
+        furniture:furniture (
           furniture_id,
           title,
           cached_min_price,
@@ -54,14 +54,12 @@ export const favoritesRepository = {
         )
       `)
       .eq('user_id', userId)
-      .order('created_at', { ascending: false });
+      .order('added_at', { ascending: false });
 
     if (error) throw error;
-    
-    // Aplatir un peu le résultat si besoin, ou le laisser tel quel
-    // Supabase renvoie { furniture: { ... } }
+
     return data.map(item => ({
-        added_at: item.created_at,
+        added_at: item.added_at,
         ...item.furniture
     }));
   },
@@ -71,12 +69,12 @@ export const favoritesRepository = {
    */
   async isFavorite(userId, furnitureId) {
       const { data, error } = await supabase
-        .from('favorites')
-        .select('id')
+        .from('favorite')
+        .select('user_id')
         .eq('user_id', userId)
         .eq('furniture_id', furnitureId)
         .maybeSingle();
-      
+
       if (error) throw error;
       return !!data;
   }

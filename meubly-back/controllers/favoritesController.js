@@ -26,10 +26,7 @@ export const favoritesController = {
         if (error.message === "Furniture not found") {
             return res.status(404).json({ error: "Furniture not found" });
         }
-        if (error.message.includes("User profile not found")) {
-            return res.status(400).json({ error: error.message });
-        }
-      res.status(500).json({ error: error.message });
+        res.status(500).json({ error: error.message });
     }
   },
 
