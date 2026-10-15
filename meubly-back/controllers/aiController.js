@@ -9,21 +9,35 @@ const replicate = new Replicate({
 
 const BUCKET_NAME = 'ai-generated';
 
-// Ensure the bucket exists at startup (creates it if missing)
+let bucketPromise = null;
+
 async function ensureBucket() {
   const { data: buckets } = await supabase.storage.listBuckets();
-  const exists = buckets?.some(b => b.name === BUCKET_NAME);
-  if (!exists) {
-    const { error } = await supabase.storage.createBucket(BUCKET_NAME, { public: true });
-    if (error) {
-      console.error(`[AI] Failed to create bucket "${BUCKET_NAME}":`, error.message);
-    } else {
-      console.log(`[AI] Bucket "${BUCKET_NAME}" created successfully.`);
-    }
-  }
+  const exists = buckets?.some((b) => b.name === BUCKET_NAME);
+  if (exists) return;
+  const { error } = await supabase.storage.createBucket(BUCKET_NAME, { public: true });
+  if (error) throw new Error(`[AI] Failed to create bucket "${BUCKET_NAME}": ${error.message}`);
 }
 
-ensureBucket();
+/**
+ * Garantit l'existence du bucket au premier usage (et non a l'import).
+ * Les appels concurrents partagent la meme promesse ; un echec n'est pas memorise.
+ * @returns {Promise<void>}
+ */
+export function ensureBucketOnce() {
+  if (!bucketPromise) {
+    bucketPromise = ensureBucket().catch((err) => {
+      bucketPromise = null;
+      throw err;
+    });
+  }
+  return bucketPromise;
+}
+
+/** Reinitialise l'etat memoise. Reserve aux tests. */
+export function __resetBucketStateForTests() {
+  bucketPromise = null;
+}
 
 export const aiController = {
   async generateScene(req, res) {
@@ -37,6 +51,8 @@ export const aiController = {
       if (!process.env.REPLICATE_API_TOKEN) {
         return res.status(500).json({ error: 'Replicate API token not configured' });
       }
+
+      await ensureBucketOnce();
 
       // 1. Download source image (Docker fix: localhost -> kong for Supabase Storage)
       let downloadUrl = imageUrl;

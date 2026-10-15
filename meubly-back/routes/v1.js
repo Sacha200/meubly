@@ -7,9 +7,11 @@ import providerRouter from './v1/provider.js';
 import reviewsRouter from './v1/reviews.js';
 import favoritesRouter from './v1/favorites.js';
 import aiRouter from './v1/ai.js';
+import healthRouter from './v1/health.js';
 
 const router = express.Router();
 
+router.use(healthRouter);
 router.use('/auth', authRouter);
 router.use('/ai', aiRouter);
 router.use(usersRouter);
