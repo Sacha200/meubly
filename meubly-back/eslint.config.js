@@ -1,20 +1,19 @@
 import globals from "globals";
-import pluginJs from "@eslint/js";
-import eslintConfigPrettier from "eslint-config-prettier";
-import eslintPluginPrettier from "eslint-plugin-prettier";
+import js from "@eslint/js";
+import prettier from "eslint-config-prettier";
 
 export default [
-  {languageOptions: { globals: globals.node }},
-  pluginJs.configs.recommended,
+  { ignores: ["node_modules/**", "coverage/**"] },
+  js.configs.recommended,
   {
-      plugins: {
-          prettier: eslintPluginPrettier,
-      },
-      rules: {
-          "no-unused-vars": "warn",
-          "no-undef": "error",
-          "prettier/prettier": "error",
-      },
+    languageOptions: { ecmaVersion: "latest", sourceType: "module", globals: globals.node },
+    rules: {
+      "no-unused-vars": ["warn", { argsIgnorePattern: "^_|^next$" }],
+    },
   },
-  eslintConfigPrettier,
+  {
+    files: ["tests/**"],
+    languageOptions: { globals: { ...globals.node, ...globals.vitest } },
+  },
+  prettier,
 ];
