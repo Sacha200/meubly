@@ -9,11 +9,8 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const envConfig = dotenv.config({ path: path.join(__dirname, '../../.env'), override: true });
 
-// Restore console
-console.log = console.warn; 
-console.error = console.warn; 
-
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { assertLocalSupabase } from './guard.js';
 
 describe('Favorites Integration', () => {
   let app; // Will load dynamically
@@ -23,6 +20,7 @@ describe('Favorites Integration', () => {
   let supabase;
 
   beforeAll(async () => {
+      assertLocalSupabase(process.env.SUPABASE_URL);
       try {
         // Dynamic import app AFTER dotenv is loaded
         const appModule = await import('../../app.js');
@@ -55,12 +53,12 @@ describe('Favorites Integration', () => {
         testToken = signInData.session.access_token;
     }
 
-    // 2. Insert User profile (Required because favorites references public.User)
+    // 2. Insert User profile (Required because favorites references public.profile)
     if(testUser) {
         // Check if exists first (cleaner)
-        const { data: existing } = await supabase.from('User').select('id').eq('user_id', testUser.id).maybeSingle();
+        const { data: existing } = await supabase.from('profile').select('user_id').eq('user_id', testUser.id).maybeSingle();
         if(!existing) {
-             const { error: profileError } = await supabase.from('User').insert([{
+             const { error: profileError } = await supabase.from('profile').insert([{
                  user_id: testUser.id,
                  email: email,
                  username: `TestUser_${Date.now()}`,
@@ -72,7 +70,7 @@ describe('Favorites Integration', () => {
     }
     
     // 3. Get a furniture ID
-    const { data: furnitures } = await supabase.from('Furniture').select('furniture_id').limit(1);
+    const { data: furnitures } = await supabase.from('furniture').select('furniture_id').limit(1);
     if(furnitures && furnitures.length > 0) {
         testFurnitureId = furnitures[0].furniture_id;
     } else {

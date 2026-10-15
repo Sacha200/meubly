@@ -17,7 +17,8 @@
     "import:external": "node scripts/import_external_furniture.js",
     "test": "vitest",
     "test:run": "vitest run",
-    "test:coverage": "vitest --coverage"
+    "test:coverage": "vitest --coverage",
+    "test:db": "vitest run --config vitest.db.config.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
