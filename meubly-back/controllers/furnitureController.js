@@ -14,7 +14,7 @@ export const furnitureController = {
     try {
       const { id } = req.params;
       const product = await furnitureService.getFurnitureById(id);
-      
+
       if (!product) {
         return res.status(404).json({ error: "Meuble non trouvé" });
       }
@@ -22,8 +22,8 @@ export const furnitureController = {
       furnitureService.cacheFurniture(product);
       res.status(200).json(product);
     } catch (error) {
-       console.error("Erreur:", error);
-       res.status(500).json({ error: error.message });
+      console.error("Erreur:", error);
+      res.status(500).json({ error: error.message });
     }
   },
 
@@ -31,8 +31,7 @@ export const furnitureController = {
     try {
       const { id } = req.params;
       const { query } = req.query;
-      const debugOffers =
-        process.env.DEBUG_OFFERS === "true" || process.env.DEBUG === "true";
+      const debugOffers = process.env.DEBUG_OFFERS === "true" || process.env.DEBUG === "true";
 
       if (debugOffers) {
         console.log("[offers] getOffers request", { furniture_id: id, query });
@@ -82,11 +81,11 @@ export const furnitureController = {
 
   async delete(req, res) {
     try {
-       const { id } = req.params;
-       await furnitureService.deleteFurniture(id);
-       res.status(204).send();
+      const { id } = req.params;
+      await furnitureService.deleteFurniture(id);
+      res.status(204).send();
     } catch (error) {
-       res.status(400).json({ error: error.message });
+      res.status(400).json({ error: error.message });
     }
-  }
+  },
 };

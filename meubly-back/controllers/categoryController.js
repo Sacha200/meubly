@@ -13,11 +13,11 @@ export const categoryController = {
 
   async getById(req, res) {
     try {
-       const id = Number(req.params.id);
-       const category = await categoryService.getCategoryById(id);
-       res.status(200).json(category);
+      const id = Number(req.params.id);
+      const category = await categoryService.getCategoryById(id);
+      res.status(200).json(category);
     } catch (error) {
-       res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error.message });
     }
   },
 
@@ -48,5 +48,5 @@ export const categoryController = {
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
-  }
+  },
 };

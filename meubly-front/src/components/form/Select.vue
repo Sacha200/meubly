@@ -10,11 +10,7 @@
         :required="required"
       >
         <option value="" disabled>{{ placeholder }}</option>
-        <option 
-          v-for="option in options" 
-          :key="option.value" 
-          :value="option.value"
-        >
+        <option v-for="option in options" :key="option.value" :value="option.value">
           {{ option.label }}
         </option>
       </select>
@@ -24,35 +20,35 @@
 
 <script>
 export default {
-  name: 'Select',
+  name: "Select",
   props: {
     id: {
       type: String,
-      required: true
+      required: true,
     },
     label: {
       type: String,
-      required: true
+      required: true,
     },
     modelValue: {
       type: [String, Number],
-      default: ''
+      default: "",
     },
     options: {
       type: Array,
-      required: true
+      required: true,
     },
     required: {
       type: Boolean,
-      default: false
+      default: false,
     },
     placeholder: {
       type: String,
-      default: 'Sélectionnez une option'
-    }
+      default: "Sélectionnez une option",
+    },
   },
-  emits: ['update:modelValue']
-}
+  emits: ["update:modelValue"],
+};
 </script>
 
 <style scoped>
@@ -80,12 +76,12 @@ export default {
 
 .select-input:focus {
   outline: none;
-  border-color: #B88E2F;
+  border-color: #b88e2f;
   box-shadow: 0 0 0 2px rgba(184, 142, 47, 0.2);
 }
 
 .custom-select::after {
-  content: '';
+  content: "";
   position: absolute;
   right: 1rem;
   top: 50%;
@@ -99,7 +95,7 @@ export default {
 }
 
 .select-input:hover {
-  border-color: #B88E2F;
+  border-color: #b88e2f;
 }
 
 .select-input option {
@@ -107,7 +103,7 @@ export default {
 }
 
 .select-input option:checked {
-  background-color: #B88E2F;
+  background-color: #b88e2f;
   color: white;
 }
-</style> 
+</style>

@@ -7,7 +7,7 @@
       :class="{ active: themeStore.colorTheme === themeKey }"
       :style="{
         '--quick-button-color': THEME_COLORS[themeKey].accent,
-        '--quick-button-hover': THEME_COLORS[themeKey].accentHover
+        '--quick-button-hover': THEME_COLORS[themeKey].accentHover,
       }"
       :title="`Appliquer le thème ${THEME_COLORS[themeKey].name}`"
       @click="applyTheme(themeKey)"
@@ -18,12 +18,12 @@
 </template>
 
 <script>
-import { computed } from 'vue';
-import { useThemeStore } from '../stores/themeStore';
-import { THEME_COLORS } from '../config/themeColors';
+import { computed } from "vue";
+import { useThemeStore } from "../stores/themeStore";
+import { THEME_COLORS } from "../config/themeColors";
 
 export default {
-  name: 'QuickColorButtons',
+  name: "QuickColorButtons",
   setup() {
     const themeStore = useThemeStore();
 
@@ -39,9 +39,9 @@ export default {
       THEME_COLORS,
       themeStore,
       themeKeys,
-      applyTheme
+      applyTheme,
     };
-  }
+  },
 };
 </script>
 
@@ -52,12 +52,15 @@ export default {
   border-radius: 9999px;
   border: 2px solid transparent;
   background: linear-gradient(135deg, var(--quick-button-color), var(--quick-button-hover));
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
   position: relative;
 }
 
 .quick-button::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 4px;
   border-radius: 9999px;
@@ -98,4 +101,3 @@ export default {
   border: 0;
 }
 </style>
-

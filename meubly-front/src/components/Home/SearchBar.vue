@@ -1,24 +1,30 @@
 <template>
   <div class="w-full mb-8" data-testid="search-bar">
     <div class="relative">
-
       <!-- Pill container -->
       <div
         class="flex items-center bg-white dark:bg-surface rounded-full border transition-all duration-200"
-        :class="anyFocused
-          ? 'border-gray-300 dark:border-gray-500 shadow-xl'
-          : 'border-gray-200 dark:border-gray-700 shadow-md hover:shadow-lg'"
+        :class="
+          anyFocused
+            ? 'border-gray-300 dark:border-gray-500 shadow-xl'
+            : 'border-gray-200 dark:border-gray-700 shadow-md hover:shadow-lg'
+        "
       >
-
         <!-- Section 1 : Quel meuble ? -->
         <div
           class="flex-1 min-w-0 h-[60px] sm:h-[66px] flex flex-col justify-center px-5 sm:px-7 cursor-text rounded-full transition-colors duration-150"
-          :class="searchFocused
-            ? 'bg-white dark:bg-surface shadow-sm z-10'
-            : (anyFocused ? 'opacity-60 hover:opacity-100 hover:bg-gray-50 dark:hover:bg-neutral-800/60' : 'hover:bg-gray-50 dark:hover:bg-neutral-800/60')"
+          :class="
+            searchFocused
+              ? 'bg-white dark:bg-surface shadow-sm z-10'
+              : anyFocused
+                ? 'opacity-60 hover:opacity-100 hover:bg-gray-50 dark:hover:bg-neutral-800/60'
+                : 'hover:bg-gray-50 dark:hover:bg-neutral-800/60'
+          "
           @click="$refs.searchInput.focus()"
         >
-          <span class="text-[11px] font-bold text-gray-900 dark:text-white leading-none mb-0.5">Quel meuble ?</span>
+          <span class="text-[11px] font-bold text-gray-900 dark:text-white leading-none mb-0.5"
+            >Quel meuble ?</span
+          >
           <div class="flex items-center gap-1">
             <input
               ref="searchInput"
@@ -32,16 +38,32 @@
               @keydown.down.prevent="moveDown"
               @keydown.up.prevent="moveUp"
               @keydown.escape="closeAll"
-              @focus="searchFocused = true; onFocus()"
-              @blur="searchFocused = false; onBlur()"
+              @focus="
+                searchFocused = true;
+                onFocus();
+              "
+              @blur="
+                searchFocused = false;
+                onBlur();
+              "
             />
             <button
               v-if="searchQuery"
               class="flex-shrink-0 w-4 h-4 rounded-full bg-gray-400 hover:bg-gray-600 dark:bg-gray-500 dark:hover:bg-gray-300 flex items-center justify-center transition-colors"
-              @mousedown.prevent="searchQuery = ''; suggestions = []; showSuggestions = false"
+              @mousedown.prevent="
+                searchQuery = '';
+                suggestions = [];
+                showSuggestions = false;
+              "
               tabindex="-1"
             >
-              <svg class="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+              <svg
+                class="w-2.5 h-2.5 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="3"
+              >
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
@@ -54,24 +76,41 @@
         <!-- Section 2 : Catégorie (masqué sur mobile) -->
         <div
           class="hidden sm:flex flex-1 min-w-0 h-[66px] flex-col justify-center px-7 cursor-pointer rounded-full transition-colors duration-150 relative"
-          :class="categoryFocused
-            ? 'bg-white dark:bg-surface shadow-sm z-10'
-            : (anyFocused ? 'opacity-60 hover:opacity-100 hover:bg-gray-50 dark:hover:bg-neutral-800/60' : 'hover:bg-gray-50 dark:hover:bg-neutral-800/60')"
+          :class="
+            categoryFocused
+              ? 'bg-white dark:bg-surface shadow-sm z-10'
+              : anyFocused
+                ? 'opacity-60 hover:opacity-100 hover:bg-gray-50 dark:hover:bg-neutral-800/60'
+                : 'hover:bg-gray-50 dark:hover:bg-neutral-800/60'
+          "
           @click="toggleCategoryDropdown"
         >
-          <span class="text-[11px] font-bold text-gray-900 dark:text-white leading-none mb-0.5">Catégorie</span>
+          <span class="text-[11px] font-bold text-gray-900 dark:text-white leading-none mb-0.5"
+            >Catégorie</span
+          >
           <div class="flex items-center gap-1">
             <span
               class="text-sm truncate"
-              :class="selectedCategory ? 'text-gray-800 dark:text-gray-200' : 'text-gray-400 dark:text-gray-500'"
-            >{{ selectedCategory ? selectedCategory.label : 'Toutes les catégories' }}</span>
+              :class="
+                selectedCategory
+                  ? 'text-gray-800 dark:text-gray-200'
+                  : 'text-gray-400 dark:text-gray-500'
+              "
+              >{{ selectedCategory ? selectedCategory.label : "Toutes les catégories" }}</span
+            >
             <button
               v-if="selectedCategory"
               class="flex-shrink-0 w-4 h-4 rounded-full bg-gray-400 hover:bg-gray-600 dark:bg-gray-500 dark:hover:bg-gray-300 flex items-center justify-center transition-colors"
               @click.stop="selectCategory(null)"
               tabindex="-1"
             >
-              <svg class="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+              <svg
+                class="w-2.5 h-2.5 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="3"
+              >
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
@@ -88,14 +127,36 @@
           >
             <!-- Mobile : icône seule -->
             <span class="flex sm:hidden items-center justify-center w-11 h-11">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M16.65 11a5.65 5.65 0 11-11.3 0 5.65 5.65 0 0111.3 0z" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M21 21l-4.35-4.35M16.65 11a5.65 5.65 0 11-11.3 0 5.65 5.65 0 0111.3 0z"
+                />
               </svg>
             </span>
             <!-- Desktop : icône + texte -->
             <span class="hidden sm:flex items-center gap-2 px-5 h-12">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M16.65 11a5.65 5.65 0 11-11.3 0 5.65 5.65 0 0111.3 0z" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 flex-shrink-0"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M21 21l-4.35-4.35M16.65 11a5.65 5.65 0 11-11.3 0 5.65 5.65 0 0111.3 0z"
+                />
               </svg>
               <span class="text-sm font-semibold whitespace-nowrap">Rechercher</span>
             </span>
@@ -124,13 +185,25 @@
                 class="w-10 h-10 object-cover rounded-xl flex-shrink-0 bg-gray-100 dark:bg-neutral-800"
               />
               <div class="flex-1 min-w-0">
-                <span class="text-sm text-gray-800 dark:text-gray-100 font-medium truncate block">{{ item.title }}</span>
+                <span class="text-sm text-gray-800 dark:text-gray-100 font-medium truncate block">{{
+                  item.title
+                }}</span>
                 <span v-if="item.cached_min_price" class="text-xs text-primary-500 font-medium">
                   dès {{ item.cached_min_price }}€
                 </span>
               </div>
-              <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              <svg
+                class="w-4 h-4 text-gray-400 flex-shrink-0"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                />
               </svg>
             </li>
           </ul>
@@ -154,9 +227,11 @@
           <div class="p-2 max-h-72 overflow-y-auto">
             <button
               class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium transition-colors"
-              :class="!selectedCategory
-                ? 'bg-gray-100 dark:bg-neutral-700 text-gray-900 dark:text-white'
-                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-neutral-800'"
+              :class="
+                !selectedCategory
+                  ? 'bg-gray-100 dark:bg-neutral-700 text-gray-900 dark:text-white'
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-neutral-800'
+              "
               @click="selectCategory(null)"
             >
               Toutes les catégories
@@ -165,9 +240,11 @@
               v-for="cat in categories"
               :key="cat.category_id"
               class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium transition-colors"
-              :class="selectedCategory?.category_id === cat.category_id
-                ? 'bg-gray-100 dark:bg-neutral-700 text-gray-900 dark:text-white'
-                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-neutral-800'"
+              :class="
+                selectedCategory?.category_id === cat.category_id
+                  ? 'bg-gray-100 dark:bg-neutral-700 text-gray-900 dark:text-white'
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-neutral-800'
+              "
               @click="selectCategory(cat)"
             >
               {{ cat.label }}
@@ -180,18 +257,18 @@
 </template>
 
 <script>
-import { mapStores } from 'pinia';
-import { useFurnitureStore } from '@/stores/furnitureStore';
-import { useCategoryStore } from '@/stores/categoryStore';
+import { mapStores } from "pinia";
+import { useFurnitureStore } from "@/stores/furnitureStore";
+import { useCategoryStore } from "@/stores/categoryStore";
 
 let debounceTimer = null;
 
 export default {
-  name: 'SearchBar',
+  name: "SearchBar",
 
   data() {
     return {
-      searchQuery: '',
+      searchQuery: "",
       suggestions: [],
       showSuggestions: false,
       showCategoryDropdown: false,
@@ -236,7 +313,9 @@ export default {
     },
 
     onBlur() {
-      setTimeout(() => { this.showSuggestions = false; }, 200);
+      setTimeout(() => {
+        this.showSuggestions = false;
+      }, 200);
     },
 
     closeAll() {
@@ -258,7 +337,7 @@ export default {
 
     selectSuggestion(item) {
       this.closeAll();
-      this.$router.push({ name: 'ProductDetail', params: { id: item.furniture_id } });
+      this.$router.push({ name: "ProductDetail", params: { id: item.furniture_id } });
     },
 
     toggleCategoryDropdown() {
@@ -285,7 +364,7 @@ export default {
         query.categoryId = this.selectedCategory.category_id;
         query.categoryLabel = this.selectedCategory.label;
       }
-      this.$router.push({ name: 'ResultatRecherche', query });
+      this.$router.push({ name: "ResultatRecherche", query });
     },
 
     handleOutsideClick(e) {
@@ -300,7 +379,7 @@ export default {
     this.$nextTick(() => this.$refs.searchInput?.focus());
 
     const existingQ = this.$route?.query?.q;
-    if (existingQ && typeof existingQ === 'string') {
+    if (existingQ && typeof existingQ === "string") {
       this.searchQuery = existingQ;
     }
 
@@ -308,11 +387,11 @@ export default {
       this.categoryStore.fetchCategories();
     }
 
-    document.addEventListener('click', this.handleOutsideClick);
+    document.addEventListener("click", this.handleOutsideClick);
   },
 
   beforeUnmount() {
-    document.removeEventListener('click', this.handleOutsideClick);
+    document.removeEventListener("click", this.handleOutsideClick);
   },
 };
 </script>
@@ -320,7 +399,9 @@ export default {
 <style scoped>
 .dropdown-enter-active,
 .dropdown-leave-active {
-  transition: opacity 0.15s ease, transform 0.15s ease;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
 }
 .dropdown-enter-from,
 .dropdown-leave-to {

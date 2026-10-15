@@ -11,9 +11,7 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 const supabaseUrl =
-  process.env.SUPABASE_URL ||
-  process.env.SUPABASE_PUBLIC_URL ||
-  process.env.API_EXTERNAL_URL;
+  process.env.SUPABASE_URL || process.env.SUPABASE_PUBLIC_URL || process.env.API_EXTERNAL_URL;
 const supabaseKey =
   process.env.SUPABASE_SERVICE_ROLE_KEY ||
   process.env.SERVICE_ROLE_KEY ||
@@ -29,8 +27,7 @@ if (!supabaseUrl || !supabaseKey) {
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const API_BASE_URL = (
-  process.env.EXTERNAL_FURNITURE_API_BASE_URL ||
-  "https://funiture-store-api.up.railway.app"
+  process.env.EXTERNAL_FURNITURE_API_BASE_URL || "https://funiture-store-api.up.railway.app"
 ).replace(/\/+$/, "");
 
 const SOURCE_PARTNER_NAME =
@@ -115,11 +112,7 @@ async function loadLocalJsonFallback() {
 
 async function resolveDataSource() {
   const candidates = Array.from(
-    new Set([
-      API_BASE_URL,
-      `${API_BASE_URL}/api`,
-      `${API_BASE_URL}/api/v1`,
-    ])
+    new Set([API_BASE_URL, `${API_BASE_URL}/api`, `${API_BASE_URL}/api/v1`])
   );
 
   for (const candidate of candidates) {
@@ -297,9 +290,8 @@ async function upsertOffer({ furnitureId, partnerId, title, url, price }) {
       .eq("offer_id", existing.offer_id);
     if (error) throw error;
   } else {
-    const { error } = await supabase
-      .from("offers")
-      .insert([{
+    const { error } = await supabase.from("offers").insert([
+      {
         furniture_id: furnitureId,
         partner_id: partnerId,
         external_title: title || null,
@@ -307,7 +299,8 @@ async function upsertOffer({ furnitureId, partnerId, title, url, price }) {
         price: toNumberOrNull(price),
         is_active: true,
         updated_at: nowIso,
-      }]);
+      },
+    ]);
     if (error) throw error;
   }
 }
@@ -430,8 +423,7 @@ async function run() {
         title: furniture.title,
       });
 
-      const categoryLabel =
-        detail?.category?.name || product?.category?.name || null;
+      const categoryLabel = detail?.category?.name || product?.category?.name || null;
       if (categoryLabel) {
         const categoryId = await ensureCategoryByLabel(categoryLabel, categoryCache);
         await linkFurnitureCategory(furniture.furniture_id, categoryId);
@@ -452,7 +444,9 @@ async function run() {
           });
           stats.offersImported += 1;
         } catch (offerError) {
-          console.warn(`Offre ignoree pour ${furniture.title} / ${offer.partner}: ${offerError.message}`);
+          console.warn(
+            `Offre ignoree pour ${furniture.title} / ${offer.partner}: ${offerError.message}`
+          );
         }
       }
 

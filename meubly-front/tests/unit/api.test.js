@@ -153,7 +153,9 @@ describe("auth", () => {
       data: { user: { id: "u1" }, session: {} },
       error: null,
     });
-    const single = vi.fn().mockResolvedValue({ data: { user_id: "u1", role: "USER" }, error: null });
+    const single = vi
+      .fn()
+      .mockResolvedValue({ data: { user_id: "u1", role: "USER" }, error: null });
     supabase.from.mockReturnValue({ select: () => ({ eq: () => ({ single }) }) });
     const result = await loginUser({ email: "a@b.fr", password: "x" });
     expect(result.profile.role).toBe("USER");

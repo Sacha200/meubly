@@ -2,51 +2,51 @@
 export const THEME_COLORS = {
   // Thème neutre (par défaut)
   neutral: {
-    name: 'Neutre',
-    background: '#0a0a0a', // neutral-950
-    surface: '#171717', // neutral-900
-    text: '#fafafa', // neutral-50
-    accent: '#3b82f6', // blue-500
-    accentHover: '#2563eb', // blue-600
-    shadow: '#0a0a0a'
+    name: "Neutre",
+    background: "#0a0a0a", // neutral-950
+    surface: "#171717", // neutral-900
+    text: "#fafafa", // neutral-50
+    accent: "#3b82f6", // blue-500
+    accentHover: "#2563eb", // blue-600
+    shadow: "#0a0a0a",
   },
 
   // Thème vert
   green: {
-    name: 'Vert',
-    background: '#052e16',
-    surface: '#14532d',
-    text: '#dcfce7',
-    accent: '#4ade80',
-    accentHover: '#22c55e',
-    shadow: '#052e16'
+    name: "Vert",
+    background: "#052e16",
+    surface: "#14532d",
+    text: "#dcfce7",
+    accent: "#4ade80",
+    accentHover: "#22c55e",
+    shadow: "#052e16",
   },
 
   // Thème rouge
   red: {
-    name: 'Rouge',
-    background: '#450a0a',
-    surface: '#7f1d1d',
-    text: '#fee2e2',
-    accent: '#f87171',
-    accentHover: '#ef4444',
-    shadow: '#450a0a'
+    name: "Rouge",
+    background: "#450a0a",
+    surface: "#7f1d1d",
+    text: "#fee2e2",
+    accent: "#f87171",
+    accentHover: "#ef4444",
+    shadow: "#450a0a",
   },
 
   // Thème bleu
   blue: {
-    name: 'Bleu',
-    background: '#172554',
-    surface: '#1e3a8a',
-    text: '#dbeafe',
-    accent: '#60a5fa',
-    accentHover: '#3b82f6',
-    shadow: '#172554'
-  }
+    name: "Bleu",
+    background: "#172554",
+    surface: "#1e3a8a",
+    text: "#dbeafe",
+    accent: "#60a5fa",
+    accentHover: "#3b82f6",
+    shadow: "#172554",
+  },
 };
 
 // Thème actuel (peut être modifié dynamiquement)
-export let currentTheme = 'neutral';
+export let currentTheme = "neutral";
 
 // Fonction pour changer le thème
 export function setThemeColor(themeName) {
@@ -61,14 +61,14 @@ export function setThemeColor(themeName) {
 export function applyThemeColors() {
   const theme = THEME_COLORS[currentTheme];
   const root = document.documentElement;
-  
+
   // Appliquer les variables CSS personnalisées
-  root.style.setProperty('--dark-bg', theme.background);
-  root.style.setProperty('--dark-surface', theme.surface);
-  root.style.setProperty('--dark-text', theme.text);
-  root.style.setProperty('--dark-accent', theme.accent);
-  root.style.setProperty('--dark-accent-hover', theme.accentHover);
-  root.style.setProperty('--dark-shadow', theme.shadow);
+  root.style.setProperty("--dark-bg", theme.background);
+  root.style.setProperty("--dark-surface", theme.surface);
+  root.style.setProperty("--dark-text", theme.text);
+  root.style.setProperty("--dark-accent", theme.accent);
+  root.style.setProperty("--dark-accent-hover", theme.accentHover);
+  root.style.setProperty("--dark-shadow", theme.shadow);
 }
 
 // Fonction pour obtenir les couleurs du thème actuel

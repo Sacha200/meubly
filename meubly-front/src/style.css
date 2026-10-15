@@ -22,39 +22,51 @@ body {
 
 /* Polices personnalisées */
 @font-face {
-  font-family: 'Poppins-Regular';
-  src: url('../public/assets/fonts/POPPINS-REGULAR.TTF');
+  font-family: "Poppins-Regular";
+  src: url("../public/assets/fonts/POPPINS-REGULAR.TTF");
 }
 
 @font-face {
-  font-family: 'Poppins-Bold';
-  src: url('../public/assets/fonts/POPPINS-BOLD.TTF');
+  font-family: "Poppins-Bold";
+  src: url("../public/assets/fonts/POPPINS-BOLD.TTF");
 }
 
 @font-face {
-  font-family: 'Poppins-Medium';
-  src: url('../public/assets/fonts/POPPINS-MEDIUM.TTF');
+  font-family: "Poppins-Medium";
+  src: url("../public/assets/fonts/POPPINS-MEDIUM.TTF");
 }
 
 @font-face {
-  font-family: 'Poppins-SemiBold';
-  src: url('../public/assets/fonts/POPPINS-SEMIBOLD.TTF');
-} 
+  font-family: "Poppins-SemiBold";
+  src: url("../public/assets/fonts/POPPINS-SEMIBOLD.TTF");
+}
 
 @font-face {
-  font-family: 'Poppins-Light';
-  src: url('../public/assets/fonts/POPPINS-LIGHT.TTF');
+  font-family: "Poppins-Light";
+  src: url("../public/assets/fonts/POPPINS-LIGHT.TTF");
 }
 
 /* Animations personnalisées */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes slideIn {
-  from { transform: translateX(-20px); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
+  from {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 .animate-fade-in {
@@ -63,7 +75,7 @@ body {
 
 .animate-slide-in {
   animation: slideIn 0.3s ease-out;
-} 
+}
 
 /* PrimeVue Toast: éviter chevauchement avec le header */
 .p-toast {
@@ -144,7 +156,7 @@ body {
 .dark .p-toast .p-toast-message {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35) !important;
   background: #111827 !important; /* gray-900 */
-  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
 /* Barre colorée en bas selon la sévérité (comme ton 2e screen) */
@@ -169,10 +181,3 @@ body {
 .p-toast .p-toast-message.p-toast-message-info::after {
   background: #3b82f6; /* blue-500 */
 }
-
-
-
-
-
-
-

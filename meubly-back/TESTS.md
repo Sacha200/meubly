@@ -3,6 +3,7 @@
 ## 📋 Vue d'ensemble
 
 Ce projet utilise une approche de test complète avec :
+
 - **Tests unitaires** : Vitest
 - **Tests d'intégration** : Vitest + Supertest
 - **Tests de services** : Vitest avec mocks
@@ -44,22 +45,23 @@ tests/
 ### Exemples de tests
 
 #### Test d'un service
+
 ```javascript
-describe('FurnitureService', () => {
-  it('should return furniture when found', async () => {
+describe("FurnitureService", () => {
+  it("should return furniture when found", async () => {
     const mockFurniture = {
       id: 1,
-      name: 'Chaise de bureau',
-      price: 150
+      name: "Chaise de bureau",
+      price: 150,
     };
 
-    const { supabase } = await import('../../supabase.js');
+    const { supabase } = await import("../../supabase.js");
     supabase.from.mockReturnValue({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({
-          single: vi.fn(() => mockFurniture)
-        }))
-      }))
+          single: vi.fn(() => mockFurniture),
+        })),
+      })),
     });
 
     const result = await furnitureService.getFurnitureById(1);
@@ -80,15 +82,14 @@ npm run test:run
 ### Exemples de tests d'intégration
 
 #### Test d'une route API
+
 ```javascript
-describe('Furniture Routes Integration Tests', () => {
-  it('should return all furniture', async () => {
-    const response = await request(server)
-      .get('/api/v1/furnitures')
-      .expect(200);
+describe("Furniture Routes Integration Tests", () => {
+  it("should return all furniture", async () => {
+    const response = await request(server).get("/api/v1/furnitures").expect(200);
 
     expect(response.body).toBeInstanceOf(Array);
-    expect(response.headers['content-type']).toMatch(/application\/json/);
+    expect(response.headers["content-type"]).toMatch(/application\/json/);
   });
 });
 ```
@@ -102,6 +103,7 @@ npm run test:coverage
 ```
 
 Le rapport sera généré avec :
+
 - Statistiques par fichier
 - Lignes couvertes/non couvertes
 - Branches couvertes/non couvertes
@@ -113,24 +115,19 @@ Le rapport sera généré avec :
 Créez un fichier `vitest.config.js` :
 
 ```javascript
-import { defineConfig } from 'vitest/config'
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    environment: 'node',
+    environment: "node",
     globals: true,
     coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'html'],
-      exclude: [
-        'node_modules/',
-        'tests/',
-        '**/*.config.js',
-        'dist/'
-      ]
-    }
-  }
-})
+      provider: "v8",
+      reporter: ["text", "json", "html"],
+      exclude: ["node_modules/", "tests/", "**/*.config.js", "dist/"],
+    },
+  },
+});
 ```
 
 ### Variables d'environnement pour les tests
@@ -147,18 +144,21 @@ SUPABASE_ANON_KEY=your_test_supabase_key
 ## 🚨 Bonnes pratiques
 
 ### Tests unitaires
+
 - Testez une fonctionnalité à la fois
 - Utilisez des mocks pour les dépendances externes (Supabase, etc.)
 - Nommez vos tests de manière descriptive
 - Vérifiez les cas d'erreur et de succès
 
 ### Tests d'intégration
+
 - Testez les routes API complètes
 - Vérifiez les codes de statut HTTP
 - Testez les réponses JSON
 - Vérifiez les headers de réponse
 
 ### Organisation
+
 - Gardez les tests proches du code testé
 - Utilisez des fixtures pour les données de test
 - Documentez les mocks complexes
@@ -195,7 +195,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: "18"
       - run: npm ci
       - run: npm run test:run
       - run: npm run test:coverage
@@ -204,11 +204,13 @@ jobs:
 ## 🎯 Métriques de qualité
 
 ### Objectifs de couverture
+
 - **Tests unitaires** : > 80%
 - **Tests d'intégration** : > 70%
 - **Services critiques** : > 90%
 
 ### Performance
+
 - Tests unitaires : < 20 secondes
 - Tests d'intégration : < 30 secondes
 - Build complet : < 5 minutes
@@ -225,16 +227,16 @@ jobs:
 ### Mock de Supabase
 
 ```javascript
-vi.mock('../../supabase.js', () => ({
+vi.mock("../../supabase.js", () => ({
   supabase: {
     from: vi.fn(() => ({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({
-          single: vi.fn()
-        }))
-      }))
-    }))
-  }
+          single: vi.fn(),
+        })),
+      })),
+    })),
+  },
 }));
 ```
 
@@ -242,8 +244,8 @@ vi.mock('../../supabase.js', () => ({
 
 ```javascript
 // Mock d'un service de paiement
-vi.mock('../../services/paymentService.js', () => ({
-  processPayment: vi.fn(() => Promise.resolve({ success: true }))
+vi.mock("../../services/paymentService.js", () => ({
+  processPayment: vi.fn(() => Promise.resolve({ success: true })),
 }));
 ```
 

@@ -18,15 +18,15 @@ export const favoritesController = {
       const userId = req.user.id;
       const { furnitureId } = req.params;
       const token = req.headers.authorization;
-      
+
       await favoritesService.addFavorite(userId, furnitureId, token);
-      
+
       res.status(201).json({ message: "Added to favorites" });
     } catch (error) {
-        if (error.message === "Furniture not found") {
-            return res.status(404).json({ error: "Furniture not found" });
-        }
-        res.status(500).json({ error: error.message });
+      if (error.message === "Furniture not found") {
+        return res.status(404).json({ error: "Furniture not found" });
+      }
+      res.status(500).json({ error: error.message });
     }
   },
 
@@ -37,10 +37,10 @@ export const favoritesController = {
       const token = req.headers.authorization;
 
       await favoritesService.removeFavorite(userId, furnitureId, token);
-      
+
       res.status(200).json({ message: "Removed from favorites" });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
-  }
+  },
 };

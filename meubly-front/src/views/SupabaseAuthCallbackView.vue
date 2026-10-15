@@ -13,28 +13,27 @@
 </template>
 
 <script>
-import { supabase } from '../supabase'
+import { supabase } from "../supabase";
 
 export default {
-  name: 'SupabaseAuthCallbackView',
+  name: "SupabaseAuthCallbackView",
   data() {
-    return { error: null }
+    return { error: null };
   },
   async mounted() {
     try {
       // Supabase JS gère la session via l'URL (detectSessionInUrl: true).
       // On force une lecture de session pour s'assurer que tout est pris en compte.
-      const { data, error } = await supabase.auth.getSession()
-      if (error) throw error
+      const { data, error } = await supabase.auth.getSession();
+      if (error) throw error;
 
       // Si pas de session (ex: simple confirmation email), on redirige vers login.
-      const hasSession = !!data?.session
-      this.$router.replace(hasSession ? '/' : '/login')
+      const hasSession = !!data?.session;
+      this.$router.replace(hasSession ? "/" : "/login");
     } catch (e) {
-      this.error = e?.message || String(e)
-      setTimeout(() => this.$router.replace('/login'), 2500)
+      this.error = e?.message || String(e);
+      setTimeout(() => this.$router.replace("/login"), 2500);
     }
-  }
-}
+  },
+};
 </script>
-

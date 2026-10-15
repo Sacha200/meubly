@@ -1,9 +1,9 @@
 <template>
   <div class="form-group">
     <label :for="id" class="block text-sm font-medium text-gray-700 mb-2">{{ label }}</label>
-    <input 
+    <input
       :type="type"
-      :id="id" 
+      :id="id"
       :value="modelValue"
       @input="$emit('update:modelValue', $event.target.value)"
       class="form-input"
@@ -15,35 +15,35 @@
 
 <script>
 export default {
-  name: 'TextInput',
+  name: "TextInput",
   props: {
     id: {
       type: String,
-      required: true
+      required: true,
     },
     label: {
       type: String,
-      required: true
+      required: true,
     },
     modelValue: {
       type: [String, Number],
-      default: ''
+      default: "",
     },
     type: {
       type: String,
-      default: 'text'
+      default: "text",
     },
     required: {
       type: Boolean,
-      default: false
+      default: false,
     },
     placeholder: {
       type: String,
-      default: ''
-    }
+      default: "",
+    },
   },
-  emits: ['update:modelValue']
-}
+  emits: ["update:modelValue"],
+};
 </script>
 
 <style scoped>
@@ -64,11 +64,11 @@ export default {
 
 .form-input:focus {
   outline: none;
-  border-color: #B88E2F;
+  border-color: #b88e2f;
   box-shadow: 0 0 0 2px rgba(184, 142, 47, 0.2);
 }
 
 .form-input:hover {
-  border-color: #B88E2F;
+  border-color: #b88e2f;
 }
-</style> 
+</style>

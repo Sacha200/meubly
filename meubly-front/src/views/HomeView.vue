@@ -16,14 +16,14 @@
 </template>
 
 <script>
-import Header from '../components/Header.vue'
-import SearchBar from '../components/Home/SearchBar.vue'
-import CategoryCarousel from '../components/Home/CategoryCarousel.vue'
-import CategorySections from '../components/Home/CategorySections.vue'
-import Footer from '../components/Footer.vue'
+import Header from "../components/Header.vue";
+import SearchBar from "../components/Home/SearchBar.vue";
+import CategoryCarousel from "../components/Home/CategoryCarousel.vue";
+import CategorySections from "../components/Home/CategorySections.vue";
+import Footer from "../components/Footer.vue";
 
 export default {
-  name: 'HomeView',
+  name: "HomeView",
   components: { Header, SearchBar, CategoryCarousel, CategorySections, Footer },
-}
+};
 </script>

@@ -9,9 +9,7 @@ export const furnitureService = {
       if (furniture) {
         furniture.nb_offers = furniture.cached_nb_offers || 1;
         // Normalise le nom de la relation Supabase vers "images"
-        furniture.images = (furniture.FurnitureImage || []).sort(
-          (a, b) => a.position - b.position
-        );
+        furniture.images = (furniture.FurnitureImage || []).sort((a, b) => a.position - b.position);
         delete furniture.FurnitureImage;
       }
       return furniture;
@@ -30,8 +28,8 @@ export const furnitureService = {
   },
 
   async getBestOffer(furnitureId) {
-      const offers = await this.getOffers(furnitureId);
-      return offers.length > 0 ? offers[0] : null;
+    const offers = await this.getOffers(furnitureId);
+    return offers.length > 0 ? offers[0] : null;
   },
 
   async addFurniture(furniture) {
@@ -50,58 +48,56 @@ export const furnitureService = {
     const to = from + lim - 1;
 
     try {
-        const { data, count } = await furnitureRepository.search({
-            q,
-            categoryId: categoryId || undefined, // UUID (String), ne pas convertir en Number
-            minPrice: minPrice ? Number(minPrice) : undefined,
-            maxPrice: maxPrice ? Number(maxPrice) : undefined,
-            sort,
-            from,
-            to
-        });
+      const { data, count } = await furnitureRepository.search({
+        q,
+        categoryId: categoryId || undefined, // UUID (String), ne pas convertir en Number
+        minPrice: minPrice ? Number(minPrice) : undefined,
+        maxPrice: maxPrice ? Number(maxPrice) : undefined,
+        sort,
+        from,
+        to,
+      });
 
-        const items = (data || []).map(item => ({
-            ...item,
-            nb_offers: item.cached_nb_offers || 1
-        }));
+      const items = (data || []).map((item) => ({
+        ...item,
+        nb_offers: item.cached_nb_offers || 1,
+      }));
 
-        return {
-            items,
-            total: count || 0,
-            page: pageNum,
-            limit: lim
-        };
+      return {
+        items,
+        total: count || 0,
+        page: pageNum,
+        limit: lim,
+      };
     } catch (error) {
-        console.error("Erreur lors de la recherche:", error);
-        throw error;
+      console.error("Erreur lors de la recherche:", error);
+      throw error;
     }
   },
 
   async updateFurniture(id, updates) {
-      try {
-          return await furnitureRepository.update(id, updates);
-      } catch (error) {
-          console.error("Erreur update:", error);
-          throw error;
-      }
+    try {
+      return await furnitureRepository.update(id, updates);
+    } catch (error) {
+      console.error("Erreur update:", error);
+      throw error;
+    }
   },
 
   async deleteFurniture(id) {
-      try {
-          await furnitureRepository.delete(id);
-      } catch (error) {
-          console.error("Erreur delete:", error);
-          throw error;
-      }
+    try {
+      await furnitureRepository.delete(id);
+    } catch (error) {
+      console.error("Erreur delete:", error);
+      throw error;
+    }
   },
 
-
-  
   async cacheFurniture(furniture) {
     try {
       await furnitureRepository.upsert(furniture);
     } catch (error) {
       console.error("Erreur cache:", error);
     }
-  }
+  },
 };

@@ -25,4 +25,3 @@ router.patch("/furnitures/:id", requireAuth, requireAdmin, furnitureController.u
 router.delete("/furnitures/:id", requireAuth, requireAdmin, furnitureController.delete);
 
 export default router;
-

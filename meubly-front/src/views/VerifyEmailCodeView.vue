@@ -9,8 +9,14 @@
 
         <p class="text-sm text-gray-600 dark:text-gray-300 mb-6">
           On t’a envoyé un email de confirmation.
-          <template v-if="isLocal">Ouvre Mailpit, copie le <strong>code</strong>, colle-le ici, puis clique sur <strong>Vérifier</strong>.</template>
-          <template v-else>Consulte ta boîte mail, copie le <strong>code à 6 chiffres</strong>, colle-le ici, puis clique sur <strong>Vérifier</strong>.</template>
+          <template v-if="isLocal"
+            >Ouvre Mailpit, copie le <strong>code</strong>, colle-le ici, puis clique sur
+            <strong>Vérifier</strong>.</template
+          >
+          <template v-else
+            >Consulte ta boîte mail, copie le <strong>code à 6 chiffres</strong>, colle-le ici, puis
+            clique sur <strong>Vérifier</strong>.</template
+          >
         </p>
 
         <div class="flex flex-col gap-4">
@@ -21,7 +27,13 @@
           </div>
           <div v-else>
             <label class="block mb-2 text-gray-700 dark:text-gray-300">Email</label>
-            <input type="email" class="input-field w-full" v-model="email" placeholder="ton@email.com" required />
+            <input
+              type="email"
+              class="input-field w-full"
+              v-model="email"
+              placeholder="ton@email.com"
+              required
+            />
             <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
               Si tu arrives ici directement, renseigne ton email.
             </p>
@@ -29,8 +41,13 @@
 
           <div>
             <label class="block mb-2 text-gray-700 dark:text-gray-300">Code de vérification</label>
-            <input type="text" class="input-field w-full" v-model="token" placeholder="Colle le code depuis l’email"
-              required />
+            <input
+              type="text"
+              class="input-field w-full"
+              v-model="token"
+              placeholder="Colle le code depuis l’email"
+              required
+            />
             <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
               Tu peux aussi cliquer sur le lien de confirmation dans l’email.
             </p>
@@ -38,7 +55,7 @@
 
           <div class="flex flex-col items-center gap-3">
             <button class="submit-button" :disabled="loading" @click="verify">
-              {{ loading ? 'Vérification...' : 'Vérifier' }}
+              {{ loading ? "Vérification..." : "Vérifier" }}
             </button>
             <a
               v-if="isLocal"
@@ -61,96 +78,96 @@
 </template>
 
 <script>
-import Toast from 'primevue/toast'
-import Header from '../components/Header.vue'
-import Footer from '../components/Footer.vue'
-import { supabase } from '../supabase'
+import Toast from "primevue/toast";
+import Header from "../components/Header.vue";
+import Footer from "../components/Footer.vue";
+import { supabase } from "../supabase";
 
 export default {
-  name: 'VerifyEmailCodeView',
+  name: "VerifyEmailCodeView",
   components: { Toast, Header, Footer },
   data() {
     return {
-      email: this.$route?.query?.email || '',
-      token: '',
+      email: this.$route?.query?.email || "",
+      token: "",
       loading: false,
-      mailpitUrl: import.meta.env.VITE_MAILPIT_URL || 'http://localhost:8025',
+      mailpitUrl: import.meta.env.VITE_MAILPIT_URL || "http://localhost:8025",
       isLocal: !!import.meta.env.VITE_MAILPIT_URL || import.meta.env.DEV,
-    }
+    };
   },
   mounted() {
     // Feedback quand on arrive juste après l'inscription
-      if (this.$route?.query?.sent === '1') {
-        this.$toast.add({
-          severity: 'success',
-          summary: 'Email envoyé',
-          detail: this.isLocal
-            ? "Email de confirmation envoyé. Ouvre Mailpit pour récupérer le code."
-            : "Email de confirmation envoyé. Consulte ta boîte mail pour récupérer le code.",
-          life: 6500,
-          closable: false,
-        })
+    if (this.$route?.query?.sent === "1") {
+      this.$toast.add({
+        severity: "success",
+        summary: "Email envoyé",
+        detail: this.isLocal
+          ? "Email de confirmation envoyé. Ouvre Mailpit pour récupérer le code."
+          : "Email de confirmation envoyé. Consulte ta boîte mail pour récupérer le code.",
+        life: 6500,
+        closable: false,
+      });
     }
   },
   methods: {
     async verify() {
-      const email = String(this.email || '').trim()
-      const token = String(this.token || '').trim()
+      const email = String(this.email || "").trim();
+      const token = String(this.token || "").trim();
       if (!email || !token) {
         this.$toast.add({
-          severity: 'warn',
-          summary: 'Champs manquants',
+          severity: "warn",
+          summary: "Champs manquants",
           detail: email ? "Renseigne le code." : "Renseigne l'email et le code.",
           life: 4500,
           closable: false,
-        })
-        return
+        });
+        return;
       }
 
       try {
-        this.loading = true
+        this.loading = true;
         const { data, error } = await supabase.auth.verifyOtp({
-          type: 'signup',
+          type: "signup",
           email,
           token,
-        })
-        if (error) throw error
+        });
+        if (error) throw error;
 
         // Si verifyOtp crée une session, on peut rediriger directement.
-        const hasSession = !!data?.session
+        const hasSession = !!data?.session;
         this.$toast.add({
-          severity: 'success',
-          summary: 'Email vérifié',
-          detail: hasSession ? 'Tu es connecté.' : 'Tu peux maintenant te connecter.',
+          severity: "success",
+          summary: "Email vérifié",
+          detail: hasSession ? "Tu es connecté." : "Tu peux maintenant te connecter.",
           life: 3500,
           closable: false,
-        })
-        this.$router.push(hasSession ? '/' : '/login')
+        });
+        this.$router.push(hasSession ? "/" : "/login");
       } catch (e) {
         const msg =
           e?.message ||
           e?.error_description ||
-          "Code invalide ou expiré. Ouvre l'email de confirmation et réessaie."
+          "Code invalide ou expiré. Ouvre l'email de confirmation et réessaie.";
         this.$toast.add({
-          severity: 'error',
-          summary: 'Vérification impossible',
+          severity: "error",
+          summary: "Vérification impossible",
           detail: msg,
           life: 6000,
           closable: false,
-        })
+        });
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
   },
-}
+};
 </script>
 
 <style scoped>
 h1 {
-  font-family: 'Poppins-Bold';
+  font-family: "Poppins-Bold";
   font-size: 28px;
-  color: #3A3A3A;
+  color: #3a3a3a;
 }
 
 .dark h1 {
@@ -174,12 +191,12 @@ h1 {
 .submit-button {
   padding: 10px 20px;
   width: 100%;
-  background-color: #B88E2F;
+  background-color: #b88e2f;
   color: white;
   border-radius: 30px;
   cursor: pointer;
   transition: background-color 0.3s;
-  font-family: 'Poppins-Medium';
+  font-family: "Poppins-Medium";
   font-size: 16px;
   border: none;
 }

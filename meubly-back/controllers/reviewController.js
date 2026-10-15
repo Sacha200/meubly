@@ -3,10 +3,10 @@ import { validationResult } from "express-validator";
 
 export const reviewController = {
   async list(req, res) {
-     // Validation result handling could be here or middleware. 
-     // The route definition uses 'handleValidation', so we assume req is valid here or we check it.
-     // But 'handleValidation' middleware provided in the snippet handles it.
-     
+    // Validation result handling could be here or middleware.
+    // The route definition uses 'handleValidation', so we assume req is valid here or we check it.
+    // But 'handleValidation' middleware provided in the snippet handles it.
+
     try {
       const { id } = req.params;
       const { page, limit } = req.query;
@@ -29,8 +29,10 @@ export const reviewController = {
       const userId = req.user ? req.user.id : null;
 
       if (!userId) {
-         // Should not happen if route is protected, but safe guard
-        return res.status(401).json({ error: "Une authentification est requise pour publier un avis." });
+        // Should not happen if route is protected, but safe guard
+        return res
+          .status(401)
+          .json({ error: "Une authentification est requise pour publier un avis." });
       }
 
       const sanitizedComment = comment.trim();
@@ -48,5 +50,5 @@ export const reviewController = {
       console.error("Erreur lors de la création ou mise à jour d'un avis:", error);
       res.status(500).json({ error: "Impossible d'enregistrer l'avis." });
     }
-  }
+  },
 };

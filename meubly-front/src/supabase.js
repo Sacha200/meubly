@@ -1,7 +1,7 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 // Configuration pour la production
 const supabaseOptions = {
@@ -10,8 +10,8 @@ const supabaseOptions = {
     persistSession: true,
     detectSessionInUrl: true,
     // Configuration spécifique pour Vercel
-    flowType: 'pkce'
-  }
-}
+    flowType: "pkce",
+  },
+};
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, supabaseOptions) 
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, supabaseOptions);

@@ -16,7 +16,7 @@ export const userController = {
       const user = await userService.getUserById(id);
       res.status(200).json(user);
     } catch (error) {
-       res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error.message });
     }
   },
 
@@ -24,16 +24,16 @@ export const userController = {
     // Basic validation
     const { firstName, lastName, email, password, role } = req.body;
     if (!firstName || !lastName || !email || !password || !role) {
-        return res.status(400).json({ error: 'Tous les champs obligatoires doivent être remplis' });
+      return res.status(400).json({ error: "Tous les champs obligatoires doivent être remplis" });
     }
     // Validation email simple
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-        return res.status(400).json({ error: 'Format d\'email invalide' });
+      return res.status(400).json({ error: "Format d'email invalide" });
     }
     // Validation du mot de passe
     if (password.length < 8) {
-        return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 8 caractères' });
+      return res.status(400).json({ error: "Le mot de passe doit contenir au moins 8 caractères" });
     }
 
     try {
@@ -62,5 +62,5 @@ export const userController = {
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
-  }
+  },
 };

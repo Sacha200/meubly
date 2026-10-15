@@ -1,17 +1,16 @@
 <template>
   <div class="admin-update-furniture bg-white shadow-lg rounded-xl p-8 max-w-4xl mx-auto mt-8">
-    <div v-if="loading" class="text-center py-8 text-lg font-semibold text-gray-500">Chargement du produit...</div>
-    <div v-else-if="error" class="text-center text-red-500 py-8 text-lg font-semibold">{{ error }}</div>
+    <div v-if="loading" class="text-center py-8 text-lg font-semibold text-gray-500">
+      Chargement du produit...
+    </div>
+    <div v-else-if="error" class="text-center text-red-500 py-8 text-lg font-semibold">
+      {{ error }}
+    </div>
     <template v-else>
       <h1 class="text-2xl font-bold mb-6">Modifier le produit</h1>
-      
+
       <form @submit.prevent="updateFurniture" class="space-y-6">
-        <TextInput
-          id="name"
-          label="Nom du produit"
-          v-model="furniture.name"
-          required
-        />
+        <TextInput id="name" label="Nom du produit" v-model="furniture.name" required />
 
         <Select
           id="type"
@@ -22,12 +21,7 @@
           placeholder="Sélectionnez un type"
         />
 
-        <TextArea
-          id="description"
-          label="Description"
-          v-model="furniture.text"
-          required
-        />
+        <TextArea id="description" label="Description" v-model="furniture.text" required />
 
         <TextInput
           id="price"
@@ -40,19 +34,15 @@
         />
 
         <div class="flex justify-end space-x-4">
-          <button 
+          <button
             type="button"
             class="btn btn-secondary"
             @click="$router.push('/admin/furnitures')"
           >
             Annuler
           </button>
-          <button 
-            type="submit"
-            class="btn btn-primary"
-            :disabled="updating"
-          >
-            {{ updating ? 'Enregistrement...' : 'Enregistrer' }}
+          <button type="submit" class="btn btn-primary" :disabled="updating">
+            {{ updating ? "Enregistrement..." : "Enregistrer" }}
           </button>
         </div>
       </form>
@@ -61,45 +51,48 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { getFurnitureById, updateFurniture as updateFurnitureApi } from '../../../api/furnituresApi';
-import TextInput from '../../../components/form/TextInput.vue';
-import TextArea from '../../../components/form/TextArea.vue';
-import Select from '../../../components/form/Select.vue';
+import { ref, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import {
+  getFurnitureById,
+  updateFurniture as updateFurnitureApi,
+} from "../../../api/furnituresApi";
+import TextInput from "../../../components/form/TextInput.vue";
+import TextArea from "../../../components/form/TextArea.vue";
+import Select from "../../../components/form/Select.vue";
 
 export default {
   components: {
     TextInput,
     TextArea,
-    Select
+    Select,
   },
   setup() {
     const route = useRoute();
     const router = useRouter();
     const furniture = ref({
-      name: '',
-      type: '',
-      text: '',
-      price: null
+      name: "",
+      type: "",
+      text: "",
+      price: null,
     });
     const loading = ref(true);
     const updating = ref(false);
     const error = ref(null);
 
     const furnitureTypes = [
-      { label: 'Canapé', value: 'canape' },
-      { label: 'Table', value: 'table' },
-      { label: 'Chaise', value: 'chaise' },
-      { label: 'Armoire', value: 'armoire' },
-      { label: 'Lit', value: 'lit' }
+      { label: "Canapé", value: "canape" },
+      { label: "Table", value: "table" },
+      { label: "Chaise", value: "chaise" },
+      { label: "Armoire", value: "armoire" },
+      { label: "Lit", value: "lit" },
     ];
 
     const filteredTypes = ref([]);
 
     const searchTypes = (event) => {
       const query = event.query.toLowerCase();
-      filteredTypes.value = furnitureTypes.filter(type => 
+      filteredTypes.value = furnitureTypes.filter((type) =>
         type.label.toLowerCase().includes(query)
       );
     };
@@ -122,7 +115,7 @@ export default {
       try {
         updating.value = true;
         await updateFurnitureApi(route.params.id, furniture.value);
-        await router.push('/admin/furnitures');
+        await router.push("/admin/furnitures");
       } catch (e) {
         error.value = "Erreur lors de la mise à jour du produit.";
         console.error(e);
@@ -141,9 +134,9 @@ export default {
       furnitureTypes,
       filteredTypes,
       searchTypes,
-      updateFurniture
+      updateFurniture,
     };
-  }
+  },
 };
 </script>
 
@@ -151,7 +144,7 @@ export default {
 .admin-update-furniture {
   background: #fff;
   border-radius: 18px;
-  box-shadow: 0 4px 24px 0 rgba(0,0,0,0.07);
+  box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.07);
 }
 
 .form-group {
@@ -171,12 +164,12 @@ export default {
 
 .form-input:focus {
   outline: none;
-  border-color: #B88E2F;
+  border-color: #b88e2f;
   box-shadow: 0 0 0 2px rgba(184, 142, 47, 0.2);
 }
 
 .form-input:hover {
-  border-color: #B88E2F;
+  border-color: #b88e2f;
 }
 
 textarea.form-input {
@@ -210,7 +203,7 @@ input[type="number"].form-input::-webkit-inner-spin-button {
 }
 
 .btn-primary {
-  background: #B88E2F;
+  background: #b88e2f;
   color: white;
 }
 
@@ -247,12 +240,12 @@ input[type="number"].form-input::-webkit-inner-spin-button {
 
 .select-input:focus {
   outline: none;
-  border-color: #B88E2F;
+  border-color: #b88e2f;
   box-shadow: 0 0 0 2px rgba(184, 142, 47, 0.2);
 }
 
 .custom-select::after {
-  content: '';
+  content: "";
   position: absolute;
   right: 1rem;
   top: 50%;
@@ -266,7 +259,7 @@ input[type="number"].form-input::-webkit-inner-spin-button {
 }
 
 .select-input:hover {
-  border-color: #B88E2F;
+  border-color: #b88e2f;
 }
 
 .select-input option {
@@ -274,7 +267,7 @@ input[type="number"].form-input::-webkit-inner-spin-button {
 }
 
 .select-input option:checked {
-  background-color: #B88E2F;
+  background-color: #b88e2f;
   color: white;
 }
 </style>

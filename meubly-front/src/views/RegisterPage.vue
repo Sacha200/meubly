@@ -3,21 +3,39 @@
     <Toast position="top-right">
       <template #message="slotProps">
         <div class="p-toast-message-content flex items-start gap-3">
-          <span class="p-toast-message-icon inline-flex items-center justify-center" aria-hidden="true">
-            <svg v-if="slotProps.message.severity === 'success'" viewBox="0 0 24 24" class="w-4 h-4">
+          <span
+            class="p-toast-message-icon inline-flex items-center justify-center"
+            aria-hidden="true"
+          >
+            <svg
+              v-if="slotProps.message.severity === 'success'"
+              viewBox="0 0 24 24"
+              class="w-4 h-4"
+            >
               <path fill="currentColor" d="M9.0 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z" />
             </svg>
-            <svg v-else-if="slotProps.message.severity === 'info'" viewBox="0 0 24 24" class="w-4 h-4">
-              <path fill="currentColor"
-                d="M11 17h2v-6h-2v6zm0-8h2V7h-2v2zm1-7C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
+            <svg
+              v-else-if="slotProps.message.severity === 'info'"
+              viewBox="0 0 24 24"
+              class="w-4 h-4"
+            >
+              <path
+                fill="currentColor"
+                d="M11 17h2v-6h-2v6zm0-8h2V7h-2v2zm1-7C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"
+              />
             </svg>
-            <svg v-else-if="slotProps.message.severity === 'warn'" viewBox="0 0 24 24" class="w-4 h-4">
-              <path fill="currentColor"
-                d="M1 21h22L12 2 1 21zm12-3h-2v2h2v-2zm0-8h-2v6h2V10z" />
+            <svg
+              v-else-if="slotProps.message.severity === 'warn'"
+              viewBox="0 0 24 24"
+              class="w-4 h-4"
+            >
+              <path fill="currentColor" d="M1 21h22L12 2 1 21zm12-3h-2v2h2v-2zm0-8h-2v6h2V10z" />
             </svg>
             <svg v-else viewBox="0 0 24 24" class="w-4 h-4">
-              <path fill="currentColor"
-                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3.59 13.59L14.17 14.17 12 12l-2.17 2.17-1.41-1.41L10.59 10.59 8.41 8.41l1.41-1.41L12 9.17l2.17-2.17 1.41 1.41-2.18 2.18 2.18 2.18-1.41 1.41z" />
+              <path
+                fill="currentColor"
+                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3.59 13.59L14.17 14.17 12 12l-2.17 2.17-1.41-1.41L10.59 10.59 8.41 8.41l1.41-1.41L12 9.17l2.17-2.17 1.41 1.41-2.18 2.18 2.18 2.18-1.41 1.41z"
+              />
             </svg>
           </span>
 
@@ -51,7 +69,9 @@
 
         <form @submit.prevent="handleRegister" class="space-y-6">
           <div>
-            <label for="username" class="block mb-2 text-gray-700 dark:text-gray-300">Nom d'utilisateur</label>
+            <label for="username" class="block mb-2 text-gray-700 dark:text-gray-300"
+              >Nom d'utilisateur</label
+            >
             <input
               id="username"
               v-model="formData.username"
@@ -61,7 +81,9 @@
               @input="validateField('username')"
               required
             />
-            <span v-if="fieldErrors.username" class="error-message">{{ fieldErrors.username }}</span>
+            <span v-if="fieldErrors.username" class="error-message">{{
+              fieldErrors.username
+            }}</span>
           </div>
 
           <div>
@@ -78,7 +100,9 @@
           </div>
 
           <div>
-            <label for="password" class="block mb-2 text-gray-700 dark:text-gray-300">Mot de passe</label>
+            <label for="password" class="block mb-2 text-gray-700 dark:text-gray-300"
+              >Mot de passe</label
+            >
             <input
               id="password"
               v-model="formData.password"
@@ -87,12 +111,14 @@
               placeholder="Mot de passe"
               required
             />
-            <span v-if="fieldErrors.password" class="error-message">{{ fieldErrors.password }}</span>
+            <span v-if="fieldErrors.password" class="error-message">{{
+              fieldErrors.password
+            }}</span>
           </div>
 
           <div class="flex flex-col items-center gap-4">
             <button type="submit" class="submit-button" :disabled="loading">
-              {{ loading ? 'Inscription...' : "S'inscrire" }}
+              {{ loading ? "Inscription..." : "S'inscrire" }}
             </button>
 
             <p class="text-sm text-gray-600 dark:text-gray-400">
@@ -110,29 +136,29 @@
 </template>
 
 <script>
-import { registerUser } from '../api/authApi';
-import Toast from 'primevue/toast';
-import Header from '../components/Header.vue';
-import Footer from '../components/Footer.vue';
+import { registerUser } from "../api/authApi";
+import Toast from "primevue/toast";
+import Header from "../components/Header.vue";
+import Footer from "../components/Footer.vue";
 
 export default {
-  name: 'Register',
+  name: "Register",
   components: { Toast, Header, Footer },
   data() {
     return {
       formData: {
-        username: '',
-        email: '',
-        password: '',
+        username: "",
+        email: "",
+        password: "",
       },
       fieldErrors: {
-        username: '',
-        email: '',
-        password: '',
+        username: "",
+        email: "",
+        password: "",
       },
-      mailpitUrl: import.meta.env.VITE_MAILPIT_URL || 'http://localhost:8025',
-      loading: false
-    }
+      mailpitUrl: import.meta.env.VITE_MAILPIT_URL || "http://localhost:8025",
+      loading: false,
+    };
   },
   methods: {
     validateForm() {
@@ -145,15 +171,16 @@ export default {
         errors.push("Le nom d'utilisateur ne peut pas dépasser 30 caractères");
       }
       if (!/^[a-zA-Z0-9_-]+$/.test(this.formData.username)) {
-        errors.push("Le nom d'utilisateur ne peut contenir que des lettres, chiffres, tirets et underscores");
+        errors.push(
+          "Le nom d'utilisateur ne peut contenir que des lettres, chiffres, tirets et underscores"
+        );
       }
-      
-      
-      
 
       const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
       if (!emailRegex.test(this.formData.email)) {
-        errors.push("L'adresse email n'est pas valide. Utilisez un format standard (exemple@domaine.com)");
+        errors.push(
+          "L'adresse email n'est pas valide. Utilisez un format standard (exemple@domaine.com)"
+        );
       }
 
       if (this.formData.password.length < 8) {
@@ -178,11 +205,11 @@ export default {
         const errors = this.validateForm();
         if (errors.length > 0) {
           this.$toast.add({
-            severity: 'error',
-            summary: 'Formulaire invalide',
+            severity: "error",
+            summary: "Formulaire invalide",
             detail: errors[0],
             life: 4500,
-            closable: false
+            closable: false,
           });
           return;
         }
@@ -190,39 +217,46 @@ export default {
         const { user, profile } = await registerUser(this.formData);
 
         if (user) {
-          console.log('User:', user);
-          console.log('Profil créé:', profile);
+          console.log("User:", user);
+          console.log("Profil créé:", profile);
           // Diriger vers l'écran de vérification (optionnel) :
           // l'utilisateur peut soit coller le token, soit cliquer le lien dans l'email.
-          this.$router.push({ path: '/verify-email', query: { email: this.formData.email, sent: '1' } });
+          this.$router.push({
+            path: "/verify-email",
+            query: { email: this.formData.email, sent: "1" },
+          });
         }
-
       } catch (error) {
-        console.error('Erreur:', error);
-        const msg = (error?.message || '').toLowerCase();
-        if (msg.includes('error sending confirmation email') || msg.includes('confirmation email')) {
+        console.error("Erreur:", error);
+        const msg = (error?.message || "").toLowerCase();
+        if (
+          msg.includes("error sending confirmation email") ||
+          msg.includes("confirmation email")
+        ) {
           this.$toast.add({
-            severity: 'warn',
-            summary: 'Compte créé',
-            detail: "Compte créé, mais l’email n’a pas été envoyé. Vérifie Mailpit (ou la config SMTP).",
+            severity: "warn",
+            summary: "Compte créé",
+            detail:
+              "Compte créé, mais l’email n’a pas été envoyé. Vérifie Mailpit (ou la config SMTP).",
             life: 11000,
             closable: false,
-            data: { actions: { mailpit: true } }
+            data: { actions: { mailpit: true } },
           });
           return;
         }
-        const fallback = "Service d'authentification indisponible (Supabase). Réessaie dans quelques secondes.";
+        const fallback =
+          "Service d'authentification indisponible (Supabase). Réessaie dans quelques secondes.";
         const detail =
           error?.message ||
           error?.error_description ||
-          (typeof error === 'string' ? error : '') ||
+          (typeof error === "string" ? error : "") ||
           fallback;
         this.$toast.add({
-          severity: 'error',
-          summary: 'Inscription impossible',
+          severity: "error",
+          summary: "Inscription impossible",
           detail,
           life: 6000,
-          closable: false
+          closable: false,
         });
       } finally {
         this.loading = false;
@@ -230,24 +264,25 @@ export default {
     },
 
     validateField(fieldName) {
-      if (fieldName === 'username') {
-        this.fieldErrors.username = this.formData.username.length < 3
-          ? "Le nom d'utilisateur doit contenir au moins 3 caractères"
-          : '';
+      if (fieldName === "username") {
+        this.fieldErrors.username =
+          this.formData.username.length < 3
+            ? "Le nom d'utilisateur doit contenir au moins 3 caractères"
+            : "";
       }
     },
     openMailpit() {
-      window.open(this.mailpitUrl, '_blank', 'noopener,noreferrer');
-    }
-  }
-}
+      window.open(this.mailpitUrl, "_blank", "noopener,noreferrer");
+    },
+  },
+};
 </script>
 
 <style scoped>
 h1 {
-  font-family: 'Poppins-Bold';
+  font-family: "Poppins-Bold";
   font-size: 32px;
-  color: #3A3A3A;
+  color: #3a3a3a;
 }
 
 .dark h1 {
@@ -275,12 +310,12 @@ h1 {
 .submit-button {
   padding: 10px 20px;
   width: 100%;
-  background-color: #B88E2F;
+  background-color: #b88e2f;
   color: white;
   border-radius: 30px;
   cursor: pointer;
   transition: background-color 0.3s;
-  font-family: 'Poppins-Medium';
+  font-family: "Poppins-Medium";
   font-size: 16px;
   border: none;
 }
@@ -304,7 +339,7 @@ h1 {
   border-radius: 9999px;
   background: #22c55e;
   color: white;
-  font-family: 'Poppins-Medium';
+  font-family: "Poppins-Medium";
   font-size: 14px;
   text-decoration: none;
 }
@@ -314,9 +349,9 @@ h1 {
 }
 
 .cta-link {
-  color: #B88E2F;
+  color: #b88e2f;
   font-size: 14px;
-  font-family: 'Poppins-Medium';
+  font-family: "Poppins-Medium";
   text-decoration: underline;
   background: transparent;
   border: none;

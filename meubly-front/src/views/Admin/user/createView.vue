@@ -13,7 +13,12 @@
             class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#B88E2F]"
           >
             <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
             </svg>
             Retour à la liste
           </router-link>
@@ -41,11 +46,15 @@
                   required
                   :class="[
                     'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#B88E2F]',
-                    errors.firstName ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-[#B88E2F]'
+                    errors.firstName
+                      ? 'border-red-300 focus:border-red-500'
+                      : 'border-gray-300 focus:border-[#B88E2F]',
                   ]"
                   placeholder="Prénom"
                 />
-                <p v-if="errors.firstName" class="mt-1 text-sm text-red-600">{{ errors.firstName }}</p>
+                <p v-if="errors.firstName" class="mt-1 text-sm text-red-600">
+                  {{ errors.firstName }}
+                </p>
               </div>
 
               <!-- Last Name -->
@@ -60,11 +69,15 @@
                   required
                   :class="[
                     'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#B88E2F]',
-                    errors.lastName ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-[#B88E2F]'
+                    errors.lastName
+                      ? 'border-red-300 focus:border-red-500'
+                      : 'border-gray-300 focus:border-[#B88E2F]',
                   ]"
                   placeholder="Nom"
                 />
-                <p v-if="errors.lastName" class="mt-1 text-sm text-red-600">{{ errors.lastName }}</p>
+                <p v-if="errors.lastName" class="mt-1 text-sm text-red-600">
+                  {{ errors.lastName }}
+                </p>
               </div>
             </div>
           </div>
@@ -85,7 +98,9 @@
                   required
                   :class="[
                     'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#B88E2F]',
-                    errors.email ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-[#B88E2F]'
+                    errors.email
+                      ? 'border-red-300 focus:border-red-500'
+                      : 'border-gray-300 focus:border-[#B88E2F]',
                   ]"
                   placeholder="email@exemple.com"
                 />
@@ -103,7 +118,9 @@
                   type="tel"
                   :class="[
                     'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#B88E2F]',
-                    errors.phone ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-[#B88E2F]'
+                    errors.phone
+                      ? 'border-red-300 focus:border-red-500'
+                      : 'border-gray-300 focus:border-[#B88E2F]',
                   ]"
                   placeholder="+33 1 23 45 67 89"
                 />
@@ -127,7 +144,9 @@
                   required
                   :class="[
                     'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#B88E2F]',
-                    errors.role ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-[#B88E2F]'
+                    errors.role
+                      ? 'border-red-300 focus:border-red-500'
+                      : 'border-gray-300 focus:border-[#B88E2F]',
                   ]"
                 >
                   <option value="">Sélectionner un rôle</option>
@@ -153,7 +172,9 @@
                     Compte actif
                   </label>
                 </div>
-                <p v-if="errors.isActive" class="mt-1 text-sm text-red-600">{{ errors.isActive }}</p>
+                <p v-if="errors.isActive" class="mt-1 text-sm text-red-600">
+                  {{ errors.isActive }}
+                </p>
               </div>
             </div>
           </div>
@@ -174,11 +195,15 @@
                   required
                   :class="[
                     'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#B88E2F]',
-                    errors.password ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-[#B88E2F]'
+                    errors.password
+                      ? 'border-red-300 focus:border-red-500'
+                      : 'border-gray-300 focus:border-[#B88E2F]',
                   ]"
                   placeholder="Mot de passe"
                 />
-                <p v-if="errors.password" class="mt-1 text-sm text-red-600">{{ errors.password }}</p>
+                <p v-if="errors.password" class="mt-1 text-sm text-red-600">
+                  {{ errors.password }}
+                </p>
               </div>
 
               <!-- Confirm Password -->
@@ -193,11 +218,15 @@
                   required
                   :class="[
                     'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#B88E2F]',
-                    errors.confirmPassword ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-[#B88E2F]'
+                    errors.confirmPassword
+                      ? 'border-red-300 focus:border-red-500'
+                      : 'border-gray-300 focus:border-[#B88E2F]',
                   ]"
                   placeholder="Confirmer le mot de passe"
                 />
-                <p v-if="errors.confirmPassword" class="mt-1 text-sm text-red-600">{{ errors.confirmPassword }}</p>
+                <p v-if="errors.confirmPassword" class="mt-1 text-sm text-red-600">
+                  {{ errors.confirmPassword }}
+                </p>
               </div>
             </div>
           </div>
@@ -215,11 +244,27 @@
               :disabled="loading"
               class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#B88E2F] hover:bg-[#B88E2F] hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#B88E2F] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <svg v-if="loading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <svg
+                v-if="loading"
+                class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
               </svg>
-              {{ loading ? 'Création...' : 'Créer l\'utilisateur' }}
+              {{ loading ? "Création..." : "Créer l'utilisateur" }}
             </button>
           </div>
         </form>
@@ -229,72 +274,72 @@
 </template>
 
 <script>
-import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
-import axios from 'axios'
+import { ref, reactive } from "vue";
+import { useRouter } from "vue-router";
+import axios from "axios";
 
 export default {
-  name: 'AdminUserCreateView',
+  name: "AdminUserCreateView",
   setup() {
-    const router = useRouter()
-    const loading = ref(false)
-    const errors = reactive({})
+    const router = useRouter();
+    const loading = ref(false);
+    const errors = reactive({});
 
     const form = reactive({
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
-      role: '',
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      role: "",
       isActive: true,
-      password: '',
-      confirmPassword: ''
-    })
+      password: "",
+      confirmPassword: "",
+    });
 
     const validateForm = () => {
-      errors.value = {}
+      errors.value = {};
 
       if (!form.firstName.trim()) {
-        errors.firstName = 'Le prénom est requis'
+        errors.firstName = "Le prénom est requis";
       }
 
       if (!form.lastName.trim()) {
-        errors.lastName = 'Le nom est requis'
+        errors.lastName = "Le nom est requis";
       }
 
       if (!form.email.trim()) {
-        errors.email = 'L\'email est requis'
+        errors.email = "L'email est requis";
       } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-        errors.email = 'L\'email n\'est pas valide'
+        errors.email = "L'email n'est pas valide";
       }
 
       if (!form.role) {
-        errors.role = 'Le rôle est requis'
+        errors.role = "Le rôle est requis";
       }
 
       if (!form.password) {
-        errors.password = 'Le mot de passe est requis'
+        errors.password = "Le mot de passe est requis";
       } else if (form.password.length < 6) {
-        errors.password = 'Le mot de passe doit contenir au moins 6 caractères'
+        errors.password = "Le mot de passe doit contenir au moins 6 caractères";
       }
 
       if (!form.confirmPassword) {
-        errors.confirmPassword = 'La confirmation du mot de passe est requise'
+        errors.confirmPassword = "La confirmation du mot de passe est requise";
       } else if (form.password !== form.confirmPassword) {
-        errors.confirmPassword = 'Les mots de passe ne correspondent pas'
+        errors.confirmPassword = "Les mots de passe ne correspondent pas";
       }
 
-      return Object.keys(errors).length === 0
-    }
+      return Object.keys(errors).length === 0;
+    };
 
     const handleSubmit = async () => {
       if (!validateForm()) {
-        return
+        return;
       }
 
       try {
-        loading.value = true
-        
+        loading.value = true;
+
         const userData = {
           firstName: form.firstName,
           lastName: form.lastName,
@@ -302,40 +347,40 @@ export default {
           phone: form.phone || null,
           role: form.role,
           isActive: form.isActive,
-          password: form.password
-        }
+          password: form.password,
+        };
 
-        await axios.post('/api/v1/users', userData)
-        
-        router.push('/admin/users')
+        await axios.post("/api/v1/users", userData);
+
+        router.push("/admin/users");
       } catch (error) {
-        console.error('Erreur lors de la création de l\'utilisateur:', error)
-        
+        console.error("Erreur lors de la création de l'utilisateur:", error);
+
         if (error.response?.data?.message) {
           // Handle specific error messages from the server
-          const message = error.response.data.message
-          if (message.includes('email')) {
-            errors.email = 'Cet email est déjà utilisé'
+          const message = error.response.data.message;
+          if (message.includes("email")) {
+            errors.email = "Cet email est déjà utilisé";
           } else {
             // General error
-            alert('Erreur lors de la création de l\'utilisateur: ' + message)
+            alert("Erreur lors de la création de l'utilisateur: " + message);
           }
         } else {
-          alert('Erreur lors de la création de l\'utilisateur')
+          alert("Erreur lors de la création de l'utilisateur");
         }
       } finally {
-        loading.value = false
+        loading.value = false;
       }
-    }
+    };
 
     return {
       form,
       errors,
       loading,
-      handleSubmit
-    }
-  }
-}
+      handleSubmit,
+    };
+  },
+};
 </script>
 
 <style scoped>

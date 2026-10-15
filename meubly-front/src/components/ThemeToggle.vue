@@ -10,7 +10,11 @@
     <!-- Cercle de fond animé -->
     <div
       class="absolute inset-0 rounded-full opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-105"
-      :class="themeStore.isDarkMode ? 'toggle__glow toggle__glow--dark' : 'toggle__glow toggle__glow--light'"
+      :class="
+        themeStore.isDarkMode
+          ? 'toggle__glow toggle__glow--dark'
+          : 'toggle__glow toggle__glow--light'
+      "
     ></div>
 
     <!-- Icône Soleil (mode clair) -->
@@ -20,7 +24,9 @@
       fill="currentColor"
       viewBox="0 0 24 24"
     >
-      <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"/>
+      <path
+        d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"
+      />
     </svg>
 
     <!-- Icône Lune (mode sombre) -->
@@ -30,7 +36,9 @@
       fill="currentColor"
       viewBox="0 0 24 24"
     >
-      <path d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z"/>
+      <path
+        d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z"
+      />
     </svg>
 
     <!-- Effet de brillance au hover -->
@@ -40,33 +48,36 @@
     ></div>
 
     <!-- Particules animées (optionnel) -->
-    <div
-      v-if="themeStore.isDarkMode"
-      class="absolute inset-0 rounded-full"
-    >
-      <div class="absolute top-1 left-1 w-1 h-1 rounded-full animate-pulse toggle__particle--primary"></div>
-      <div class="absolute top-2 right-2 w-0.5 h-0.5 rounded-full animate-pulse delay-100 toggle__particle--secondary"></div>
-      <div class="absolute bottom-2 left-3 w-0.5 h-0.5 rounded-full animate-pulse delay-200 toggle__particle--primary"></div>
+    <div v-if="themeStore.isDarkMode" class="absolute inset-0 rounded-full">
+      <div
+        class="absolute top-1 left-1 w-1 h-1 rounded-full animate-pulse toggle__particle--primary"
+      ></div>
+      <div
+        class="absolute top-2 right-2 w-0.5 h-0.5 rounded-full animate-pulse delay-100 toggle__particle--secondary"
+      ></div>
+      <div
+        class="absolute bottom-2 left-3 w-0.5 h-0.5 rounded-full animate-pulse delay-200 toggle__particle--primary"
+      ></div>
     </div>
   </button>
 </template>
 
 <script>
-import { useThemeStore } from '../stores/themeStore';
-import { computed } from 'vue';
+import { useThemeStore } from "../stores/themeStore";
+import { computed } from "vue";
 
 export default {
-  name: 'ThemeToggle',
+  name: "ThemeToggle",
   setup() {
     const themeStore = useThemeStore();
 
     const fallbackTheme = {
-      background: '#0a0a0a', // neutral-950
-      surface: '#171717', // neutral-900
-      text: '#fafafa', // neutral-50
-      accent: '#3b82f6', // blue-500
-      accentHover: '#2563eb', // blue-600
-      shadow: '#0a0a0a'
+      background: "#0a0a0a", // neutral-950
+      surface: "#171717", // neutral-900
+      text: "#fafafa", // neutral-50
+      accent: "#3b82f6", // blue-500
+      accentHover: "#2563eb", // blue-600
+      shadow: "#0a0a0a",
     };
 
     const currentColors = computed(() => themeStore.currentColorTheme || fallbackTheme);
@@ -77,14 +88,14 @@ export default {
       }
       const colors = currentColors.value;
       return {
-        '--toggle-surface': colors.surface,
-        '--toggle-background': colors.background,
-        '--toggle-text': colors.text,
-        '--toggle-accent': colors.accent,
-        '--toggle-accent-hover': colors.accentHover,
-        '--toggle-accent-transparent': hexToRgba(colors.accent, 0.2),
-        '--toggle-accent-hover-transparent': hexToRgba(colors.accentHover, 0.2),
-        '--toggle-shadow': hexToRgba(colors.shadow || colors.background, 0.35)
+        "--toggle-surface": colors.surface,
+        "--toggle-background": colors.background,
+        "--toggle-text": colors.text,
+        "--toggle-accent": colors.accent,
+        "--toggle-accent-hover": colors.accentHover,
+        "--toggle-accent-transparent": hexToRgba(colors.accent, 0.2),
+        "--toggle-accent-hover-transparent": hexToRgba(colors.accentHover, 0.2),
+        "--toggle-shadow": hexToRgba(colors.shadow || colors.background, 0.35),
       };
     });
 
@@ -93,9 +104,12 @@ export default {
         return `rgba(0, 0, 0, ${alpha})`;
       }
 
-      let normalized = hex.replace('#', '');
+      let normalized = hex.replace("#", "");
       if (normalized.length === 3) {
-        normalized = normalized.split('').map((c) => c + c).join('');
+        normalized = normalized
+          .split("")
+          .map((c) => c + c)
+          .join("");
       }
 
       const parsed = parseInt(normalized, 16);
@@ -110,11 +124,11 @@ export default {
       return `rgba(${r}, ${g}, ${b}, ${alpha})`;
     }
 
-    return { 
+    return {
       themeStore,
-      themeVariables
+      themeVariables,
     };
-  }
+  },
 };
 </script>
 
@@ -146,7 +160,11 @@ export default {
 }
 
 .toggle__highlight--dark {
-  background: linear-gradient(135deg, var(--toggle-accent-transparent), var(--toggle-accent-hover-transparent));
+  background: linear-gradient(
+    135deg,
+    var(--toggle-accent-transparent),
+    var(--toggle-accent-hover-transparent)
+  );
 }
 
 .toggle__icon--sun {
@@ -163,7 +181,8 @@ export default {
 
 /* Animation personnalisée pour les particules */
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.3;
     transform: scale(1);
   }

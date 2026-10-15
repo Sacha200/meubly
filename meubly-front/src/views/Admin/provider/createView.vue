@@ -13,7 +13,12 @@
             class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#B88E2F]"
           >
             <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
             </svg>
             Retour à la liste
           </router-link>
@@ -41,7 +46,9 @@
                   required
                   :class="[
                     'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#B88E2F]',
-                    errors.name ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-[#B88E2F]'
+                    errors.name
+                      ? 'border-red-300 focus:border-red-500'
+                      : 'border-gray-300 focus:border-[#B88E2F]',
                   ]"
                   placeholder="Nom du fournisseur"
                 />
@@ -60,7 +67,9 @@
                   required
                   :class="[
                     'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#B88E2F]',
-                    errors.url ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-[#B88E2F]'
+                    errors.url
+                      ? 'border-red-300 focus:border-red-500'
+                      : 'border-gray-300 focus:border-[#B88E2F]',
                   ]"
                   placeholder="https://www.exemple.com"
                 />
@@ -78,11 +87,15 @@
                   rows="3"
                   :class="[
                     'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#B88E2F]',
-                    errors.description ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-[#B88E2F]'
+                    errors.description
+                      ? 'border-red-300 focus:border-red-500'
+                      : 'border-gray-300 focus:border-[#B88E2F]',
                   ]"
                   placeholder="Description du fournisseur et de ses services..."
                 ></textarea>
-                <p v-if="errors.description" class="mt-1 text-sm text-red-600">{{ errors.description }}</p>
+                <p v-if="errors.description" class="mt-1 text-sm text-red-600">
+                  {{ errors.description }}
+                </p>
               </div>
             </div>
           </div>
@@ -101,7 +114,9 @@
                   v-model="form.type"
                   :class="[
                     'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#B88E2F]',
-                    errors.type ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-[#B88E2F]'
+                    errors.type
+                      ? 'border-red-300 focus:border-red-500'
+                      : 'border-gray-300 focus:border-[#B88E2F]',
                   ]"
                 >
                   <option value="">Sélectionner un type</option>
@@ -129,7 +144,9 @@
                     Fournisseur actif
                   </label>
                 </div>
-                <p v-if="errors.isActive" class="mt-1 text-sm text-red-600">{{ errors.isActive }}</p>
+                <p v-if="errors.isActive" class="mt-1 text-sm text-red-600">
+                  {{ errors.isActive }}
+                </p>
               </div>
             </div>
           </div>
@@ -149,11 +166,15 @@
                   type="url"
                   :class="[
                     'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#B88E2F]',
-                    errors.apiEndpoint ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-[#B88E2F]'
+                    errors.apiEndpoint
+                      ? 'border-red-300 focus:border-red-500'
+                      : 'border-gray-300 focus:border-[#B88E2F]',
                   ]"
                   placeholder="https://api.exemple.com/products"
                 />
-                <p v-if="errors.apiEndpoint" class="mt-1 text-sm text-red-600">{{ errors.apiEndpoint }}</p>
+                <p v-if="errors.apiEndpoint" class="mt-1 text-sm text-red-600">
+                  {{ errors.apiEndpoint }}
+                </p>
               </div>
 
               <!-- API Key -->
@@ -167,7 +188,9 @@
                   type="password"
                   :class="[
                     'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#B88E2F]',
-                    errors.apiKey ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-[#B88E2F]'
+                    errors.apiKey
+                      ? 'border-red-300 focus:border-red-500'
+                      : 'border-gray-300 focus:border-[#B88E2F]',
                   ]"
                   placeholder="Clé API (optionnelle)"
                 />
@@ -189,11 +212,27 @@
               :disabled="loading"
               class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#B88E2F] hover:bg-[#B88E2F] hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#B88E2F] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <svg v-if="loading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <svg
+                v-if="loading"
+                class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
               </svg>
-              {{ loading ? 'Création...' : 'Créer le fournisseur' }}
+              {{ loading ? "Création..." : "Créer le fournisseur" }}
             </button>
           </div>
         </form>
@@ -203,55 +242,55 @@
 </template>
 
 <script>
-import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
-import axios from 'axios'
+import { ref, reactive } from "vue";
+import { useRouter } from "vue-router";
+import axios from "axios";
 
 export default {
-  name: 'AdminProviderCreateView',
+  name: "AdminProviderCreateView",
   setup() {
-    const router = useRouter()
-    const loading = ref(false)
-    const errors = reactive({})
+    const router = useRouter();
+    const loading = ref(false);
+    const errors = reactive({});
 
     const form = reactive({
-      name: '',
-      url: '',
-      description: '',
-      type: '',
+      name: "",
+      url: "",
+      description: "",
+      type: "",
       isActive: true,
-      apiEndpoint: '',
-      apiKey: ''
-    })
+      apiEndpoint: "",
+      apiKey: "",
+    });
 
     const validateForm = () => {
-      errors.value = {}
+      errors.value = {};
 
       if (!form.name.trim()) {
-        errors.name = 'Le nom du fournisseur est requis'
+        errors.name = "Le nom du fournisseur est requis";
       }
 
       if (!form.url.trim()) {
-        errors.url = 'L\'URL est requise'
+        errors.url = "L'URL est requise";
       } else if (!/^https?:\/\/.+/.test(form.url)) {
-        errors.url = 'L\'URL doit commencer par http:// ou https://'
+        errors.url = "L'URL doit commencer par http:// ou https://";
       }
 
       if (form.apiEndpoint && !/^https?:\/\/.+/.test(form.apiEndpoint)) {
-        errors.apiEndpoint = 'L\'URL de l\'API doit commencer par http:// ou https://'
+        errors.apiEndpoint = "L'URL de l'API doit commencer par http:// ou https://";
       }
 
-      return Object.keys(errors).length === 0
-    }
+      return Object.keys(errors).length === 0;
+    };
 
     const handleSubmit = async () => {
       if (!validateForm()) {
-        return
+        return;
       }
 
       try {
-        loading.value = true
-        
+        loading.value = true;
+
         const providerData = {
           name: form.name,
           url: form.url,
@@ -259,40 +298,40 @@ export default {
           type: form.type || null,
           isActive: form.isActive,
           apiEndpoint: form.apiEndpoint || null,
-          apiKey: form.apiKey || null
-        }
+          apiKey: form.apiKey || null,
+        };
 
-        await axios.post('/api/v1/providers', providerData)
-        
-        router.push('/admin/providers')
+        await axios.post("/api/v1/providers", providerData);
+
+        router.push("/admin/providers");
       } catch (error) {
-        console.error('Erreur lors de la création du fournisseur:', error)
-        
+        console.error("Erreur lors de la création du fournisseur:", error);
+
         if (error.response?.data?.message) {
-          const message = error.response.data.message
-          if (message.includes('name')) {
-            errors.name = 'Ce nom de fournisseur est déjà utilisé'
-          } else if (message.includes('url')) {
-            errors.url = 'Cette URL est déjà utilisée'
+          const message = error.response.data.message;
+          if (message.includes("name")) {
+            errors.name = "Ce nom de fournisseur est déjà utilisé";
+          } else if (message.includes("url")) {
+            errors.url = "Cette URL est déjà utilisée";
           } else {
-            alert('Erreur lors de la création du fournisseur: ' + message)
+            alert("Erreur lors de la création du fournisseur: " + message);
           }
         } else {
-          alert('Erreur lors de la création du fournisseur')
+          alert("Erreur lors de la création du fournisseur");
         }
       } finally {
-        loading.value = false
+        loading.value = false;
       }
-    }
+    };
 
     return {
       form,
       errors,
       loading,
-      handleSubmit
-    }
-  }
-}
+      handleSubmit,
+    };
+  },
+};
 </script>
 
 <style scoped>

@@ -1,8 +1,8 @@
-import { createClient } from '@supabase/supabase-js';
-import dotenv from 'dotenv';
-import fs from 'node:fs/promises';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { createClient } from "@supabase/supabase-js";
+import dotenv from "dotenv";
+import fs from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 // Charger les variables d'environnement
 // - Docker: injectées par docker-compose
@@ -10,24 +10,20 @@ import { fileURLToPath } from 'node:url';
 dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 // Compat env:
 // - supabase-js attends l'URL du projet (Kong en local): http://localhost:8000
 // - clés: SERVICE_ROLE_KEY (stack supabase) ou SUPABASE_SERVICE_ROLE_KEY (naming app)
 const supabaseUrl =
-  process.env.SUPABASE_URL
-  || process.env.SUPABASE_PUBLIC_URL
-  || process.env.API_EXTERNAL_URL;
-const supabaseKey =
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-  || process.env.SERVICE_ROLE_KEY; // Utiliser la clé SERVICE_ROLE pour contourner RLS si besoin
+  process.env.SUPABASE_URL || process.env.SUPABASE_PUBLIC_URL || process.env.API_EXTERNAL_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SERVICE_ROLE_KEY; // Utiliser la clé SERVICE_ROLE pour contourner RLS si besoin
 
 if (!supabaseUrl || !supabaseKey) {
   console.error(
-    'Erreur: variables Supabase manquantes. Attendu:\n'
-    + '- URL: SUPABASE_URL (ou SUPABASE_PUBLIC_URL / API_EXTERNAL_URL)\n'
-    + '- KEY: SUPABASE_SERVICE_ROLE_KEY (ou SERVICE_ROLE_KEY)\n'
+    "Erreur: variables Supabase manquantes. Attendu:\n" +
+      "- URL: SUPABASE_URL (ou SUPABASE_PUBLIC_URL / API_EXTERNAL_URL)\n" +
+      "- KEY: SUPABASE_SERVICE_ROLE_KEY (ou SERVICE_ROLE_KEY)\n"
   );
   process.exit(1);
 }
@@ -35,23 +31,21 @@ if (!supabaseUrl || !supabaseKey) {
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 function toNumberOrNull(v) {
-  if (v === null || v === undefined || v === '') return null;
+  if (v === null || v === undefined || v === "") return null;
   const n = Number(v);
   return Number.isFinite(n) ? n : null;
 }
 
 async function readSeedFile() {
-  const seedFile =
-    process.env.SEED_OFFERS_FILE
-    || path.resolve(__dirname, 'seed_offers.json');
+  const seedFile = process.env.SEED_OFFERS_FILE || path.resolve(__dirname, "seed_offers.json");
 
-  const fallbackFile = path.resolve(__dirname, 'seed_offers.example.json');
+  const fallbackFile = path.resolve(__dirname, "seed_offers.example.json");
 
   try {
-    const raw = await fs.readFile(seedFile, 'utf-8');
+    const raw = await fs.readFile(seedFile, "utf-8");
     return { seed: JSON.parse(raw), seedFile };
   } catch {
-    const raw = await fs.readFile(fallbackFile, 'utf-8');
+    const raw = await fs.readFile(fallbackFile, "utf-8");
     return { seed: JSON.parse(raw), seedFile: fallbackFile };
   }
 }
@@ -61,21 +55,16 @@ async function getOrCreatePartner(partner) {
 
   const byId = seedPartnerId
     ? await supabase
-      .from('Partner')
-      .select('*')
-      .eq('partner_id', seedPartnerId)
-      .limit(1)
-      .maybeSingle()
+        .from("Partner")
+        .select("*")
+        .eq("partner_id", seedPartnerId)
+        .limit(1)
+        .maybeSingle()
     : { data: null, error: null };
   if (byId.error) throw byId.error;
 
   const byName = !byId.data
-    ? await supabase
-      .from('Partner')
-      .select('*')
-      .eq('name', partner.name)
-      .limit(1)
-      .maybeSingle()
+    ? await supabase.from("Partner").select("*").eq("name", partner.name).limit(1).maybeSingle()
     : { data: null, error: null };
   if (byName.error) throw byName.error;
 
@@ -95,20 +84,16 @@ async function getOrCreatePartner(partner) {
   if (existing) {
     // Si la seed fournit un partner_id différent de celui déjà en base, on garde l'existant.
     const { data, error } = await supabase
-      .from('Partner')
+      .from("Partner")
       .update(updatePayload)
-      .eq('partner_id', existing.partner_id)
+      .eq("partner_id", existing.partner_id)
       .select()
       .single();
     if (error) throw error;
     return data;
   }
 
-  const { data, error } = await supabase
-    .from('Partner')
-    .insert([insertPayload])
-    .select()
-    .single();
+  const { data, error } = await supabase.from("Partner").insert([insertPayload]).select().single();
   if (error) throw error;
   return data;
 }
@@ -118,21 +103,21 @@ async function getOrCreateFurniture(furniture) {
 
   const byId = seedFurnitureId
     ? await supabase
-      .from('Furniture')
-      .select('*')
-      .eq('furniture_id', seedFurnitureId)
-      .limit(1)
-      .maybeSingle()
+        .from("Furniture")
+        .select("*")
+        .eq("furniture_id", seedFurnitureId)
+        .limit(1)
+        .maybeSingle()
     : { data: null, error: null };
   if (byId.error) throw byId.error;
 
   const byTitle = !byId.data
     ? await supabase
-      .from('Furniture')
-      .select('*')
-      .eq('title', furniture.title)
-      .limit(1)
-      .maybeSingle()
+        .from("Furniture")
+        .select("*")
+        .eq("title", furniture.title)
+        .limit(1)
+        .maybeSingle()
     : { data: null, error: null };
   if (byTitle.error) throw byTitle.error;
 
@@ -155,9 +140,9 @@ async function getOrCreateFurniture(furniture) {
 
   if (existing) {
     const { data, error } = await supabase
-      .from('Furniture')
+      .from("Furniture")
       .update(updatePayload)
-      .eq('furniture_id', existing.furniture_id)
+      .eq("furniture_id", existing.furniture_id)
       .select()
       .single();
     if (error) throw error;
@@ -165,7 +150,7 @@ async function getOrCreateFurniture(furniture) {
   }
 
   const { data, error } = await supabase
-    .from('Furniture')
+    .from("Furniture")
     .insert([insertPayload])
     .select()
     .single();
@@ -184,28 +169,23 @@ async function upsertOffer({
   updated_at,
 }) {
   if (!url_website) {
-    throw new Error('Offer.url_website est requis (URL de la page partenaire).');
+    throw new Error("Offer.url_website est requis (URL de la page partenaire).");
   }
 
   const existingById = offer_id
-    ? await supabase
-      .from('offers')
-      .select('*')
-      .eq('offer_id', offer_id)
-      .limit(1)
-      .maybeSingle()
+    ? await supabase.from("offers").select("*").eq("offer_id", offer_id).limit(1).maybeSingle()
     : { data: null, error: null };
   if (existingById.error) throw existingById.error;
 
   const existingByComposite = !existingById.data
     ? await supabase
-      .from('offers')
-      .select('*')
-      .eq('furniture_id', furniture_id)
-      .eq('partner_id', partner_id)
-      .eq('url_website', url_website)
-      .limit(1)
-      .maybeSingle()
+        .from("offers")
+        .select("*")
+        .eq("furniture_id", furniture_id)
+        .eq("partner_id", partner_id)
+        .eq("url_website", url_website)
+        .limit(1)
+        .maybeSingle()
     : { data: null, error: null };
   if (existingByComposite.error) throw existingByComposite.error;
 
@@ -228,43 +208,39 @@ async function upsertOffer({
 
   if (existing) {
     const { data, error } = await supabase
-      .from('offers')
+      .from("offers")
       .update(updatePayload)
-      .eq('offer_id', existing.offer_id)
+      .eq("offer_id", existing.offer_id)
       .select()
       .single();
     if (error) throw error;
     return data;
   }
 
-  const { data, error } = await supabase
-    .from('offers')
-    .insert([insertPayload])
-    .select()
-    .single();
+  const { data, error } = await supabase.from("offers").insert([insertPayload]).select().single();
   if (error) throw error;
   return data;
 }
 
 async function recomputeFurnitureCache(furnitureId) {
   const { data: offers, error } = await supabase
-    .from('offers')
-    .select('price')
-    .eq('furniture_id', furnitureId)
-    .eq('is_active', true);
+    .from("offers")
+    .select("price")
+    .eq("furniture_id", furnitureId)
+    .eq("is_active", true);
   if (error) throw error;
 
   const prices = (offers || [])
-    .map(o => toNumberOrNull(o.price))
-    .filter(n => typeof n === 'number');
+    .map((o) => toNumberOrNull(o.price))
+    .filter((n) => typeof n === "number");
 
   const cached_nb_offers = prices.length;
   const cached_min_price = cached_nb_offers > 0 ? Math.min(...prices) : null;
 
   const { error: uErr } = await supabase
-    .from('Furniture')
+    .from("Furniture")
     .update({ cached_nb_offers, cached_min_price })
-    .eq('furniture_id', furnitureId);
+    .eq("furniture_id", furnitureId);
   if (uErr) throw uErr;
 }
 
@@ -306,21 +282,24 @@ async function seed() {
 
   const touchedFurnitureIds = new Set();
 
-  console.log('Creating/Updating offers...');
+  console.log("Creating/Updating offers...");
   for (const o of offerRows) {
     // Nouveau format (schema-only): o contient furniture_id + partner_id
     // Ancien format: o contient furniture_title + partner_name
-    let furnitureId = o.furniture_id ? (furnitureIdMap.get(o.furniture_id) || o.furniture_id) : null;
-    let partnerId = o.partner_id ? (partnerIdMap.get(o.partner_id) || o.partner_id) : null;
+    let furnitureId = o.furniture_id ? furnitureIdMap.get(o.furniture_id) || o.furniture_id : null;
+    let partnerId = o.partner_id ? partnerIdMap.get(o.partner_id) || o.partner_id : null;
 
     if (!furnitureId && o.furniture_title) {
-      const f = furnituresByTitle.get(o.furniture_title) || await getOrCreateFurniture({ title: o.furniture_title });
+      const f =
+        furnituresByTitle.get(o.furniture_title) ||
+        (await getOrCreateFurniture({ title: o.furniture_title }));
       furnituresByTitle.set(f.title, f);
       furnituresById.set(f.furniture_id, f);
       furnitureId = f.furniture_id;
     }
     if (!partnerId && o.partner_name) {
-      const p = partnersByName.get(o.partner_name) || await getOrCreatePartner({ name: o.partner_name });
+      const p =
+        partnersByName.get(o.partner_name) || (await getOrCreatePartner({ name: o.partner_name }));
       partnersByName.set(p.name, p);
       partnersById.set(p.partner_id, p);
       partnerId = p.partner_id;
@@ -328,8 +307,8 @@ async function seed() {
 
     if (!furnitureId || !partnerId) {
       throw new Error(
-        'Format seed invalide pour une offre. Requis (schema-only): furniture_id + partner_id. '
-        + 'Ou (legacy): furniture_title + partner_name.'
+        "Format seed invalide pour une offre. Requis (schema-only): furniture_id + partner_id. " +
+          "Ou (legacy): furniture_title + partner_name."
       );
     }
 
@@ -347,12 +326,12 @@ async function seed() {
     touchedFurnitureIds.add(furnitureId);
   }
 
-  console.log('Recalcul des caches (min_price / nb_offers)...');
+  console.log("Recalcul des caches (min_price / nb_offers)...");
   for (const furnitureId of touchedFurnitureIds) {
     await recomputeFurnitureCache(furnitureId);
   }
 
-  console.log('✅ Seed terminé avec succès !');
+  console.log("✅ Seed terminé avec succès !");
 }
 
-seed().catch(e => console.error(e));
+seed().catch((e) => console.error(e));
