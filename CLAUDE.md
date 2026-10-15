@@ -11,14 +11,15 @@ Feuille de route : `docs/ROADMAP.md`. Architecture : `docs/diagrams/architecture
 | Prod | Vercel | Render | Supabase cloud `rlxyptqvtpdhrdpdoiwy` (eu-west-3) |
 
 - Toute action sur le projet Supabase cloud (MCP Supabase) touche la PRODUCTION : lecture libre, mais DDL/DML uniquement apres accord explicite, et de preference sur une branche Supabase d'abord.
-- Ne jamais lire, afficher ni commiter le contenu de `.env` (racine, `meubly-back/.env`). Les noms de variables sont dans `.env.example`.
+- Ne jamais lire, afficher ni commiter le contenu de `.env` (racine, `meubly-back/.env`). Les noms de variables sont dans `.env.example` (local uniquement : pas encore versionne, ses cles JWT restent a verifier).
 
 ## Commandes
 
 ```bash
-# Back (meubly-back)
-npm run dev            # nodemon app.js
-npm run test:run       # vitest run
+# Back (meubly-back) - app.js = app Express (testable), server.js = point d'entree
+npm run dev            # nodemon server.js
+npm run test:run       # vitest run (tests/db exclus)
+npm run test:db        # tests sur vraie base, refuse toute URL Supabase non locale
 npm run test:coverage
 
 # Front (meubly-front)
@@ -26,6 +27,10 @@ npm run dev
 npm run build          # verifier apres tout changement front
 npm run test:run       # vitest (jsdom)
 npm run test:e2e       # cypress, necessite la stack complete
+
+# Les deux projets (verifies par la CI .github/workflows/ci.yml)
+npm run lint           # ESLint flat config, 0 erreur exigee
+npm run format:check   # Prettier ; npm run format pour corriger
 
 # Stack locale
 docker compose up -d --build
@@ -71,10 +76,12 @@ Tables (snake_case, `public`) : `profile`, `category` (hierarchique `parent_id`)
 
 ## Pieges connus
 
-- `meubly-back/app.js` appelle `app.listen()` a l'import : les tests supertest entrent en conflit de port tant que app/server ne sont pas separes.
-- `meubly-front/tests/unit/api.test.js` cible d'anciennes fonctions (`getProducts`...) : a reecrire, pas a "reparer" en recreant ces fonctions.
+- Ne rien executer a l'import d'un module back (pas de `listen`, pas d'appel reseau) : les tests importent `app.js` directement.
+- supabase-js ne leve pas sur erreur HTTP : toujours lire `error` dans `{ data, error }`.
+- `routes/v1/favorites.js` applique `requireAuth` sans prefixe : toute route inconnue sous `/api/v1` repond 401 (a corriger en phase 1).
+- `meubly-back/.env` ne definit pas `SUPABASE_URL` : hors Docker, `npm start` echoue sans variables exportees.
 - `.gitignore` ignore `*.md` sauf exceptions : ajouter une exception pour tout nouveau document a versionner.
-- Auth0 est initialise dans `src/main.js` mais inutilise (a retirer).
+- Fins de ligne forcees en LF (`.gitattributes`) ; Prettier echoue sur du CRLF.
 
 ## Skills utiles (installes dans `.claude/skills`)
 

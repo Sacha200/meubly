@@ -12,6 +12,8 @@ Etabli le 2026-10-15 apres audit. Chaque phase = une branche + une PR. Le plan d
 
 Objectif : pouvoir modifier le code en confiance.
 
+Statut : realisee le 2026-10-16 sur `chore/phase-0-hygiene` (plan : `docs/superpowers/plans/2026-10-15-phase-0-hygiene.md`). Restent hors phase : nettoyage partenaires (phase 2), `.env.example`.
+
 - Separer `app.js` (app Express exportee) et `server.js` (listen) ; adapter `npm start`, Dockerfile, `render.yaml`.
 - Reecrire `tests/unit/api.test.js` front sur l'API actuelle ; isoler le test d'integration favoris (tag `integration`, exclu par defaut).
 - ESLint + Prettier fonctionnels back et front (`eslint-plugin-vue`), scripts `lint`.
