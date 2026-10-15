@@ -1,6 +1,5 @@
 import { createApp } from "vue";
 import { createPinia } from "pinia";
-import { createAuth0 } from "@auth0/auth0-vue";
 import PrimeVue from "primevue/config";
 import Paginator from "primevue/paginator";
 import ToastService from "primevue/toastservice";
@@ -21,13 +20,6 @@ app.use(PrimeVue, {});
 // Nom impose par PrimeVue, utilise tel quel dans les templates.
 // eslint-disable-next-line vue/multi-word-component-names
 app.component("Paginator", Paginator);
-app.use(createAuth0, {
-  domain: "dev-qiffixd22t30g6oo.us.auth0.com",
-  clientId: "97DBKAZ9oNsVyrWNxMThWjzlko8u7EZh",
-  authorizationParams: {
-    redirect_uri: window.location.origin,
-  },
-});
 
 // Initialiser le thème
 const themeStore = useThemeStore(pinia);

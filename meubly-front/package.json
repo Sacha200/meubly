@@ -20,7 +20,6 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
-    "@auth0/auth0-vue": "^2.4.0",
     "@primeuix/themes": "^1.1.1",
     "@supabase/supabase-js": "^2.39.0",
     "@vitejs/plugin-vue": "^4.5.2",
@@ -48,7 +47,6 @@
     "globals": "^17.13.0",
     "jsdom": "^26.1.0",
     "prettier": "^3.9.10",
-    "supertest": "^6.3.3",
     "vitest": "^3.2.4"
   }
 }
