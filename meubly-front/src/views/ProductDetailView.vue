@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Header />
+    <AppHeader />
     <div class="container mx-auto px-4">
       <div v-if="loading" class="loading">Chargement...</div>
       <div v-else-if="error" class="error">
@@ -19,25 +19,23 @@
         <div class="" v-if="totalOffers > 0"></div>
       </div>
     </div>
-    <Footer />
+    <AppFooter />
   </div>
 </template>
 
 <script>
-import Header from "../components/Header.vue";
-import Footer from "../components/Footer.vue";
+import AppHeader from "../components/AppHeader.vue";
+import AppFooter from "../components/AppFooter.vue";
 import ProductDetail from "../components/Detail/ProductDetail.vue";
 import TableComparison from "../components/Detail/TableComparison.vue";
-import ProductReviews from "../components/Detail/ProductReviews.vue";
 import { getFurnitureById } from "../api/furnituresApi";
 
 export default {
   components: {
-    Header,
-    Footer,
+    AppHeader,
+    AppFooter,
     ProductDetail,
     TableComparison,
-    ProductReviews,
   },
   data() {
     return {

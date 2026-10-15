@@ -18,6 +18,8 @@ app.use(router);
 app.use(pinia);
 app.use(ToastService);
 app.use(PrimeVue, {});
+// Nom impose par PrimeVue, utilise tel quel dans les templates.
+// eslint-disable-next-line vue/multi-word-component-names
 app.component("Paginator", Paginator);
 app.use(createAuth0, {
   domain: "dev-qiffixd22t30g6oo.us.auth0.com",

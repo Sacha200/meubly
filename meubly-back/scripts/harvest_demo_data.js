@@ -283,7 +283,7 @@ async function run() {
   console.log("\n📦 Traitement du catalogue...");
   for (const item of CATALOG) {
     // A. Catégorie
-    let catId = null;
+    let catId;
     const { data: existCat } = await supabase
       .from("Category")
       .select("category_id")

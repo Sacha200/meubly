@@ -1,7 +1,7 @@
 <!-- ResultatRechercheView -->
 <template>
   <div>
-    <Header />
+    <AppHeader />
 
     <div class="max-w-7xl mx-auto px-4 lg:px-0 py-6">
       <!-- En-tête section + tri -->
@@ -137,14 +137,14 @@
       </div>
     </div>
 
-    <Footer />
+    <AppFooter />
   </div>
 </template>
 
 <script>
-import Header from "../components/Header.vue";
+import AppHeader from "../components/AppHeader.vue";
 import ProductCard from "../components/Home/ProductCard.vue";
-import Footer from "../components/Footer.vue";
+import AppFooter from "../components/AppFooter.vue";
 import CategoryFilter from "../components/Filters/CategoryFilter.vue";
 import PriceFilter from "../components/Filters/PriceFilter.vue";
 import Paginator from "primevue/paginator";
@@ -154,7 +154,7 @@ import { useFurnitureStore } from "@/stores/furnitureStore";
 
 export default {
   name: "ResultatRechercheView",
-  components: { Header, ProductCard, Footer, CategoryFilter, PriceFilter, Paginator },
+  components: { AppHeader, ProductCard, AppFooter, CategoryFilter, PriceFilter, Paginator },
 
   computed: {
     ...mapStores(useFurnitureStore),

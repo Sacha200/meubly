@@ -221,7 +221,7 @@ import ThemeToggle from "./ThemeToggle.vue";
 import { useThemeStore } from "../stores/themeStore";
 
 export default {
-  name: "Header",
+  name: "AppHeader",
   components: {
     ThemeToggle,
   },

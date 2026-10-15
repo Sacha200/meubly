@@ -561,7 +561,7 @@ export default {
 
     const validatePhone = (phone) => {
       if (!phone) return true; // Optional field
-      const phoneRegex = /^[\+]?[0-9\s\-\(\)]{10,}$/;
+      const phoneRegex = /^\+?[0-9\s\-()]{10,}$/;
       return phoneRegex.test(phone);
     };
 

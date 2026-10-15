@@ -20,7 +20,7 @@
 
 <script>
 export default {
-  name: "Select",
+  name: "FormSelect",
   props: {
     id: {
       type: String,

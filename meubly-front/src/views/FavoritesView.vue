@@ -1,5 +1,5 @@
 <template>
-  <Header />
+  <AppHeader />
 
   <div class="container mx-auto py-8">
     <h2 class="text-2xl font-bold mb-6">Mes Favoris</h2>
@@ -13,18 +13,18 @@
       />
     </div>
   </div>
-  <Footer />
+  <AppFooter />
 </template>
 
 <script>
 import ProductCard from "../components/Home/ProductCard.vue";
-import Header from "../components/Header.vue";
-import Footer from "../components/Footer.vue";
+import AppHeader from "../components/AppHeader.vue";
+import AppFooter from "../components/AppFooter.vue";
 import { getUserFavorites } from "../api/favoritesApi";
 import { isUserLoggedIn } from "../api/authApi";
 
 export default {
-  components: { ProductCard, Header, Footer },
+  components: { ProductCard, AppHeader, AppFooter },
   data() {
     return {
       favorites: [],

@@ -2,7 +2,7 @@
   <div>
     <Toast position="top-right" />
 
-    <Header />
+    <AppHeader />
     <div class="container mx-auto px-4 py-8">
       <div class="max-w-md mx-auto bg-white dark:bg-surface p-8 rounded-lg shadow-md">
         <h1 class="text-center mb-6">Vérification email</h1>
@@ -73,19 +73,19 @@
         </div>
       </div>
     </div>
-    <Footer />
+    <AppFooter />
   </div>
 </template>
 
 <script>
 import Toast from "primevue/toast";
-import Header from "../components/Header.vue";
-import Footer from "../components/Footer.vue";
+import AppHeader from "../components/AppHeader.vue";
+import AppFooter from "../components/AppFooter.vue";
 import { supabase } from "../supabase";
 
 export default {
   name: "VerifyEmailCodeView",
-  components: { Toast, Header, Footer },
+  components: { Toast, AppHeader, AppFooter },
   data() {
     return {
       email: this.$route?.query?.email || "",

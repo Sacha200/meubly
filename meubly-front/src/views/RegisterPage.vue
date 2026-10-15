@@ -62,7 +62,7 @@
       </template>
     </Toast>
 
-    <Header />
+    <AppHeader />
     <div class="container mx-auto px-4 py-8">
       <div class="max-w-md mx-auto bg-white dark:bg-surface p-8 rounded-lg shadow-md">
         <h1 class="text-center mb-8">Inscription</h1>
@@ -131,19 +131,19 @@
         </form>
       </div>
     </div>
-    <Footer />
+    <AppFooter />
   </div>
 </template>
 
 <script>
 import { registerUser } from "../api/authApi";
 import Toast from "primevue/toast";
-import Header from "../components/Header.vue";
-import Footer from "../components/Footer.vue";
+import AppHeader from "../components/AppHeader.vue";
+import AppFooter from "../components/AppFooter.vue";
 
 export default {
-  name: "Register",
-  components: { Toast, Header, Footer },
+  name: "RegisterPage",
+  components: { Toast, AppHeader, AppFooter },
   data() {
     return {
       formData: {

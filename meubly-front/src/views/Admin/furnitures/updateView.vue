@@ -12,7 +12,7 @@
       <form @submit.prevent="updateFurniture" class="space-y-6">
         <TextInput id="name" label="Nom du produit" v-model="furniture.name" required />
 
-        <Select
+        <FormSelect
           id="type"
           label="Type de meuble"
           v-model="furniture.type"
@@ -59,13 +59,13 @@ import {
 } from "../../../api/furnituresApi";
 import TextInput from "../../../components/form/TextInput.vue";
 import TextArea from "../../../components/form/TextArea.vue";
-import Select from "../../../components/form/Select.vue";
+import FormSelect from "../../../components/form/FormSelect.vue";
 
 export default {
   components: {
     TextInput,
     TextArea,
-    Select,
+    FormSelect,
   },
   setup() {
     const route = useRoute();

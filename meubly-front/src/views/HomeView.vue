@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Header />
+    <AppHeader />
     <div class="max-w-7xl mx-auto px-4 lg:px-0 py-6">
       <SearchBar />
 
@@ -11,19 +11,19 @@
       <CategorySections />
     </div>
 
-    <Footer />
+    <AppFooter />
   </div>
 </template>
 
 <script>
-import Header from "../components/Header.vue";
+import AppHeader from "../components/AppHeader.vue";
 import SearchBar from "../components/Home/SearchBar.vue";
 import CategoryCarousel from "../components/Home/CategoryCarousel.vue";
 import CategorySections from "../components/Home/CategorySections.vue";
-import Footer from "../components/Footer.vue";
+import AppFooter from "../components/AppFooter.vue";
 
 export default {
   name: "HomeView",
-  components: { Header, SearchBar, CategoryCarousel, CategorySections, Footer },
+  components: { AppHeader, SearchBar, CategoryCarousel, CategorySections, AppFooter },
 };
 </script>

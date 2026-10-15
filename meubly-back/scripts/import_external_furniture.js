@@ -335,7 +335,7 @@ async function run() {
   const sourcePartner = await getOrCreateSourcePartner();
   const categoryCache = new Map();
 
-  let products = [];
+  let products;
 
   if (source.mode === "api") {
     const externalCategories = await fetchCategories(source.apiBaseUrl);
