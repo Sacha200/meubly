@@ -11,12 +11,18 @@ const BUCKET_NAME = "ai-generated";
 
 let bucketPromise = null;
 
+const isAlreadyExists = (error) =>
+  error?.status === 409 || /already exists/i.test(error?.message || "");
+
+// supabase-js ne leve pas sur erreur HTTP : il renvoie { data, error }.
 async function ensureBucket() {
-  const { data: buckets } = await supabase.storage.listBuckets();
-  const exists = buckets?.some((b) => b.name === BUCKET_NAME);
-  if (exists) return;
+  const { data: buckets, error: listError } = await supabase.storage.listBuckets();
+  if (listError) throw new Error(`[AI] Cannot list buckets: ${listError.message}`);
+  if (buckets?.some((b) => b.name === BUCKET_NAME)) return;
   const { error } = await supabase.storage.createBucket(BUCKET_NAME, { public: true });
-  if (error) throw new Error(`[AI] Failed to create bucket "${BUCKET_NAME}": ${error.message}`);
+  if (error && !isAlreadyExists(error)) {
+    throw new Error(`[AI] Failed to create bucket "${BUCKET_NAME}": ${error.message}`);
+  }
 }
 
 /**
@@ -52,7 +58,8 @@ export const aiController = {
         return res.status(500).json({ error: "Replicate API token not configured" });
       }
 
-      await ensureBucketOnce();
+      // Non bloquant : sans bucket, l'upload echoue et on renvoie l'URL Replicate (repli plus bas).
+      await ensureBucketOnce().catch((err) => console.error(err.message));
 
       // 1. Download source image (Docker fix: localhost -> kong for Supabase Storage)
       let downloadUrl = imageUrl;
