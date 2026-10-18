@@ -14,18 +14,41 @@ Le projet combine :
 ## Architecture
 
 ```mermaid
-flowchart LR
-    FE[Frontend Vue 3]
-    BE[Backend Express]
-    KG[Kong Gateway Supabase]
-    DB[(PostgreSQL)]
-    EXT[APIs externes IA/media]
+flowchart TB
 
-    FE -->|REST| BE
-    FE -->|Supabase SDK| KG
-    BE -->|Supabase client| KG
-    KG --> DB
-    BE --> EXT
+    %% ── Externe (hors Docker) ──────────────────────────────
+    DEPLOY["☁️ Déploiement cloud<br/>GitHub → Vercel (front)<br/>GitHub → Render (back)"]
+    AI["🤖 Services IA<br/>Gemini · Replicate<br/>Unsplash · OpenRouter"]
+
+    %% ── Docker Compose ─────────────────────────────────────
+    subgraph DOCKER["🐳 Docker Compose - Environnement local"]
+        direction LR
+
+        subgraph ROW1["&nbsp;"]
+            direction LR
+            FRONT["🌐 Navigateur<br/>Vue 3 · Vite<br/>Pinia · Vue Router"]
+            BACK["⚙️ meubly-back<br/>Express · Supabase Auth<br/>Helmet · CORS · express-validator"]
+            DEVOPS["🔧 DevOps<br/>SonarQube (qualité)<br/>Mailpit (sandbox SMTP)"]
+        end
+
+        subgraph ROW2["&nbsp;"]
+            direction LR
+            SUPA["🗄️ Supabase Stack<br/>Kong (API Gateway)<br/>Auth · REST · Storage<br/>Realtime · PostgreSQL"]
+            ING["📥 Ingestion<br/>CSV / JSON · IKEA<br/>CRON jobs"]
+        end
+    end
+
+    %% ── Relations externes ─────────────────────────────────
+    DEPLOY -.->|auto-deploy front| FRONT
+    DEPLOY -.->|auto-deploy back| BACK
+    BACK -->|HTTP REST génération IA| AI
+
+    %% ── Relations internes ─────────────────────────────────
+    FRONT -->|REST API logique métier| BACK
+    FRONT -->|SDK Supabase JS auth·session| SUPA
+    BACK -->|Supabase client DB·Storage| SUPA
+    BACK -->|scan qualité SonarQube CI| DEVOPS
+    ING -->|pg direct INSERT catalogue| SUPA
 ```
 
 Documentation detaillee :
@@ -38,7 +61,7 @@ Documentation detaillee :
 | Couche | Technologies | Usage |
 |---|---|---|
 | Frontend | Vue 3, Vite, Pinia, PrimeVue, Tailwind | Interface utilisateur |
-| Backend | Node.js, Express, Zod, JWT, Vitest | API metier |
+| Backend | Node.js, Express, express-validator, Supabase Auth, Vitest | API metier |
 | Data Platform | Supabase self-hosted (Kong, Auth, REST, Realtime, Storage) | Auth + donnees + API |
 | Base de donnees | PostgreSQL 15 | Stockage relationnel |
 | Ingestion | Service `bd/ingestion` (CRON, CSV/JSON, IKEA adapter) | Import de donnees |
