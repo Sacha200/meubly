@@ -24,11 +24,11 @@ flowchart TB
     end
 
     subgraph CLIENT["Navigateur Client"]
-        FE["meubly-front :5173\nVue 3 | Vite | Pinia | PrimeVue"]
+        FE["meubly-front :5173<br/>Vue 3 | Vite | Pinia | PrimeVue"]
     end
 
     subgraph APP["Application Backend"]
-        BE["meubly-back :5000\nExpress | Supabase Auth | express-validator | Vitest"]
+        BE["meubly-back :5000<br/>Express | Supabase Auth | express-validator | Vitest"]
     end
 
     subgraph SUPA["Supabase Stack self-hosted"]
@@ -53,7 +53,7 @@ flowchart TB
     end
 
     subgraph ING["Ingestion profile ingestion"]
-        INGEST["ingestion\nCSV/JSON | IKEA | CRON"]
+        INGEST["ingestion<br/>CSV/JSON | IKEA | CRON"]
     end
 
     FE -->|REST API| BE
