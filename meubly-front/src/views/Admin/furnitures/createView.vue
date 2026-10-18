@@ -13,7 +13,12 @@
             class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#B88E2F]"
           >
             <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
             </svg>
             Retour à la liste
           </router-link>
@@ -71,7 +76,9 @@
                   <option value="bibliotheque">Bibliothèque</option>
                   <option value="autre">Autre</option>
                 </select>
-                <p v-if="errors.category" class="mt-1 text-sm text-red-600">{{ errors.category }}</p>
+                <p v-if="errors.category" class="mt-1 text-sm text-red-600">
+                  {{ errors.category }}
+                </p>
               </div>
             </div>
           </div>
@@ -131,7 +138,9 @@
                   :class="['form-input', { error: errors.originalPrice }]"
                   placeholder="Prix barré si promotion"
                 />
-                <p v-if="errors.originalPrice" class="mt-1 text-sm text-red-600">{{ errors.originalPrice }}</p>
+                <p v-if="errors.originalPrice" class="mt-1 text-sm text-red-600">
+                  {{ errors.originalPrice }}
+                </p>
               </div>
 
               <!-- Stock -->
@@ -169,10 +178,10 @@
                   :class="['form-input', { error: errors.cover_url }]"
                   placeholder="https://exemple.com/image.jpg"
                 />
-                <p v-if="errors.cover_url" class="mt-1 text-sm text-red-600">{{ errors.cover_url }}</p>
-                <p class="mt-1 text-xs text-gray-500">
-                  URL de l'image principale du meuble
+                <p v-if="errors.cover_url" class="mt-1 text-sm text-red-600">
+                  {{ errors.cover_url }}
                 </p>
+                <p class="mt-1 text-xs text-gray-500">URL de l'image principale du meuble</p>
               </div>
 
               <!-- Additional Images -->
@@ -211,7 +220,9 @@
                   :class="['form-input', { error: errors.dimensions }]"
                   placeholder="Ex: L 200 x l 80 x H 75 cm"
                 />
-                <p v-if="errors.dimensions" class="mt-1 text-sm text-red-600">{{ errors.dimensions }}</p>
+                <p v-if="errors.dimensions" class="mt-1 text-sm text-red-600">
+                  {{ errors.dimensions }}
+                </p>
               </div>
 
               <!-- Material -->
@@ -226,7 +237,9 @@
                   :class="['form-input', { error: errors.material }]"
                   placeholder="Ex: Bois massif, MDF, Cuir..."
                 />
-                <p v-if="errors.material" class="mt-1 text-sm text-red-600">{{ errors.material }}</p>
+                <p v-if="errors.material" class="mt-1 text-sm text-red-600">
+                  {{ errors.material }}
+                </p>
               </div>
 
               <!-- Color -->
@@ -299,7 +312,9 @@
                   <option :value="false">Non</option>
                   <option :value="true">Oui</option>
                 </select>
-                <p v-if="errors.is_featured" class="mt-1 text-sm text-red-600">{{ errors.is_featured }}</p>
+                <p v-if="errors.is_featured" class="mt-1 text-sm text-red-600">
+                  {{ errors.is_featured }}
+                </p>
               </div>
             </div>
           </div>
@@ -320,7 +335,9 @@
                   :class="['form-input', { error: errors.meta_title }]"
                   placeholder="Titre optimisé pour les moteurs de recherche"
                 />
-                <p v-if="errors.meta_title" class="mt-1 text-sm text-red-600">{{ errors.meta_title }}</p>
+                <p v-if="errors.meta_title" class="mt-1 text-sm text-red-600">
+                  {{ errors.meta_title }}
+                </p>
               </div>
 
               <!-- Meta Description -->
@@ -335,7 +352,9 @@
                   :class="['form-input', { error: errors.meta_description }]"
                   placeholder="Description optimisée pour les moteurs de recherche"
                 ></textarea>
-                <p v-if="errors.meta_description" class="mt-1 text-sm text-red-600">{{ errors.meta_description }}</p>
+                <p v-if="errors.meta_description" class="mt-1 text-sm text-red-600">
+                  {{ errors.meta_description }}
+                </p>
               </div>
 
               <!-- Tags -->
@@ -371,11 +390,27 @@
               :disabled="saving"
               class="bg-[#B88E2F] hover:bg-[#B88E2F] hover:opacity-80 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <svg v-if="saving" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <svg
+                v-if="saving"
+                class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
               </svg>
-              {{ saving ? 'Création...' : 'Créer le meuble' }}
+              {{ saving ? "Création..." : "Créer le meuble" }}
             </button>
           </div>
         </form>
@@ -383,12 +418,25 @@
     </div>
 
     <!-- Success Modal -->
-    <div v-if="showSuccessModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div
+      v-if="showSuccessModal"
+      class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+    >
       <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
         <div class="mt-3 text-center">
           <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-            <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            <svg
+              class="h-6 w-6 text-green-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              />
             </svg>
           </div>
           <h3 class="text-lg leading-6 font-medium text-gray-900 mt-4">Meuble créé avec succès</h3>
@@ -412,138 +460,138 @@
 </template>
 
 <script>
-import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
-import axios from 'axios'
+import { ref, reactive } from "vue";
+import { useRouter } from "vue-router";
+import axios from "axios";
 
 export default {
-  name: 'AdminFurnitureCreateView',
+  name: "AdminFurnitureCreateView",
   setup() {
-    const router = useRouter()
-    const saving = ref(false)
-    const showSuccessModal = ref(false)
+    const router = useRouter();
+    const saving = ref(false);
+    const showSuccessModal = ref(false);
 
     const form = reactive({
-      name: '',
-      category: '',
-      text: '',
-      price: '',
-      originalPrice: '',
-      stock: '',
-      cover_url: '',
-      images: '',
-      dimensions: '',
-      material: '',
-      color: '',
-      weight: '',
-      status: '',
+      name: "",
+      category: "",
+      text: "",
+      price: "",
+      originalPrice: "",
+      stock: "",
+      cover_url: "",
+      images: "",
+      dimensions: "",
+      material: "",
+      color: "",
+      weight: "",
+      status: "",
       is_featured: false,
-      meta_title: '',
-      meta_description: '',
-      tags: ''
-    })
+      meta_title: "",
+      meta_description: "",
+      tags: "",
+    });
 
     const errors = reactive({
-      name: '',
-      category: '',
-      text: '',
-      price: '',
-      originalPrice: '',
-      stock: '',
-      cover_url: '',
-      images: '',
-      dimensions: '',
-      material: '',
-      color: '',
-      weight: '',
-      status: '',
-      is_featured: '',
-      meta_title: '',
-      meta_description: '',
-      tags: ''
-    })
+      name: "",
+      category: "",
+      text: "",
+      price: "",
+      originalPrice: "",
+      stock: "",
+      cover_url: "",
+      images: "",
+      dimensions: "",
+      material: "",
+      color: "",
+      weight: "",
+      status: "",
+      is_featured: "",
+      meta_title: "",
+      meta_description: "",
+      tags: "",
+    });
 
     // Validation functions
     const validateUrl = (url) => {
-      if (!url) return true // Optional field
+      if (!url) return true; // Optional field
       try {
-        new URL(url)
-        return true
+        new URL(url);
+        return true;
       } catch {
-        return false
+        return false;
       }
-    }
+    };
 
     const validateForm = () => {
-      let isValid = true
-      
+      let isValid = true;
+
       // Reset errors
-      Object.keys(errors).forEach(key => {
-        errors[key] = ''
-      })
+      Object.keys(errors).forEach((key) => {
+        errors[key] = "";
+      });
 
       // Name validation
       if (!form.name.trim()) {
-        errors.name = 'Le nom du meuble est requis'
-        isValid = false
+        errors.name = "Le nom du meuble est requis";
+        isValid = false;
       } else if (form.name.trim().length < 2) {
-        errors.name = 'Le nom doit contenir au moins 2 caractères'
-        isValid = false
+        errors.name = "Le nom doit contenir au moins 2 caractères";
+        isValid = false;
       }
 
       // Category validation
       if (!form.category) {
-        errors.category = 'La catégorie est requise'
-        isValid = false
+        errors.category = "La catégorie est requise";
+        isValid = false;
       }
 
       // Description validation
       if (!form.text.trim()) {
-        errors.text = 'La description est requise'
-        isValid = false
+        errors.text = "La description est requise";
+        isValid = false;
       } else if (form.text.trim().length < 10) {
-        errors.text = 'La description doit contenir au moins 10 caractères'
-        isValid = false
+        errors.text = "La description doit contenir au moins 10 caractères";
+        isValid = false;
       }
 
       // Price validation
       if (!form.price || form.price <= 0) {
-        errors.price = 'Le prix doit être supérieur à 0'
-        isValid = false
+        errors.price = "Le prix doit être supérieur à 0";
+        isValid = false;
       }
 
       // Original price validation
       if (form.originalPrice && parseFloat(form.originalPrice) <= parseFloat(form.price)) {
-        errors.originalPrice = 'Le prix original doit être supérieur au prix actuel'
-        isValid = false
+        errors.originalPrice = "Le prix original doit être supérieur au prix actuel";
+        isValid = false;
       }
 
       // Cover URL validation
       if (!form.cover_url.trim()) {
-        errors.cover_url = 'L\'URL de l\'image principale est requise'
-        isValid = false
+        errors.cover_url = "L'URL de l'image principale est requise";
+        isValid = false;
       } else if (!validateUrl(form.cover_url)) {
-        errors.cover_url = 'L\'URL de l\'image principale n\'est pas valide'
-        isValid = false
+        errors.cover_url = "L'URL de l'image principale n'est pas valide";
+        isValid = false;
       }
 
       // Status validation
       if (!form.status) {
-        errors.status = 'Le statut est requis'
-        isValid = false
+        errors.status = "Le statut est requis";
+        isValid = false;
       }
 
-      return isValid
-    }
+      return isValid;
+    };
 
     const handleSubmit = async () => {
       if (!validateForm()) {
-        return
+        return;
       }
 
       try {
-        saving.value = true
-        
+        saving.value = true;
+
         const createData = {
           name: form.name.trim(),
           category: form.category,
@@ -561,35 +609,34 @@ export default {
           is_featured: form.is_featured,
           meta_title: form.meta_title.trim() || null,
           meta_description: form.meta_description.trim() || null,
-          tags: form.tags.trim() || null
-        }
+          tags: form.tags.trim() || null,
+        };
 
-        await axios.post('/api/v1/furnitures', createData)
-        
-        showSuccessModal.value = true
-        
+        await axios.post("/api/v1/furnitures", createData);
+
+        showSuccessModal.value = true;
       } catch (err) {
-        console.error('Erreur lors de la création:', err)
-        
+        console.error("Erreur lors de la création:", err);
+
         if (err.response?.data?.error) {
           // Handle specific API errors
-          if (err.response.data.error.includes('name')) {
-            errors.name = 'Ce nom de meuble est déjà utilisé'
+          if (err.response.data.error.includes("name")) {
+            errors.name = "Ce nom de meuble est déjà utilisé";
           } else {
-            alert('Erreur lors de la création: ' + err.response.data.error)
+            alert("Erreur lors de la création: " + err.response.data.error);
           }
         } else {
-          alert('Erreur lors de la création du meuble')
+          alert("Erreur lors de la création du meuble");
         }
       } finally {
-        saving.value = false
+        saving.value = false;
       }
-    }
+    };
 
     const goToList = () => {
-      showSuccessModal.value = false
-      router.push('/admin/furnitures')
-    }
+      showSuccessModal.value = false;
+      router.push("/admin/furnitures");
+    };
 
     return {
       form,
@@ -597,10 +644,10 @@ export default {
       saving,
       showSuccessModal,
       handleSubmit,
-      goToList
-    }
-  }
-}
+      goToList,
+    };
+  },
+};
 </script>
 
 <style scoped>

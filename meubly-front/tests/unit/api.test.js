@@ -1,309 +1,173 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { 
-  getProducts, 
-  getProductById, 
-  searchProducts, 
-  updateProduct,
-  registerUser,
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import API_BASE from "../../src/api/apiBase";
+import {
+  getFurnitures,
+  getFurnitureById,
+  searchFurnitures,
+  updateFurniture,
+  getFurnitureOffers,
+  addFavorite,
+  removeFavorite,
+  getUserFavorites,
   loginUser,
   logoutUser,
-  addFavorite,
-  removeFavorite
-} from '../../src/clientapi';
+} from "../../src/clientapi";
 
-// Mock de fetch
-global.fetch = vi.fn();
-
-// Mock de Supabase
-vi.mock('../../src/supabase', () => ({
+vi.mock("../../src/supabase", () => ({
   supabase: {
     auth: {
-      signUp: vi.fn(),
       signInWithPassword: vi.fn(),
       signOut: vi.fn(),
+      getSession: vi.fn(),
       getUser: vi.fn(),
-      resend: vi.fn()
     },
-    from: vi.fn()
-  }
+    from: vi.fn(),
+  },
 }));
 
-describe('API Functions', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
+const { supabase } = await import("../../src/supabase");
+
+const okJson = (body) => ({ ok: true, status: 200, json: async () => body, text: async () => "" });
+const errJson = (status, body = {}) => ({
+  ok: false,
+  status,
+  json: async () => body,
+  text: async () => "",
+});
+const withSession = () =>
+  supabase.auth.getSession.mockResolvedValue({
+    data: { session: { access_token: "tok" } },
+    error: null,
   });
 
-  describe('getProducts', () => {
-    it('should fetch products successfully', async () => {
-      const mockProducts = [
-        { id: 1, name: 'Chaise', price: 100 },
-        { id: 2, name: 'Table', price: 200 }
-      ];
+beforeEach(() => {
+  vi.clearAllMocks();
+  vi.spyOn(console, "error").mockImplementation(() => {});
+  vi.spyOn(console, "log").mockImplementation(() => {});
+});
 
-      fetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockProducts
-      });
-
-      const result = await getProducts();
-
-      expect(fetch).toHaveBeenCalledWith('https://meubly-back.onrender.com/api/v1/furnitures');
-      expect(result).toEqual(mockProducts);
-    });
-
-    it('should throw error when API call fails', async () => {
-      fetch.mockResolvedValueOnce({
-        ok: false,
-        status: 500
-      });
-
-      await expect(getProducts()).rejects.toThrow('Erreur HTTP: 500');
-    });
+describe("getFurnitures", () => {
+  it("construit l'URL avec filtres et pagination", async () => {
+    fetch.mockResolvedValueOnce(okJson({ items: [], total: 0, page: 2, limit: 12 }));
+    await getFurnitures({ q: "table", categoryId: 3, minPrice: 0, page: 2 });
+    const url = new URL(fetch.mock.calls[0][0]);
+    expect(url.origin + url.pathname).toBe(`${API_BASE}/furnitures`);
+    expect(url.searchParams.get("q")).toBe("table");
+    expect(url.searchParams.get("categoryId")).toBe("3");
+    expect(url.searchParams.get("minPrice")).toBe("0");
+    expect(url.searchParams.has("maxPrice")).toBe(false);
+    expect(url.searchParams.get("page")).toBe("2");
   });
 
-  describe('getProductById', () => {
-    it('should fetch a specific product successfully', async () => {
-      const mockProduct = { id: 1, name: 'Chaise', price: 100 };
+  it("leve une erreur sur reponse HTTP en echec", async () => {
+    fetch.mockResolvedValueOnce(errJson(500));
+    await expect(getFurnitures()).rejects.toThrow("Erreur HTTP: 500");
+  });
+});
 
-      fetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockProduct
-      });
+describe("searchFurnitures", () => {
+  it("delegue a getFurnitures avec q", async () => {
+    fetch.mockResolvedValueOnce(okJson({ items: [] }));
+    await searchFurnitures("lit", { page: 3 });
+    const url = new URL(fetch.mock.calls[0][0]);
+    expect(url.searchParams.get("q")).toBe("lit");
+    expect(url.searchParams.get("page")).toBe("3");
+  });
+});
 
-      const result = await getProductById(1);
-
-      expect(fetch).toHaveBeenCalledWith('https://meubly-back.onrender.com/api/v1/furnitures/1');
-      expect(result).toEqual(mockProduct);
-    });
-
-    it('should throw error when product not found', async () => {
-      fetch.mockResolvedValueOnce({
-        ok: false,
-        json: async () => ({ error: 'Produit non trouvé' })
-      });
-
-      await expect(getProductById(999)).rejects.toThrow('Produit non trouvé');
-    });
+describe("getFurnitureById", () => {
+  it("retourne le meuble", async () => {
+    fetch.mockResolvedValueOnce(okJson({ furniture_id: "a1", title: "Chaise" }));
+    await expect(getFurnitureById("a1")).resolves.toEqual({ furniture_id: "a1", title: "Chaise" });
+    expect(fetch).toHaveBeenCalledWith(`${API_BASE}/furnitures/a1`);
   });
 
-  describe('searchProducts', () => {
-    it('should search products with query', async () => {
-      const mockResults = [{ id: 1, name: 'Chaise de bureau' }];
+  it("propage le message d'erreur du serveur", async () => {
+    fetch.mockResolvedValueOnce(errJson(404, { error: "Meuble non trouve" }));
+    await expect(getFurnitureById("zz")).rejects.toThrow("Meuble non trouve");
+  });
+});
 
-      fetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockResults
-      });
+describe("updateFurniture", () => {
+  it("envoie un PATCH JSON", async () => {
+    fetch.mockResolvedValueOnce(okJson({ furniture_id: "a1", title: "X" }));
+    await updateFurniture("a1", { title: "X" });
+    const [url, init] = fetch.mock.calls[0];
+    expect(url).toBe(`${API_BASE}/furnitures/a1`);
+    expect(init.method).toBe("PATCH");
+    expect(JSON.parse(init.body)).toEqual({ title: "X" });
+  });
+});
 
-      const result = await searchProducts('bureau');
+describe("getFurnitureOffers", () => {
+  it("appelle /furnitures/:id/offers", async () => {
+    fetch.mockResolvedValueOnce(okJson([{ offer_id: "o1" }]));
+    await expect(getFurnitureOffers("a1")).resolves.toHaveLength(1);
+    expect(fetch).toHaveBeenCalledWith(`${API_BASE}/furnitures/a1/offers`);
+  });
+});
 
-      expect(fetch).toHaveBeenCalledWith('https://meubly-back.onrender.com/api/v1/furnitures?search=bureau');
-      expect(result).toEqual(mockResults);
-    });
-
-    it('should search products without query', async () => {
-      const mockResults = [{ id: 1, name: 'Chaise' }];
-
-      fetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockResults
-      });
-
-      const result = await searchProducts();
-
-      expect(fetch).toHaveBeenCalledWith('https://meubly-back.onrender.com/api/v1/furnitures');
-      expect(result).toEqual(mockResults);
-    });
+describe("favoris", () => {
+  it("addFavorite envoie le token Bearer", async () => {
+    withSession();
+    fetch.mockResolvedValueOnce(okJson({ message: "Added to favorites" }));
+    await expect(addFavorite("a1")).resolves.toBe(true);
+    const [url, init] = fetch.mock.calls[0];
+    expect(url).toBe(`${API_BASE}/favorites/a1`);
+    expect(init.method).toBe("POST");
+    expect(init.headers.Authorization).toBe("Bearer tok");
   });
 
-  describe('updateProduct', () => {
-    it('should update product successfully', async () => {
-      const mockUpdatedProduct = { id: 1, name: 'Chaise mise à jour', price: 150 };
-      const updateData = { name: 'Chaise mise à jour', price: 150 };
-
-      fetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockUpdatedProduct
-      });
-
-      const result = await updateProduct(1, updateData);
-
-      expect(fetch).toHaveBeenCalledWith('https://meubly-back.onrender.com/api/v1/furnitures/1', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updateData)
-      });
-      expect(result).toEqual(mockUpdatedProduct);
-    });
+  it("addFavorite refuse sans session", async () => {
+    supabase.auth.getSession.mockResolvedValue({ data: { session: null }, error: null });
+    await expect(addFavorite("a1")).rejects.toThrow("Utilisateur non connecté");
+    expect(fetch).not.toHaveBeenCalled();
   });
 
-  describe('Authentication Functions', () => {
-    it('should register user successfully', async () => {
-      const userData = {
-        email: 'test@example.com',
-        password: 'password123',
-        username: 'testuser',
-        lastname: 'Test'
-      };
-
-      const mockAuthData = {
-        user: { 
-          id: '123', 
-          email: 'test@example.com',
-          user_metadata: {
-            username: 'testuser',
-            lastname: 'Test'
-          }
-        }
-      };
-
-      const mockUserProfile = { id: 1, user_id: '123', username: 'testuser' };
-
-      const { supabase } = await import('../../src/supabase');
-      
-      // Mock signUp
-      supabase.auth.signUp.mockResolvedValueOnce({
-        data: mockAuthData,
-        error: null
-      });
-
-      // Mock resend
-      supabase.auth.resend.mockResolvedValueOnce({
-        error: null
-      });
-
-      // Mock from().insert().select() - retourne un tableau pour registerUser
-      supabase.from.mockReturnValue({
-        insert: vi.fn().mockReturnValue({
-          select: vi.fn().mockReturnValue([mockUserProfile])
-        })
-      });
-
-      const result = await registerUser(userData);
-
-      expect(supabase.auth.signUp).toHaveBeenCalledWith({
-        email: userData.email,
-        password: userData.password,
-        options: expect.any(Object)
-      });
-      expect(supabase.auth.resend).toHaveBeenCalledWith({
-        type: 'signup',
-        email: mockAuthData.user.email
-      });
-      expect(result.user).toEqual(mockAuthData.user);
-      expect(result.profile).toEqual(mockUserProfile);
-    });
-
-    it('should login user successfully', async () => {
-      const credentials = {
-        email: 'test@example.com',
-        password: 'password123'
-      };
-
-      const mockUser = { id: '123', email: 'test@example.com' };
-      const mockProfile = { id: 1, role: 'user' };
-
-      const { supabase } = await import('../../src/supabase');
-      
-      // Mock signInWithPassword
-      supabase.auth.signInWithPassword.mockResolvedValueOnce({
-        data: { user: mockUser },
-        error: null
-      });
-
-      // Mock from().select().eq().single() - retourne un objet pour loginUser
-      supabase.from.mockReturnValue({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            single: vi.fn().mockReturnValue(mockProfile)
-          })
-        })
-      });
-
-      // Mock localStorage
-      const localStorageMock = {
-        setItem: vi.fn(),
-        getItem: vi.fn(),
-        removeItem: vi.fn()
-      };
-      Object.defineProperty(window, 'localStorage', {
-        value: localStorageMock
-      });
-
-      const result = await loginUser(credentials);
-
-      expect(supabase.auth.signInWithPassword).toHaveBeenCalledWith(credentials);
-      expect(supabase.from).toHaveBeenCalledWith('User');
-      expect(result.user).toEqual(mockUser);
-      expect(result.profile).toEqual(mockProfile);
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('userProfile', JSON.stringify({
-        id: mockProfile.id,
-        role: mockProfile.role
-      }));
-    });
-
-    it('should logout user successfully', async () => {
-      const { supabase } = await import('../../src/supabase');
-      supabase.auth.signOut.mockResolvedValueOnce({
-        error: null
-      });
-
-      await logoutUser();
-
-      expect(supabase.auth.signOut).toHaveBeenCalled();
-    });
+  it("removeFavorite envoie un DELETE", async () => {
+    withSession();
+    fetch.mockResolvedValueOnce(okJson({}));
+    await removeFavorite("a1");
+    expect(fetch.mock.calls[0][1].method).toBe("DELETE");
   });
 
-  describe('Favorites Functions', () => {
-    it('should add favorite successfully', async () => {
-      const mockUser = { id: '123' };
-      const mockFavorite = { id: 1, user_id: '123', furniture_id: 1 };
+  it("getUserFavorites retourne [] sans session", async () => {
+    supabase.auth.getSession.mockResolvedValue({ data: { session: null }, error: null });
+    await expect(getUserFavorites()).resolves.toEqual([]);
+  });
+});
 
-      const { supabase } = await import('../../src/supabase');
-      
-      // Mock getUser
-      supabase.auth.getUser.mockResolvedValueOnce({
-        data: { user: mockUser },
-        error: null
-      });
-
-      // Mock from().insert().select().single() - retourne un objet pour addFavorite
-      supabase.from.mockReturnValue({
-        insert: vi.fn().mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            single: vi.fn().mockReturnValue(mockFavorite)
-          })
-        })
-      });
-
-      const result = await addFavorite(1);
-
-      expect(supabase.from).toHaveBeenCalledWith('Favoris');
-      expect(result).toEqual(mockFavorite);
+describe("auth", () => {
+  it("loginUser traduit les identifiants invalides", async () => {
+    supabase.auth.signInWithPassword.mockResolvedValueOnce({
+      data: {},
+      error: { message: "Invalid login credentials" },
     });
+    await expect(loginUser({ email: "a@b.fr", password: "x" })).rejects.toThrow(
+      "Email ou mot de passe incorrect"
+    );
+  });
 
-    it('should remove favorite successfully', async () => {
-      const mockUser = { id: '123' };
-
-      const { supabase } = await import('../../src/supabase');
-      supabase.auth.getUser.mockResolvedValueOnce({
-        data: { user: mockUser },
-        error: null
-      });
-
-      supabase.from.mockReturnValue({
-        delete: vi.fn(() => ({
-          eq: vi.fn(() => ({
-            eq: vi.fn(() => ({ error: null }))
-          }))
-        }))
-      });
-
-      await removeFavorite(1);
-
-      expect(supabase.from).toHaveBeenCalledWith('Favoris');
+  it("loginUser retourne le profil et memorise le role", async () => {
+    supabase.auth.signInWithPassword.mockResolvedValueOnce({
+      data: { user: { id: "u1" }, session: {} },
+      error: null,
     });
+    const single = vi
+      .fn()
+      .mockResolvedValue({ data: { user_id: "u1", role: "USER" }, error: null });
+    supabase.from.mockReturnValue({ select: () => ({ eq: () => ({ single }) }) });
+    const result = await loginUser({ email: "a@b.fr", password: "x" });
+    expect(result.profile.role).toBe("USER");
+    expect(localStorage.setItem).toHaveBeenCalledWith(
+      "userProfile",
+      JSON.stringify({ id: "u1", role: "USER" })
+    );
+  });
+
+  it("logoutUser appelle signOut", async () => {
+    supabase.auth.signOut.mockResolvedValueOnce({ error: null });
+    await logoutUser();
+    expect(supabase.auth.signOut).toHaveBeenCalled();
   });
 });

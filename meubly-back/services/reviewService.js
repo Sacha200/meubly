@@ -14,7 +14,7 @@ function sanitizePagination(page, limit) {
     page: pageNumber,
     limit: safeLimit,
     from,
-    to
+    to,
   };
 }
 
@@ -24,7 +24,7 @@ function buildEmptySummary() {
   return {
     average: null,
     total: 0,
-    breakdown: { ...EMPTY_BREAKDOWN }
+    breakdown: { ...EMPTY_BREAKDOWN },
   };
 }
 
@@ -51,7 +51,7 @@ async function computeSummary(productId) {
   return {
     average: total > 0 ? sum / total : null,
     total,
-    breakdown
+    breakdown,
   };
 }
 
@@ -73,7 +73,7 @@ export const reviewService = {
       total: count ?? 0,
       page: safePage,
       limit: safeLimit,
-      summary
+      summary,
     };
   },
 
@@ -83,7 +83,7 @@ export const reviewService = {
       rating,
       comment: comment || null,
       author_name: authorName || null,
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
     if (userId) {
@@ -91,20 +91,20 @@ export const reviewService = {
     }
 
     if (userId) {
-        // Check existing using repository
-        const existing = await reviewRepository.findByProductAndUser(productId, userId);
+      // Check existing using repository
+      const existing = await reviewRepository.findByProductAndUser(productId, userId);
 
-        if (existing) {
-          const updated = await reviewRepository.update(existing.review_id, payload);
-          return { action: "updated", review: updated };
-        }
+      if (existing) {
+        const updated = await reviewRepository.update(existing.review_id, payload);
+        return { action: "updated", review: updated };
+      }
     }
 
     const created = await reviewRepository.create({
-        ...payload,
-        created_at: new Date().toISOString()
+      ...payload,
+      created_at: new Date().toISOString(),
     });
 
     return { action: "created", review: created };
-  }
+  },
 };

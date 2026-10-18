@@ -26,22 +26,23 @@ export const furnitureRepository = {
   },
 
   async search({ q, categoryId, minPrice, maxPrice, sort, from, to }) {
-    let selectClause = "furniture_id, title, description, cover_url, cached_min_price, cached_nb_offers, size_width, size_height, size_depth, created_at, ai_description, ai_tags, ai_style, ai_material, ai_category_suggestion, ai_scene_prompt, ai_enriched_at";
+    let selectClause =
+      "furniture_id, title, description, cover_url, cached_min_price, cached_nb_offers, size_width, size_height, size_depth, created_at, ai_description, ai_tags, ai_style, ai_material, ai_category_suggestion, ai_scene_prompt, ai_enriched_at";
     if (categoryId) selectClause += ", furniture_category!inner(category_id)";
 
-    let queryFurniture = supabase
-      .from("furniture")
-      .select(selectClause, { count: "exact" });
+    let queryFurniture = supabase.from("furniture").select(selectClause, { count: "exact" });
 
     if (q) queryFurniture = queryFurniture.ilike("title", `%${q}%`);
-    if (categoryId) queryFurniture = queryFurniture.eq("furniture_category.category_id", categoryId);
+    if (categoryId)
+      queryFurniture = queryFurniture.eq("furniture_category.category_id", categoryId);
     if (minPrice) queryFurniture = queryFurniture.gte("cached_min_price", minPrice);
     if (maxPrice) queryFurniture = queryFurniture.lte("cached_min_price", maxPrice);
 
     if (sort) {
       const [col, dir] = sort.split(":");
-      let sortCol = col === 'price' ? 'cached_min_price' : col === 'name' ? 'title' : col;
-      if (sortCol && dir) queryFurniture = queryFurniture.order(sortCol, { ascending: dir === "asc" });
+      let sortCol = col === "price" ? "cached_min_price" : col === "name" ? "title" : col;
+      if (sortCol && dir)
+        queryFurniture = queryFurniture.order(sortCol, { ascending: dir === "asc" });
     } else {
       queryFurniture = queryFurniture.order("created_at", { ascending: false });
     }
@@ -67,18 +68,13 @@ export const furnitureRepository = {
   },
 
   async delete(id) {
-    const { error } = await supabase
-      .from("furniture")
-      .delete()
-      .eq("furniture_id", id);
-    
+    const { error } = await supabase.from("furniture").delete().eq("furniture_id", id);
+
     if (error) throw error;
   },
 
   async upsert(furniture) {
-      const { error } = await supabase
-      .from("furniture")
-      .upsert(furniture);
-      if (error) throw error;
-  }
+    const { error } = await supabase.from("furniture").upsert(furniture);
+    if (error) throw error;
+  },
 };

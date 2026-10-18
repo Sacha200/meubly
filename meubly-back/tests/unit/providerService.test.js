@@ -1,50 +1,49 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { providerService } from '../../services/providerService.js';
-import { providerRepository } from '../../repositories/providerRepository.js';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { providerService } from "../../services/providerService.js";
+import { providerRepository } from "../../repositories/providerRepository.js";
 
 // Mock repository
-vi.mock('../../repositories/providerRepository.js');
+vi.mock("../../repositories/providerRepository.js");
 
 // Mock global fetch
 global.fetch = vi.fn();
 
-describe('providerService', () => {
+describe("providerService", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  describe('compareCategory', () => {
-    it('should return empty array if no providers', async () => {
+  describe("compareCategory", () => {
+    it("should return empty array if no providers", async () => {
       providerRepository.findAll.mockResolvedValue([]);
-      
+
       const result = await providerService.compareCategory(1);
-      
+
       expect(result).toEqual([]);
     });
 
-    it('should aggregate data from multiple providers and sort by price', async () => {
+    it("should aggregate data from multiple providers and sort by price", async () => {
       // Mock providers
       providerRepository.findAll.mockResolvedValue([
-        { name: 'ProvA', url: '/api/a' },
-        { name: 'ProvB', url: '/api/b' }
+        { name: "ProvA", url: "/api/a" },
+        { name: "ProvB", url: "/api/b" },
       ]);
 
       // Mock fetch responses
       fetch.mockImplementation((url) => {
-        if (url.includes('/api/a')) {
+        if (url.includes("/api/a")) {
           return Promise.resolve({
             ok: true,
-            json: () => Promise.resolve([
-              { name: 'Chair A', price: "50" }
-            ])
+            json: () => Promise.resolve([{ name: "Chair A", price: "50" }]),
           });
         }
-        if (url.includes('/api/b')) {
+        if (url.includes("/api/b")) {
           return Promise.resolve({
             ok: true,
-            json: () => Promise.resolve([
-              { name: 'Chair B', price: "40" } // Cheaper
-            ])
+            json: () =>
+              Promise.resolve([
+                { name: "Chair B", price: "40" }, // Cheaper
+              ]),
           });
         }
         return Promise.reject(new Error("Unknown URL"));
@@ -53,14 +52,12 @@ describe('providerService', () => {
       const result = await providerService.compareCategory(1);
 
       expect(result).toHaveLength(2);
-      expect(result[0].company).toBe('ProvB'); // Should be first (cheaper)
-      expect(result[1].company).toBe('ProvA');
+      expect(result[0].company).toBe("ProvB"); // Should be first (cheaper)
+      expect(result[1].company).toBe("ProvA");
     });
 
-    it('should handle fetch errors gracefully', async () => {
-       providerRepository.findAll.mockResolvedValue([
-        { name: 'ProvError', url: '/api/error' }
-      ]);
+    it("should handle fetch errors gracefully", async () => {
+      providerRepository.findAll.mockResolvedValue([{ name: "ProvError", url: "/api/error" }]);
 
       fetch.mockRejectedValue(new Error("Network Error"));
 

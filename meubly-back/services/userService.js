@@ -12,15 +12,15 @@ export const userService = {
   },
 
   async createUser(userData) {
-      // Basic validation handled in controller or schema
-      return await userRepository.create(userData);
+    // Basic validation handled in controller or schema
+    return await userRepository.create(userData);
   },
 
   async updateUser(id, updates) {
-      return await userRepository.update(id, updates);
+    return await userRepository.update(id, updates);
   },
 
   async deleteUser(id) {
-      return await userRepository.delete(id);
-  }
+    return await userRepository.delete(id);
+  },
 };

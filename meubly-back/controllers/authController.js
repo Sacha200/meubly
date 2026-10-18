@@ -6,8 +6,8 @@ export const authController = {
       const { username, lastname, email, password } = req.body;
       const result = await authService.register({ username, lastname, email, password });
       res.status(201).json({
-          message: "Inscription réussie",
-          ...result
+        message: "Inscription réussie",
+        ...result,
       });
     } catch (error) {
       console.error("Erreur complète:", error);
@@ -19,15 +19,15 @@ export const authController = {
     try {
       const { email, password } = req.body;
       const { session, user, profile } = await authService.login({ email, password });
-      
+
       res.json({
         message: "Connexion réussie",
         token: session.access_token,
         user: {
-            id: user.id,
-            email: user.email,
-            ...profile
-        }
+          id: user.id,
+          email: user.email,
+          ...profile,
+        },
       });
     } catch (error) {
       console.error("Login Error:", error);
@@ -37,5 +37,5 @@ export const authController = {
 
   async logout(req, res) {
     res.status(200).json({ message: "Logged out successfully" });
-  }
+  },
 };

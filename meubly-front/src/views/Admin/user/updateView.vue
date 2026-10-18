@@ -13,7 +13,12 @@
             class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#B88E2F]"
           >
             <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
             </svg>
             Retour à la liste
           </router-link>
@@ -31,7 +36,12 @@
         <div class="flex">
           <div class="flex-shrink-0">
             <svg class="h-5 w-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+              />
             </svg>
           </div>
           <div class="ml-3">
@@ -61,11 +71,15 @@
                   required
                   :class="[
                     'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#B88E2F]',
-                    errors.firstName ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-[#B88E2F]'
+                    errors.firstName
+                      ? 'border-red-300 focus:border-red-500'
+                      : 'border-gray-300 focus:border-[#B88E2F]',
                   ]"
                   placeholder="Prénom"
                 />
-                <p v-if="errors.firstName" class="mt-1 text-sm text-red-600">{{ errors.firstName }}</p>
+                <p v-if="errors.firstName" class="mt-1 text-sm text-red-600">
+                  {{ errors.firstName }}
+                </p>
               </div>
 
               <!-- Last Name -->
@@ -80,11 +94,15 @@
                   required
                   :class="[
                     'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#B88E2F]',
-                    errors.lastName ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-[#B88E2F]'
+                    errors.lastName
+                      ? 'border-red-300 focus:border-red-500'
+                      : 'border-gray-300 focus:border-[#B88E2F]',
                   ]"
                   placeholder="Nom"
                 />
-                <p v-if="errors.lastName" class="mt-1 text-sm text-red-600">{{ errors.lastName }}</p>
+                <p v-if="errors.lastName" class="mt-1 text-sm text-red-600">
+                  {{ errors.lastName }}
+                </p>
               </div>
             </div>
           </div>
@@ -105,7 +123,9 @@
                   required
                   :class="[
                     'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#B88E2F]',
-                    errors.email ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-[#B88E2F]'
+                    errors.email
+                      ? 'border-red-300 focus:border-red-500'
+                      : 'border-gray-300 focus:border-[#B88E2F]',
                   ]"
                   placeholder="email@exemple.com"
                 />
@@ -123,7 +143,9 @@
                   type="tel"
                   :class="[
                     'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#B88E2F]',
-                    errors.phone ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-[#B88E2F]'
+                    errors.phone
+                      ? 'border-red-300 focus:border-red-500'
+                      : 'border-gray-300 focus:border-[#B88E2F]',
                   ]"
                   placeholder="+33 1 23 45 67 89"
                 />
@@ -147,7 +169,9 @@
                   required
                   :class="[
                     'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#B88E2F]',
-                    errors.role ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-[#B88E2F]'
+                    errors.role
+                      ? 'border-red-300 focus:border-red-500'
+                      : 'border-gray-300 focus:border-[#B88E2F]',
                   ]"
                 >
                   <option value="">Sélectionner un rôle</option>
@@ -173,7 +197,9 @@
                     Compte actif
                   </label>
                 </div>
-                <p v-if="errors.isActive" class="mt-1 text-sm text-red-600">{{ errors.isActive }}</p>
+                <p v-if="errors.isActive" class="mt-1 text-sm text-red-600">
+                  {{ errors.isActive }}
+                </p>
               </div>
             </div>
           </div>
@@ -181,7 +207,9 @@
           <!-- Password (Optional for updates) -->
           <div>
             <h3 class="text-lg font-medium text-gray-900 mb-4">Mot de Passe (Optionnel)</h3>
-            <p class="text-sm text-gray-500 mb-4">Laissez vide pour conserver le mot de passe actuel</p>
+            <p class="text-sm text-gray-500 mb-4">
+              Laissez vide pour conserver le mot de passe actuel
+            </p>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <!-- Password -->
               <div>
@@ -194,11 +222,15 @@
                   type="password"
                   :class="[
                     'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#B88E2F]',
-                    errors.password ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-[#B88E2F]'
+                    errors.password
+                      ? 'border-red-300 focus:border-red-500'
+                      : 'border-gray-300 focus:border-[#B88E2F]',
                   ]"
                   placeholder="Nouveau mot de passe"
                 />
-                <p v-if="errors.password" class="mt-1 text-sm text-red-600">{{ errors.password }}</p>
+                <p v-if="errors.password" class="mt-1 text-sm text-red-600">
+                  {{ errors.password }}
+                </p>
               </div>
 
               <!-- Confirm Password -->
@@ -212,11 +244,15 @@
                   type="password"
                   :class="[
                     'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#B88E2F]',
-                    errors.confirmPassword ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-[#B88E2F]'
+                    errors.confirmPassword
+                      ? 'border-red-300 focus:border-red-500'
+                      : 'border-gray-300 focus:border-[#B88E2F]',
                   ]"
                   placeholder="Confirmer le nouveau mot de passe"
                 />
-                <p v-if="errors.confirmPassword" class="mt-1 text-sm text-red-600">{{ errors.confirmPassword }}</p>
+                <p v-if="errors.confirmPassword" class="mt-1 text-sm text-red-600">
+                  {{ errors.confirmPassword }}
+                </p>
               </div>
             </div>
           </div>
@@ -234,11 +270,27 @@
               :disabled="loading"
               class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#B88E2F] hover:bg-[#B88E2F] hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#B88E2F] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <svg v-if="loading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <svg
+                v-if="loading"
+                class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
               </svg>
-              {{ loading ? 'Modification...' : 'Modifier l\'utilisateur' }}
+              {{ loading ? "Modification..." : "Modifier l'utilisateur" }}
             </button>
           </div>
         </form>
@@ -248,141 +300,141 @@
 </template>
 
 <script>
-import { ref, reactive, onMounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import axios from 'axios'
+import { ref, reactive, onMounted } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import axios from "axios";
 
 export default {
-  name: 'AdminUserUpdateView',
+  name: "AdminUserUpdateView",
   setup() {
-    const router = useRouter()
-    const route = useRoute()
-    const loading = ref(false)
-    const error = ref('')
-    const errors = reactive({})
+    const router = useRouter();
+    const route = useRoute();
+    const loading = ref(false);
+    const error = ref("");
+    const errors = reactive({});
 
     const form = reactive({
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
-      role: '',
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      role: "",
       isActive: true,
-      password: '',
-      confirmPassword: ''
-    })
+      password: "",
+      confirmPassword: "",
+    });
 
     const fetchUser = async () => {
       try {
-        loading.value = true
-        const response = await axios.get(`/api/v1/users/${route.params.id}`)
-        const user = response.data
-        
-        form.firstName = user.firstName || ''
-        form.lastName = user.lastName || ''
-        form.email = user.email || ''
-        form.phone = user.phone || ''
-        form.role = user.role || ''
-        form.isActive = user.isActive !== undefined ? user.isActive : true
+        loading.value = true;
+        const response = await axios.get(`/api/v1/users/${route.params.id}`);
+        const user = response.data;
+
+        form.firstName = user.firstName || "";
+        form.lastName = user.lastName || "";
+        form.email = user.email || "";
+        form.phone = user.phone || "";
+        form.role = user.role || "";
+        form.isActive = user.isActive !== undefined ? user.isActive : true;
       } catch (error) {
-        console.error('Erreur lors de la récupération de l\'utilisateur:', error)
-        error.value = 'Impossible de charger les données de l\'utilisateur'
+        console.error("Erreur lors de la récupération de l'utilisateur:", error);
+        error.value = "Impossible de charger les données de l'utilisateur";
       } finally {
-        loading.value = false
+        loading.value = false;
       }
-    }
+    };
 
     const validateForm = () => {
-      errors.value = {}
+      errors.value = {};
 
       if (!form.firstName.trim()) {
-        errors.firstName = 'Le prénom est requis'
+        errors.firstName = "Le prénom est requis";
       }
 
       if (!form.lastName.trim()) {
-        errors.lastName = 'Le nom est requis'
+        errors.lastName = "Le nom est requis";
       }
 
       if (!form.email.trim()) {
-        errors.email = 'L\'email est requis'
+        errors.email = "L'email est requis";
       } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-        errors.email = 'L\'email n\'est pas valide'
+        errors.email = "L'email n'est pas valide";
       }
 
       if (!form.role) {
-        errors.role = 'Le rôle est requis'
+        errors.role = "Le rôle est requis";
       }
 
       // Password validation only if password is provided
       if (form.password && form.password.length < 6) {
-        errors.password = 'Le mot de passe doit contenir au moins 6 caractères'
+        errors.password = "Le mot de passe doit contenir au moins 6 caractères";
       }
 
       if (form.password && !form.confirmPassword) {
-        errors.confirmPassword = 'La confirmation du mot de passe est requise'
+        errors.confirmPassword = "La confirmation du mot de passe est requise";
       } else if (form.password && form.password !== form.confirmPassword) {
-        errors.confirmPassword = 'Les mots de passe ne correspondent pas'
+        errors.confirmPassword = "Les mots de passe ne correspondent pas";
       }
 
-      return Object.keys(errors).length === 0
-    }
+      return Object.keys(errors).length === 0;
+    };
 
     const handleSubmit = async () => {
       if (!validateForm()) {
-        return
+        return;
       }
 
       try {
-        loading.value = true
-        
+        loading.value = true;
+
         const userData = {
           firstName: form.firstName,
           lastName: form.lastName,
           email: form.email,
           phone: form.phone || null,
           role: form.role,
-          isActive: form.isActive
-        }
+          isActive: form.isActive,
+        };
 
         // Only include password if provided
         if (form.password) {
-          userData.password = form.password
+          userData.password = form.password;
         }
 
-        await axios.put(`/api/v1/users/${route.params.id}`, userData)
-        
-        router.push('/admin/users')
+        await axios.put(`/api/v1/users/${route.params.id}`, userData);
+
+        router.push("/admin/users");
       } catch (error) {
-        console.error('Erreur lors de la modification de l\'utilisateur:', error)
-        
+        console.error("Erreur lors de la modification de l'utilisateur:", error);
+
         if (error.response?.data?.message) {
-          const message = error.response.data.message
-          if (message.includes('email')) {
-            errors.email = 'Cet email est déjà utilisé'
+          const message = error.response.data.message;
+          if (message.includes("email")) {
+            errors.email = "Cet email est déjà utilisé";
           } else {
-            alert('Erreur lors de la modification de l\'utilisateur: ' + message)
+            alert("Erreur lors de la modification de l'utilisateur: " + message);
           }
         } else {
-          alert('Erreur lors de la modification de l\'utilisateur')
+          alert("Erreur lors de la modification de l'utilisateur");
         }
       } finally {
-        loading.value = false
+        loading.value = false;
       }
-    }
+    };
 
     onMounted(() => {
-      fetchUser()
-    })
+      fetchUser();
+    });
 
     return {
       form,
       errors,
       loading,
       error,
-      handleSubmit
-    }
-  }
-}
+      handleSubmit,
+    };
+  },
+};
 </script>
 
 <style scoped>
@@ -400,4 +452,3 @@ export default {
   }
 }
 </style>
-

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ce que j'ai appris – Meubly</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #2a2a2a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .slide {
+      width: 1280px;
+      height: 720px;
+      background: #fffaf6;
+      display: flex;
+      flex-direction: column;
+      padding: 56px 72px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Élément décoratif de fond – cercle discret */
+    .slide::before {
+      content: '';
+      position: absolute;
+      bottom: -120px;
+      right: -80px;
+      width: 340px;
+      height: 340px;
+      border-radius: 50%;
+      border: 2px solid #b88e2f22;
+      pointer-events: none;
+    }
+
+    .slide::after {
+      content: '';
+      position: absolute;
+      bottom: -60px;
+      right: -20px;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      border: 2px solid #b88e2f33;
+      pointer-events: none;
+    }
+
+    /* ── En-tête ── */
+    .header {
+      margin-bottom: 44px;
+    }
+
+    .header .label {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #b88e2f;
+      margin-bottom: 10px;
+    }
+
+    .header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 38px;
+      font-weight: 700;
+      color: #3a3a3a;
+      line-height: 1.1;
+    }
+
+    .header .underline {
+      width: 72px;
+      height: 4px;
+      background: #b88e2f;
+      margin-top: 12px;
+      border-radius: 2px;
+    }
+
+    /* ── Grille des cartes ── */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 16px;
+      flex: 1;
+    }
+
+    .card {
+      background: #fff;
+      border-left: 3px solid #b88e2f;
+      border-radius: 6px;
+      padding: 18px 22px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      box-shadow: 0 1px 6px rgba(58, 58, 58, 0.06);
+      transition: box-shadow 0.2s;
+    }
+
+    /* La 5e carte occupe toute la largeur en bas */
+    .card:nth-child(5) {
+      grid-column: 1 / -1;
+    }
+
+    .card-number {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: #b88e2f;
+      line-height: 1;
+      flex-shrink: 0;
+      width: 28px;
+      text-align: right;
+      padding-top: 2px;
+    }
+
+    .card-content {
+      flex: 1;
+    }
+
+    .card-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #3a3a3a;
+      margin-bottom: 5px;
+    }
+
+    .card-desc {
+      font-family: 'Inter', sans-serif;
+      font-size: 12.5px;
+      font-weight: 400;
+      color: #6a6a6a;
+      line-height: 1.55;
+    }
+
+    /* Responsive – affichage bureau seulement (diapo fixe 16:9) */
+  </style>
+</head>
+<body>
+  <div class="slide">
+
+    <div class="header">
+      <p class="label">Bilan technique et personnel</p>
+      <h1>Ce que j'ai appris</h1>
+      <div class="underline"></div>
+    </div>
+
+    <div class="grid">
+
+      <div class="card">
+        <span class="card-number">01</span>
+        <div class="card-content">
+          <p class="card-title">Vue.js 3 / Composition API</p>
+          <p class="card-desc">Structuration de la logique, réactivité, communication entre composants, composables réutilisables</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="card-number">02</span>
+        <div class="card-content">
+          <p class="card-title">Supabase / PostgreSQL</p>
+          <p class="card-desc">Conception d'un schéma relationnel robuste, sécurisation des accès avec les politiques RLS, gestion des contraintes et des migrations</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="card-number">03</span>
+        <div class="card-content">
+          <p class="card-title">Architecture BaaS</p>
+          <p class="card-desc">Apprendre à déléguer l'infrastructure tout en gardant la maîtrise des règles métier — arbitrer entre rapidité et contrôle</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="card-number">04</span>
+        <div class="card-content">
+          <p class="card-title">Tests automatisés (Vitest)</p>
+          <p class="card-desc">Isolation de la logique métier, mock de dépendances externes, détection des régressions</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="card-number">05</span>
+        <div class="card-content">
+          <p class="card-title">Gestion solo</p>
+          <p class="card-desc">Rigueur, découpage en livrables, versioning systématique, méthode agile adaptée</p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</body>
+</html>

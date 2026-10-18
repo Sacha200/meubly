@@ -8,18 +8,19 @@ export const favoritesRepository = {
   async add(userId, furnitureId) {
     // On utilise upsert ou insert avec ignoreDuplicates si la contrainte UNIQUE est en place
     const { data, error } = await supabase
-      .from('favorite')
+      .from("favorite")
       .insert([{ user_id: userId, furniture_id: furnitureId }])
       .select()
       .maybeSingle();
 
     // Si erreur de contrainte unique (déjà favori), on l'ignore ou on renvoie l'existant
-    if (error && error.code === '23505') { // Code PostgreSQL pour Unique Violation
-        return { message: "Already in favorites" };
+    if (error && error.code === "23505") {
+      // Code PostgreSQL pour Unique Violation
+      return { message: "Already in favorites" };
     }
     if (error) {
-        console.error("FavoritesRepository ADD Error:", JSON.stringify(error, null, 2));
-        throw error;
+      console.error("FavoritesRepository ADD Error:", JSON.stringify(error, null, 2));
+      throw error;
     }
     return data;
   },
@@ -29,11 +30,11 @@ export const favoritesRepository = {
    */
   async remove(userId, furnitureId) {
     const { error } = await supabase
-      .from('favorite')
+      .from("favorite")
       .delete()
-      .eq('user_id', userId)
-      .eq('furniture_id', furnitureId);
-    
+      .eq("user_id", userId)
+      .eq("furniture_id", furnitureId);
+
     if (error) throw error;
   },
 
@@ -42,8 +43,9 @@ export const favoritesRepository = {
    */
   async findByUser(userId) {
     const { data, error } = await supabase
-      .from('favorite')
-      .select(`
+      .from("favorite")
+      .select(
+        `
         added_at,
         furniture:furniture (
           furniture_id,
@@ -52,15 +54,16 @@ export const favoritesRepository = {
           cover_url,
           description
         )
-      `)
-      .eq('user_id', userId)
-      .order('added_at', { ascending: false });
+      `
+      )
+      .eq("user_id", userId)
+      .order("added_at", { ascending: false });
 
     if (error) throw error;
 
-    return data.map(item => ({
-        added_at: item.added_at,
-        ...item.furniture
+    return data.map((item) => ({
+      added_at: item.added_at,
+      ...item.furniture,
     }));
   },
 
@@ -68,14 +71,14 @@ export const favoritesRepository = {
    * Vérifie si un meuble est favori pour un user.
    */
   async isFavorite(userId, furnitureId) {
-      const { data, error } = await supabase
-        .from('favorite')
-        .select('user_id')
-        .eq('user_id', userId)
-        .eq('furniture_id', furnitureId)
-        .maybeSingle();
+    const { data, error } = await supabase
+      .from("favorite")
+      .select("user_id")
+      .eq("user_id", userId)
+      .eq("furniture_id", furnitureId)
+      .maybeSingle();
 
-      if (error) throw error;
-      return !!data;
-  }
+    if (error) throw error;
+    return !!data;
+  },
 };

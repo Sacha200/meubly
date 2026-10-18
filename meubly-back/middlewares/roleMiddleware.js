@@ -18,7 +18,7 @@ export const requireAdmin = async (req, res, next) => {
 
     // Check if role is admin (flexible check for 'admin', 'ADMIN', etc.)
     const role = (userData.role || "").toLowerCase();
-    
+
     if (role !== "admin") {
       return res.status(403).json({ error: "Accès refusé : Droits administrateur requis" });
     }

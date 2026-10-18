@@ -7,41 +7,41 @@
  *   node scripts/enrich_furnitures.js --id <uuid>   -> enrichit un meuble spécifique
  */
 
-import dotenv from 'dotenv';
-import { createClient } from '@supabase/supabase-js';
+import dotenv from "dotenv";
+import { createClient } from "@supabase/supabase-js";
 
 dotenv.config();
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
-const SUPABASE_URL = process.env.SUPABASE_URL || 'http://localhost:8000';
+const SUPABASE_URL = process.env.SUPABASE_URL || "http://localhost:8000";
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
-const OPENROUTER_MODEL = 'google/gemma-3-12b-it:free';
-const OPENROUTER_ENDPOINT = 'https://openrouter.ai/api/v1/chat/completions';
+const OPENROUTER_MODEL = "google/gemma-3-12b-it:free";
+const OPENROUTER_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
 
-const BATCH_SIZE = 1;    // Séquentiel pour éviter le rate limit
-const DELAY_MS = 10000;  // 10s entre chaque requête (max 6 RPM, limite à 8)
+const BATCH_SIZE = 1; // Séquentiel pour éviter le rate limit
+const DELAY_MS = 10000; // 10s entre chaque requête (max 6 RPM, limite à 8)
 
 // ─── Args CLI ─────────────────────────────────────────────────────────────────
 
 const args = process.argv.slice(2);
-const FORCE = args.includes('--force');
+const FORCE = args.includes("--force");
 const specificId = (() => {
-  const idx = args.indexOf('--id');
+  const idx = args.indexOf("--id");
   return idx !== -1 ? args[idx + 1] : null;
 })();
 
 // ─── Init clients ─────────────────────────────────────────────────────────────
 
 if (!SUPABASE_KEY) {
-  console.error('[Enrich] SUPABASE_SERVICE_ROLE_KEY manquante');
+  console.error("[Enrich] SUPABASE_SERVICE_ROLE_KEY manquante");
   process.exit(1);
 }
 
 if (!OPENROUTER_API_KEY) {
-  console.error('[Enrich] OPENROUTER_API_KEY manquante. Ajoutez-la dans .env');
+  console.error("[Enrich] OPENROUTER_API_KEY manquante. Ajoutez-la dans .env");
   process.exit(1);
 }
 
@@ -53,7 +53,7 @@ function buildPrompt(title, description) {
   return `Tu es un expert en mobilier et décoration d'intérieur. Voici un meuble :
 
 Nom : ${title}
-Description brute : ${description || 'Aucune description disponible.'}
+Description brute : ${description || "Aucune description disponible."}
 
 Réponds UNIQUEMENT avec un objet JSON valide (sans markdown, sans texte autour) avec exactement ces champs :
 {
@@ -70,16 +70,16 @@ Réponds UNIQUEMENT avec un objet JSON valide (sans markdown, sans texte autour)
 
 async function callOpenRouter(prompt) {
   const response = await fetch(OPENROUTER_ENDPOINT, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-      'HTTP-Referer': 'https://meubly.fr',
-      'X-Title': 'Meubly Enrichissement',
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+      "HTTP-Referer": "https://meubly.fr",
+      "X-Title": "Meubly Enrichissement",
     },
     body: JSON.stringify({
       model: OPENROUTER_MODEL,
-      messages: [{ role: 'user', content: prompt }],
+      messages: [{ role: "user", content: prompt }],
       temperature: 0.4,
       max_tokens: 512,
     }),
@@ -92,7 +92,7 @@ async function callOpenRouter(prompt) {
 
   const data = await response.json();
   const text = data.choices?.[0]?.message?.content?.trim();
-  if (!text) throw new Error('Réponse OpenRouter vide');
+  if (!text) throw new Error("Réponse OpenRouter vide");
   return text;
 }
 
@@ -106,11 +106,15 @@ async function enrichOne(furniture) {
     const text = await callOpenRouter(prompt);
 
     // Nettoyer le JSON (le modèle peut ajouter des backticks)
-    const jsonText = text.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
+    const jsonText = text
+      .replace(/^```json\s*/i, "")
+      .replace(/^```\s*/i, "")
+      .replace(/```\s*$/i, "")
+      .trim();
     const enriched = JSON.parse(jsonText);
 
     const { error } = await supabase
-      .from('Furniture')
+      .from("Furniture")
       .update({
         ai_description: enriched.ai_description || null,
         ai_tags: enriched.ai_tags || null,
@@ -120,7 +124,7 @@ async function enrichOne(furniture) {
         ai_scene_prompt: enriched.ai_scene_prompt || null,
         ai_enriched_at: new Date().toISOString(),
       })
-      .eq('furniture_id', furniture_id);
+      .eq("furniture_id", furniture_id);
 
     if (error) throw error;
 
@@ -137,20 +141,20 @@ async function enrichOne(furniture) {
 async function getFurnituresToEnrich() {
   if (specificId) {
     const { data, error } = await supabase
-      .from('Furniture')
-      .select('furniture_id, title, description')
-      .eq('furniture_id', specificId);
+      .from("Furniture")
+      .select("furniture_id, title, description")
+      .eq("furniture_id", specificId);
     if (error) throw error;
     return data || [];
   }
 
   let query = supabase
-    .from('Furniture')
-    .select('furniture_id, title, description')
-    .order('created_at', { ascending: false });
+    .from("Furniture")
+    .select("furniture_id, title, description")
+    .order("created_at", { ascending: false });
 
   if (!FORCE) {
-    query = query.is('ai_enriched_at', null);
+    query = query.is("ai_enriched_at", null);
   }
 
   const { data, error } = await query;
@@ -159,20 +163,22 @@ async function getFurnituresToEnrich() {
 }
 
 function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
-  console.log('[Enrich] Démarrage via OpenRouter...');
+  console.log("[Enrich] Démarrage via OpenRouter...");
   console.log(`[Enrich] Modèle: ${OPENROUTER_MODEL}`);
-  console.log(`[Enrich] Mode: ${FORCE ? 'FORCE (tous)' : specificId ? `ID: ${specificId}` : 'Nouveaux seulement'}`);
+  console.log(
+    `[Enrich] Mode: ${FORCE ? "FORCE (tous)" : specificId ? `ID: ${specificId}` : "Nouveaux seulement"}`
+  );
 
   const furnitures = await getFurnituresToEnrich();
 
   if (furnitures.length === 0) {
-    console.log('[Enrich] Aucun meuble à enrichir.');
+    console.log("[Enrich] Aucun meuble à enrichir.");
     return;
   }
 
@@ -183,12 +189,14 @@ async function main() {
 
   for (let i = 0; i < furnitures.length; i += BATCH_SIZE) {
     const batch = furnitures.slice(i, i + BATCH_SIZE);
-    console.log(`[Enrich] Batch ${Math.floor(i / BATCH_SIZE) + 1} / ${Math.ceil(furnitures.length / BATCH_SIZE)}`);
+    console.log(
+      `[Enrich] Batch ${Math.floor(i / BATCH_SIZE) + 1} / ${Math.ceil(furnitures.length / BATCH_SIZE)}`
+    );
 
     const results = await Promise.all(batch.map(enrichOne));
 
-    successCount += results.filter(r => r.success).length;
-    failCount += results.filter(r => !r.success).length;
+    successCount += results.filter((r) => r.success).length;
+    failCount += results.filter((r) => !r.success).length;
 
     if (i + BATCH_SIZE < furnitures.length) {
       await sleep(DELAY_MS);
@@ -198,7 +206,7 @@ async function main() {
   console.log(`\n[Enrich] Terminé — ${successCount} enrichi(s), ${failCount} erreur(s)`);
 }
 
-main().catch(err => {
-  console.error('[Enrich] Erreur fatale:', err);
+main().catch((err) => {
+  console.error("[Enrich] Erreur fatale:", err);
   process.exit(1);
 });

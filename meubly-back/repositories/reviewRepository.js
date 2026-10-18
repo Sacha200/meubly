@@ -2,7 +2,15 @@ import { supabase } from "../supabase.js";
 
 function isRelationMissing(error) {
   if (!error) return false;
-  return error.code === "42P01" || String(error.message ?? "").toLowerCase().includes("relation") || String(error.details ?? "").toLowerCase().includes("does not exist");
+  return (
+    error.code === "42P01" ||
+    String(error.message ?? "")
+      .toLowerCase()
+      .includes("relation") ||
+    String(error.details ?? "")
+      .toLowerCase()
+      .includes("does not exist")
+  );
 }
 
 export const reviewRepository = {
@@ -21,7 +29,7 @@ export const reviewRepository = {
       if (error) throw error;
       return { data, count };
     } catch (error) {
-       if (isRelationMissing(error)) {
+      if (isRelationMissing(error)) {
         console.warn("[ReviewRepository] Table review missing - returning empty.");
         return { data: [], count: 0 };
       }
@@ -40,7 +48,7 @@ export const reviewRepository = {
       return data;
     } catch (error) {
       if (isRelationMissing(error)) {
-         return [];
+        return [];
       }
       throw error;
     }
@@ -71,13 +79,9 @@ export const reviewRepository = {
   },
 
   async create(payload) {
-    const { data, error } = await supabase
-      .from("review")
-      .insert([payload])
-      .select()
-      .single();
+    const { data, error } = await supabase.from("review").insert([payload]).select().single();
 
     if (error) throw error;
     return data;
-  }
+  },
 };

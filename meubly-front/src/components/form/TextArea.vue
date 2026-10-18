@@ -15,35 +15,35 @@
 
 <script>
 export default {
-  name: 'TextArea',
+  name: "TextArea",
   props: {
     id: {
       type: String,
-      required: true
+      required: true,
     },
     label: {
       type: String,
-      required: true
+      required: true,
     },
     modelValue: {
       type: String,
-      default: ''
+      default: "",
     },
     rows: {
       type: Number,
-      default: 4
+      default: 4,
     },
     required: {
       type: Boolean,
-      default: false
+      default: false,
     },
     placeholder: {
       type: String,
-      default: ''
-    }
+      default: "",
+    },
   },
-  emits: ['update:modelValue']
-}
+  emits: ["update:modelValue"],
+};
 </script>
 
 <style scoped>
@@ -66,11 +66,11 @@ export default {
 
 .form-input:focus {
   outline: none;
-  border-color: #B88E2F;
+  border-color: #b88e2f;
   box-shadow: 0 0 0 2px rgba(184, 142, 47, 0.2);
 }
 
 .form-input:hover {
-  border-color: #B88E2F;
+  border-color: #b88e2f;
 }
-</style> 
+</style>

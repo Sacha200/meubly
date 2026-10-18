@@ -1,6 +1,9 @@
 *.md
 !README.md
 !**/README.md
+!CLAUDE.md
+!docs/**/*.md
+!.claude/**/*.md
 
 # Env files (local secrets)
 .env
@@ -19,3 +22,12 @@ node_modules/
 dist/
 *.log
 
+
+# Dumps de donnees generes (catalogue, regenerables)
+bd/catalog_data.sql
+bd/seed_cloud.sql
+bd/cloud_migration.sql
+bd/ingestion/ikea_seed.sql
+
+# Espace de travail des plans superpowers
+.superpowers/
