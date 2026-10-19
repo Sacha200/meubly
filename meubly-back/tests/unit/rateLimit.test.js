@@ -61,5 +61,5 @@ describe("limitation de debit", () => {
     for (let i = 0; i < 300; i += 1) await request(app).get("/api/v1/nope");
     expect((await request(app).get("/api/v1/nope")).status).toBe(429);
     expect((await request(app).get("/api/v1/health")).status).toBe(200);
-  });
+  }, 30_000); // 301 requetes : lent par construction, surtout quand les suites tournent en parallele
 });

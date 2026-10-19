@@ -69,7 +69,9 @@ describe("API des avis", () => {
     fetch.mockResolvedValueOnce({
       ok: false,
       status: 400,
-      json: async () => ({ errors: [{ msg: "La note doit être un entier compris entre 1 et 5." }] }),
+      json: async () => ({
+        errors: [{ msg: "La note doit être un entier compris entre 1 et 5." }],
+      }),
     });
     await expect(submitFurnitureReview(FURNITURE, { rating: 9 })).rejects.toThrow(
       "La note doit être un entier compris entre 1 et 5."
