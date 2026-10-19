@@ -35,7 +35,6 @@ router.get(
 router.post(
   "/furnitures/:id/reviews",
   requireAuth,
-  reviewWriteLimiter,
   [
     furnitureId,
     body("rating")
@@ -48,15 +47,16 @@ router.post(
       .withMessage("Le commentaire ne peut pas dépasser 1000 caractères."),
   ],
   handleValidation,
+  reviewWriteLimiter, // apres la validation : une requete invalide ne consomme pas le quota
   reviewController.upsert
 );
 
 router.delete(
   "/furnitures/:id/reviews/me",
   requireAuth,
-  reviewWriteLimiter,
   furnitureId,
   handleValidation,
+  reviewWriteLimiter,
   reviewController.deleteMine
 );
 

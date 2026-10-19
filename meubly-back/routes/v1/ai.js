@@ -10,7 +10,6 @@ const router = express.Router();
 router.post(
   "/generate-scene",
   requireAuth,
-  aiLimiter,
   [
     body("furnitureId").isUUID().withMessage("Identifiant de meuble invalide."),
     body("prompt")
@@ -20,6 +19,7 @@ router.post(
       .withMessage("La description doit contenir entre 3 et 200 caracteres."),
   ],
   handleValidation,
+  aiLimiter, // apres la validation : une requete invalide ne consomme pas le quota
   aiController.generateScene
 );
 

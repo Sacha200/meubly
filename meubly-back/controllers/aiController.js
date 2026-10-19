@@ -2,7 +2,7 @@ import { supabase } from "../supabase.js";
 import sharp from "sharp";
 import Replicate from "replicate";
 import { furnitureRepository } from "../repositories/furnitureRepository.js";
-import { fetchAllowedImage, getAllowedImageHosts } from "../utils/imageFetch.js";
+import { fetchAllowedImage, getAllowedImageHosts, isLocalDev } from "../utils/imageFetch.js";
 import { httpError } from "../utils/httpError.js";
 
 const replicate = new Replicate({
@@ -69,10 +69,9 @@ export const aiController = {
       await ensureBucketOnce().catch((err) => console.error(err.message));
 
       // 1. Image source (en Docker local, Storage est joignable via kong et non localhost)
-      const sourceUrl =
-        process.env.NODE_ENV !== "production"
-          ? furniture.cover_url.replace("://localhost", "://kong")
-          : furniture.cover_url;
+      const sourceUrl = isLocalDev()
+        ? furniture.cover_url.replace("://localhost", "://kong")
+        : furniture.cover_url;
       const originalBuffer = await fetchAllowedImage(sourceUrl, {
         allowedHosts: getAllowedImageHosts(),
       });

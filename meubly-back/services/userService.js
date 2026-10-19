@@ -18,6 +18,10 @@ function toItem(profile, account) {
   };
 }
 
+async function assertExists(id) {
+  if (!(await userRepository.findById(id))) throw httpError(404, "Utilisateur introuvable");
+}
+
 function assertNotSelf(targetId, actorId) {
   if (targetId === actorId) throw httpError(400, "Action impossible sur votre propre compte");
 }
@@ -44,15 +48,18 @@ export const userService = {
 
   async blockUser(id, actorId) {
     assertNotSelf(id, actorId);
+    await assertExists(id);
     await authAdminRepository.setBan(id, BAN_FOREVER);
   },
 
   async unblockUser(id) {
+    await assertExists(id);
     await authAdminRepository.setBan(id, "none");
   },
 
   async deleteUser(id, actorId) {
     assertNotSelf(id, actorId);
+    await assertExists(id);
     await authAdminRepository.deleteUser(id);
   },
 };

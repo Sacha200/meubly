@@ -5,6 +5,7 @@ import { httpError } from "../utils/httpError.js";
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 5;
 const MAX_LIMIT = 50;
+const UNIQUE_VIOLATION = "23505";
 
 function sanitizePagination(page, limit) {
   const pageNumber = Math.max(1, parseInt(page, 10) || DEFAULT_PAGE);
@@ -77,6 +78,7 @@ async function assertFurnitureExists(furnitureId) {
 
 export const reviewService = {
   async listByFurniture(furnitureId, { page = DEFAULT_PAGE, limit = DEFAULT_LIMIT } = {}) {
+    await assertFurnitureExists(furnitureId);
     const { page: safePage, limit: safeLimit, from, to } = sanitizePagination(page, limit);
     const { data, count } = await reviewRepository.findByFurniture(furnitureId, from, to);
     return {
@@ -101,12 +103,22 @@ export const reviewService = {
       const review = await reviewRepository.update(existing.review_id, fields);
       return { action: "updated", review };
     }
-    const review = await reviewRepository.create({
-      ...fields,
-      furniture_id: furnitureId,
-      user_id: userId,
-    });
-    return { action: "created", review };
+    try {
+      const review = await reviewRepository.create({
+        ...fields,
+        furniture_id: furnitureId,
+        user_id: userId,
+      });
+      return { action: "created", review };
+    } catch (error) {
+      // Deux soumissions simultanees : la contrainte unique (user_id, furniture_id) refuse la
+      // seconde insertion (23505), qui devient une mise a jour de l'avis cree entre-temps.
+      if (error?.code !== UNIQUE_VIOLATION) throw error;
+      const concurrent = await reviewRepository.findByFurnitureAndUser(furnitureId, userId);
+      if (!concurrent) throw error;
+      const review = await reviewRepository.update(concurrent.review_id, fields);
+      return { action: "updated", review };
+    }
   },
 
   async deleteOwnReview(furnitureId, userId) {

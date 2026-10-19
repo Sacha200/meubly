@@ -120,6 +120,14 @@ describe("POST /ai/generate-scene", () => {
       expect.objectContaining({ maxRedirects: 0, maxContentLength: 10 * 1024 * 1024 })
     );
   });
+
+  it("une requete invalide ne consomme pas le quota IA", async () => {
+    for (let i = 0; i < 6; i += 1) {
+      expect((await generate({ furnitureId: "pas-un-uuid", prompt: "salon" })).status).toBe(400);
+    }
+    furnitureRepository.findSummary.mockResolvedValue(null);
+    expect((await generate({ furnitureId: FURNITURE, prompt: "salon" })).status).not.toBe(429);
+  });
 });
 
 describe("fetchAllowedImage", () => {
@@ -137,6 +145,23 @@ describe("fetchAllowedImage", () => {
       fetchAllowedImage("https://www.ikea.com.evil.example/a.jpg", opts)
     ).rejects.toMatchObject({ statusCode: 400 });
     expect(axiosGet).not.toHaveBeenCalled();
+  });
+
+  it("n'autorise les hotes locaux en http qu'en developpement explicite", async () => {
+    const local = "http://localhost:8000/storage/v1/object/public/a.jpg";
+    const opts = { allowedHosts: ["www.ikea.com"] };
+    axiosGet.mockResolvedValue(imageResponse());
+    const previous = process.env.NODE_ENV;
+    try {
+      for (const env of ["test", "production", ""]) {
+        process.env.NODE_ENV = env;
+        await expect(fetchAllowedImage(local, opts)).rejects.toMatchObject({ statusCode: 400 });
+      }
+      process.env.NODE_ENV = "development";
+      await expect(fetchAllowedImage(local, opts)).resolves.toBeInstanceOf(Buffer);
+    } finally {
+      process.env.NODE_ENV = previous;
+    }
   });
 
   it("accepte un suffixe de domaine declare avec un point", async () => {

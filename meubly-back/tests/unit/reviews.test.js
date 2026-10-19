@@ -109,6 +109,32 @@ describe("API des avis", () => {
     expect(second.body.action).toBe("updated");
   });
 
+  it("met a jour si un avis concurrent est cree entre la lecture et l'insertion", async () => {
+    reviewRepository.create.mockRejectedValue(
+      Object.assign(new Error("duplicate"), { code: "23505" })
+    );
+    reviewRepository.findByFurnitureAndUser
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ review_id: REVIEW_ID });
+    const res = await post({ rating: 5 });
+    expect(res.status).toBe(200);
+    expect(res.body.action).toBe("updated");
+    expect(reviewRepository.update).toHaveBeenCalledWith(
+      REVIEW_ID,
+      expect.objectContaining({ rating: 5 })
+    );
+  });
+
+  it("404 sur la liste d'un meuble inconnu", async () => {
+    furnitureRepository.findSummary.mockResolvedValue(null);
+    expect((await request(app).get(BASE)).status).toBe(404);
+  });
+
+  it("une requete invalide ne consomme pas le quota d'ecriture d'avis", async () => {
+    for (let i = 0; i < 21; i += 1) expect((await post({ rating: 9 })).status).toBe(400);
+    expect((await post({ rating: 4 })).status).toBe(201);
+  });
+
   it("renvoie son propre avis ou null", async () => {
     const none = await request(app).get(`${BASE}/me`).set("Authorization", bearer("user"));
     expect(none.body).toEqual({ review: null });

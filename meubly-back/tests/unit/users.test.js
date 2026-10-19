@@ -101,6 +101,15 @@ describe("/users (administration des comptes)", () => {
     expect(authAdminRepository.setBan).toHaveBeenCalledWith(TARGET, "none");
   });
 
+  it("404 pour bloquer, debloquer ou supprimer un compte absent", async () => {
+    userRepository.findById.mockResolvedValue(null);
+    expect((await as("admin", "post", `/api/v1/users/${TARGET}/block`)).status).toBe(404);
+    expect((await as("admin", "post", `/api/v1/users/${TARGET}/unblock`)).status).toBe(404);
+    expect((await as("admin", "delete", `/api/v1/users/${TARGET}`)).status).toBe(404);
+    expect(authAdminRepository.setBan).not.toHaveBeenCalled();
+    expect(authAdminRepository.deleteUser).not.toHaveBeenCalled();
+  });
+
   it("supprime le compte via Supabase Auth", async () => {
     expect((await as("admin", "delete", `/api/v1/users/${TARGET}`)).status).toBe(204);
     expect(authAdminRepository.deleteUser).toHaveBeenCalledWith(TARGET);

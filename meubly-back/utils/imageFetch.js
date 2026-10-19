@@ -5,6 +5,15 @@ export const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 const LOCAL_HOSTS = new Set(["localhost", "kong"]);
 
 /**
+ * Developpement local explicite (`NODE_ENV=development`, pose par docker-compose.dev.yml).
+ * Toute autre valeur, absente comprise, applique les regles de production.
+ * @returns {boolean}
+ */
+export function isLocalDev() {
+  return process.env.NODE_ENV === "development";
+}
+
+/**
  * Hotes d'images que le serveur a le droit de telecharger (anti-SSRF).
  * `AI_IMAGE_HOSTS` (separes par des virgules) remplace la liste par defaut.
  * Une entree commencant par "." autorise ce domaine et ses sous-domaines.
@@ -50,7 +59,7 @@ export async function fetchAllowedImage(url, { allowedHosts, maxBytes = MAX_IMAG
   }
 
   const hostname = parsed.hostname.toLowerCase();
-  const localDev = process.env.NODE_ENV !== "production" && LOCAL_HOSTS.has(hostname);
+  const localDev = isLocalDev() && LOCAL_HOSTS.has(hostname);
   const protocolOk = parsed.protocol === "https:" || (localDev && parsed.protocol === "http:");
   if (!protocolOk || (!localDev && !isAllowedHost(hostname, allowedHosts))) {
     throw httpError(400, "Image source non autorisee");
