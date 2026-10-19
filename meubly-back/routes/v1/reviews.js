@@ -1,22 +1,18 @@
 import express from "express";
-import { body, param, query, validationResult } from "express-validator";
+import { body, param, query } from "express-validator";
 import { reviewController } from "../../controllers/reviewController.js";
 import { requireAuth } from "../../middlewares/authMiddleware.js";
+import { requireAdmin } from "../../middlewares/roleMiddleware.js";
+import { handleValidation } from "./validation.js";
 
 const router = express.Router();
 
-const handleValidation = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-  return next();
-};
+const furnitureId = param("id").isUUID().withMessage("Identifiant de meuble invalide.");
 
 router.get(
   "/furnitures/:id/reviews",
   [
-    param("id").trim().notEmpty().withMessage("L'identifiant du produit est requis."),
+    furnitureId,
     query("page").optional().isInt({ min: 1 }).withMessage("La page doit être un entier positif."),
     query("limit")
       .optional()
@@ -27,29 +23,47 @@ router.get(
   reviewController.list
 );
 
+router.get(
+  "/furnitures/:id/reviews/me",
+  requireAuth,
+  furnitureId,
+  handleValidation,
+  reviewController.getMine
+);
+
 router.post(
   "/furnitures/:id/reviews",
   requireAuth,
   [
-    param("id").trim().notEmpty().withMessage("L'identifiant du produit est requis."),
+    furnitureId,
     body("rating")
-      .notEmpty()
-      .withMessage("La note est obligatoire.")
       .isInt({ min: 1, max: 5 })
-      .withMessage("La note doit être comprise entre 1 et 5."),
+      .withMessage("La note doit être un entier compris entre 1 et 5."),
     body("comment")
-      .optional()
+      .optional({ values: "null" })
       .isString()
       .isLength({ max: 1000 })
       .withMessage("Le commentaire ne peut pas dépasser 1000 caractères."),
-    body("authorName")
-      .optional()
-      .isString()
-      .isLength({ max: 255 })
-      .withMessage("Le nom de l'auteur ne peut pas dépasser 255 caractères."),
   ],
   handleValidation,
-  reviewController.createOrUpdate
+  reviewController.upsert
+);
+
+router.delete(
+  "/furnitures/:id/reviews/me",
+  requireAuth,
+  furnitureId,
+  handleValidation,
+  reviewController.deleteMine
+);
+
+router.delete(
+  "/reviews/:reviewId",
+  requireAuth,
+  requireAdmin,
+  param("reviewId").isUUID().withMessage("Identifiant d'avis invalide."),
+  handleValidation,
+  reviewController.deleteAny
 );
 
 export default router;

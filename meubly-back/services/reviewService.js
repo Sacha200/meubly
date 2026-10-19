@@ -1,4 +1,6 @@
 import { reviewRepository } from "../repositories/reviewRepository.js";
+import { furnitureRepository } from "../repositories/furnitureRepository.js";
+import { httpError } from "../utils/httpError.js";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 5;
@@ -28,8 +30,8 @@ function buildEmptySummary() {
   };
 }
 
-async function computeSummary(productId) {
-  const data = await reviewRepository.getAllRatings(productId);
+async function computeSummary(furnitureId) {
+  const data = await reviewRepository.getAllRatings(furnitureId);
 
   if (!data || data.length === 0) {
     return buildEmptySummary();
@@ -55,56 +57,67 @@ async function computeSummary(productId) {
   };
 }
 
+/** Avis public : jamais d'identifiant utilisateur, seulement le nom affiche. */
+function toPublicReview(row) {
+  return {
+    review_id: row.review_id,
+    rating: Number(row.rating) || 0,
+    comment: row.comment ?? null,
+    author_name: row.profile?.username || "Utilisateur",
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  };
+}
+
+async function assertFurnitureExists(furnitureId) {
+  if (!(await furnitureRepository.findSummary(furnitureId))) {
+    throw httpError(404, "Meuble introuvable");
+  }
+}
+
 export const reviewService = {
-  async listByProduct(productId, { page = DEFAULT_PAGE, limit = DEFAULT_LIMIT } = {}) {
+  async listByFurniture(furnitureId, { page = DEFAULT_PAGE, limit = DEFAULT_LIMIT } = {}) {
     const { page: safePage, limit: safeLimit, from, to } = sanitizePagination(page, limit);
-
-    const { data, count } = await reviewRepository.findReviewsByProduct(productId, from, to);
-
-    const summary = await computeSummary(productId);
-
-    const items = (data ?? []).map((item) => ({
-      ...item,
-      rating: Number(item.rating) || 0,
-    }));
-
+    const { data, count } = await reviewRepository.findByFurniture(furnitureId, from, to);
     return {
-      items,
+      items: (data ?? []).map(toPublicReview),
       total: count ?? 0,
       page: safePage,
       limit: safeLimit,
-      summary,
+      summary: await computeSummary(furnitureId),
     };
   },
 
-  async createOrUpdateReview({ productId, userId, rating, comment, authorName }) {
-    const payload = {
-      product_id: productId,
-      rating,
-      comment: comment || null,
-      author_name: authorName || null,
-      updated_at: new Date().toISOString(),
-    };
+  async getOwnReview(furnitureId, userId) {
+    return reviewRepository.findByFurnitureAndUser(furnitureId, userId);
+  },
 
-    if (userId) {
-      payload.user_id = userId;
+  /** Un avis par utilisateur et par meuble : re-soumettre met a jour l'existant. */
+  async upsertReview({ furnitureId, userId, rating, comment }) {
+    await assertFurnitureExists(furnitureId);
+    const fields = { rating, comment: comment || null, updated_at: new Date().toISOString() };
+    const existing = await reviewRepository.findByFurnitureAndUser(furnitureId, userId);
+    if (existing) {
+      const review = await reviewRepository.update(existing.review_id, fields);
+      return { action: "updated", review };
     }
-
-    if (userId) {
-      // Check existing using repository
-      const existing = await reviewRepository.findByProductAndUser(productId, userId);
-
-      if (existing) {
-        const updated = await reviewRepository.update(existing.review_id, payload);
-        return { action: "updated", review: updated };
-      }
-    }
-
-    const created = await reviewRepository.create({
-      ...payload,
-      created_at: new Date().toISOString(),
+    const review = await reviewRepository.create({
+      ...fields,
+      furniture_id: furnitureId,
+      user_id: userId,
     });
+    return { action: "created", review };
+  },
 
-    return { action: "created", review: created };
+  async deleteOwnReview(furnitureId, userId) {
+    const existing = await reviewRepository.findByFurnitureAndUser(furnitureId, userId);
+    if (!existing) throw httpError(404, "Aucun avis a supprimer");
+    await reviewRepository.deleteById(existing.review_id);
+  },
+
+  async deleteReview(reviewId) {
+    if ((await reviewRepository.deleteById(reviewId)) === 0) {
+      throw httpError(404, "Avis introuvable");
+    }
   },
 };

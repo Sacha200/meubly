@@ -1,50 +1,51 @@
 import { reviewService } from "../services/reviewService.js";
-import { validationResult } from "express-validator";
 
 export const reviewController = {
   async list(req, res, next) {
-    // Validation result handling could be here or middleware.
-    // The route definition uses 'handleValidation', so we assume req is valid here or we check it.
-    // But 'handleValidation' middleware provided in the snippet handles it.
-
     try {
-      const { id } = req.params;
       const { page, limit } = req.query;
-      const productId = isNaN(Number(id)) ? id : Number(id);
-      const result = await reviewService.listByProduct(productId, { page, limit });
-      res.status(200).json(result);
+      res.status(200).json(await reviewService.listByFurniture(req.params.id, { page, limit }));
     } catch (error) {
       next(error);
     }
   },
 
-  async createOrUpdate(req, res, next) {
+  async getMine(req, res, next) {
     try {
-      const { id } = req.params;
-      const { rating, comment = "", authorName } = req.body;
-      const productId = isNaN(Number(id)) ? id : Number(id);
+      const review = await reviewService.getOwnReview(req.params.id, req.user.id);
+      res.status(200).json({ review: review ?? null });
+    } catch (error) {
+      next(error);
+    }
+  },
 
-      // User attached by requireAuth middleware
-      const userId = req.user ? req.user.id : null;
-
-      if (!userId) {
-        // Should not happen if route is protected, but safe guard
-        return res
-          .status(401)
-          .json({ error: "Une authentification est requise pour publier un avis." });
-      }
-
-      const sanitizedComment = comment.trim();
-
-      const result = await reviewService.createOrUpdateReview({
-        productId,
-        userId,
-        rating: Number(rating),
-        comment: sanitizedComment,
-        authorName,
+  async upsert(req, res, next) {
+    try {
+      const result = await reviewService.upsertReview({
+        furnitureId: req.params.id,
+        userId: req.user.id,
+        rating: Number(req.body.rating),
+        comment: (req.body.comment ?? "").trim(),
       });
-
       res.status(result.action === "created" ? 201 : 200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async deleteMine(req, res, next) {
+    try {
+      await reviewService.deleteOwnReview(req.params.id, req.user.id);
+      res.status(204).send();
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async deleteAny(req, res, next) {
+    try {
+      await reviewService.deleteReview(req.params.reviewId);
+      res.status(204).send();
     } catch (error) {
       next(error);
     }
