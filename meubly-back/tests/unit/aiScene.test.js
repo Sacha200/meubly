@@ -22,10 +22,13 @@ vi.mock("../../repositories/furnitureRepository.js", () => ({
   furnitureRepository: { findSummary: vi.fn() },
 }));
 
-const { app } = await import("../../app.js");
-const { userRepository } = await import("../../repositories/userRepository.js");
-const { furnitureRepository } = await import("../../repositories/furnitureRepository.js");
 const { fetchAllowedImage } = await import("../../utils/imageFetch.js");
+
+// App et mocks de repositories re-importes a chaque test : le limiteur IA (5 appels / heure /
+// utilisateur) garde ses compteurs en memoire du module.
+let app;
+let userRepository;
+let furnitureRepository;
 
 const FURNITURE = "3f2b6c1e-0000-4000-8000-000000000001";
 const COVER = "https://www.ikea.com/fr/fr/images/products/chaise.jpg";
@@ -51,7 +54,10 @@ describe("POST /ai/generate-scene", () => {
 
   beforeEach(async () => {
     vi.clearAllMocks();
-    (await import("../../controllers/aiController.js")).__resetBucketStateForTests();
+    vi.resetModules();
+    ({ app } = await import("../../app.js"));
+    ({ userRepository } = await import("../../repositories/userRepository.js"));
+    ({ furnitureRepository } = await import("../../repositories/furnitureRepository.js"));
     process.env.REPLICATE_API_TOKEN = "test-token";
     mockAuth(supabase, userRepository);
     furnitureRepository.findSummary.mockResolvedValue({
