@@ -1,31 +1,19 @@
-import { supabase } from "../supabase.js";
+import { userRepository } from "../repositories/userRepository.js";
 
+/**
+ * Autorise uniquement les comptes dont `profile.role` vaut `ADMIN`. A placer apres `requireAuth`.
+ */
 export const requireAdmin = async (req, res, next) => {
   try {
-    if (!req.user || !req.user.id) {
-      return res.status(401).json({ error: "Utilisateur non authentifié" });
+    if (!req.user?.id) {
+      return res.status(401).json({ error: "Authentification requise" });
     }
-
-    const { data: userData, error } = await supabase
-      .from("User")
-      .select("role")
-      .eq("user_id", req.user.id)
-      .single();
-
-    if (error || !userData) {
-      return res.status(403).json({ error: "Impossible de vérifier les droits" });
+    const role = await userRepository.findRoleByUserId(req.user.id);
+    if (role !== "ADMIN") {
+      return res.status(403).json({ error: "Acces reserve aux administrateurs" });
     }
-
-    // Check if role is admin (flexible check for 'admin', 'ADMIN', etc.)
-    const role = (userData.role || "").toLowerCase();
-
-    if (role !== "admin") {
-      return res.status(403).json({ error: "Accès refusé : Droits administrateur requis" });
-    }
-
-    next();
+    return next();
   } catch (error) {
-    console.error("Role Middleware Error:", error);
-    res.status(500).json({ error: "Erreur serveur lors de la vérification des droits" });
+    return next(error);
   }
 };

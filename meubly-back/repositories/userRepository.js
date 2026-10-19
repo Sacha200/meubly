@@ -1,6 +1,20 @@
 import { supabase } from "../supabase.js";
 
 export const userRepository = {
+  /**
+   * @param {string} userId
+   * @returns {Promise<"USER" | "ADMIN" | null>}
+   */
+  async findRoleByUserId(userId) {
+    const { data, error } = await supabase
+      .from("profile")
+      .select("role")
+      .eq("user_id", userId)
+      .maybeSingle();
+    if (error) throw error;
+    return data?.role ?? null;
+  },
+
   async findAll() {
     const { data, error } = await supabase.from("profile").select("*");
     if (error) throw error;

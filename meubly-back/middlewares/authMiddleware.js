@@ -1,35 +1,35 @@
 import { supabase } from "../supabase.js";
 
+const UNAUTHENTICATED = { error: "Authentification requise" };
+
 /**
- * Middleware to protect routes Authentication
- * Verifies the Bearer token in the Authorization header via Supabase
+ * Verifie le jeton Bearer aupres de Supabase Auth et place l'utilisateur dans `req.user`.
+ * - 401 : header absent, schema autre que Bearer, jeton refuse ou expire ;
+ * - 403 : compte bloque (`banned_until` dans le futur), verifie a chaque requete pour qu'un
+ *   blocage prenne effet sans attendre l'expiration du jeton.
  */
 export const requireAuth = async (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      return res.status(401).json({ error: "Authentification requise (Header manquant)" });
-    }
-
-    const token = authHeader.split(" ")[1];
-    if (!token) {
-      return res.status(401).json({ error: "Token manquant" });
+    const [scheme, token] = (req.headers.authorization || "").split(" ");
+    if (scheme !== "Bearer" || !token) {
+      return res.status(401).json(UNAUTHENTICATED);
     }
 
     const {
       data: { user },
       error,
     } = await supabase.auth.getUser(token);
-
     if (error || !user) {
-      return res.status(403).json({ error: "Token invalide ou expiré" });
+      return res.status(401).json(UNAUTHENTICATED);
     }
 
-    // Attach user to request for downstream use
+    if (user.banned_until && new Date(user.banned_until) > new Date()) {
+      return res.status(403).json({ error: "Compte bloque" });
+    }
+
     req.user = user;
-    next();
+    return next();
   } catch (error) {
-    console.error("Auth Middleware Error:", error);
-    res.status(500).json({ error: "Erreur serveur lors de l'authentification" });
+    return next(error);
   }
 };
