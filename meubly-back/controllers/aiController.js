@@ -1,7 +1,9 @@
-import axios from "axios";
 import { supabase } from "../supabase.js";
 import sharp from "sharp";
 import Replicate from "replicate";
+import { furnitureRepository } from "../repositories/furnitureRepository.js";
+import { fetchAllowedImage, getAllowedImageHosts } from "../utils/imageFetch.js";
+import { httpError } from "../utils/httpError.js";
 
 const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
@@ -46,49 +48,40 @@ export function __resetBucketStateForTests() {
 }
 
 export const aiController = {
-  async generateScene(req, res) {
+  /**
+   * Genere une mise en scene a partir de l'image de couverture d'un meuble.
+   * Corps valide a la route : { furnitureId: uuid, prompt: 3-200 caracteres }.
+   * L'image est lue en base (jamais une URL fournie par le client) puis telechargee
+   * uniquement depuis un hote autorise.
+   */
+  async generateScene(req, res, next) {
     try {
-      const { imageUrl, prompt } = req.body;
-
-      if (!imageUrl || !prompt) {
-        return res.status(400).json({ error: "imageUrl and prompt are required" });
-      }
+      const { furnitureId, prompt } = req.body;
 
       if (!process.env.REPLICATE_API_TOKEN) {
-        return res.status(500).json({ error: "Replicate API token not configured" });
+        throw httpError(503, "Generation indisponible");
       }
+
+      const furniture = await furnitureRepository.findSummary(furnitureId);
+      if (!furniture?.cover_url) throw httpError(404, "Meuble ou image introuvable");
 
       // Non bloquant : sans bucket, l'upload echoue et on renvoie l'URL Replicate (repli plus bas).
       await ensureBucketOnce().catch((err) => console.error(err.message));
 
-      // 1. Download source image (Docker fix: localhost -> kong for Supabase Storage)
-      let downloadUrl = imageUrl;
-      if (imageUrl.includes("localhost")) {
-        downloadUrl = imageUrl.replace("localhost", "kong");
-        console.log(`[AI] Docker fix: ${imageUrl} -> ${downloadUrl}`);
-      }
-
-      console.log(`[AI] Downloading image from: ${downloadUrl}`);
-      const imageResponse = await axios.get(downloadUrl, { responseType: "arraybuffer" });
-
-      const contentType = imageResponse.headers["content-type"] || "";
-      console.log(
-        `[AI] Downloaded. Status: ${imageResponse.status}, Type: ${contentType}, Size: ${imageResponse.data.length} bytes`
-      );
-
-      if (contentType.includes("text/html")) {
-        throw new Error("Downloaded source is not an image (HTML response)");
-      }
+      // 1. Image source (en Docker local, Storage est joignable via kong et non localhost)
+      const sourceUrl =
+        process.env.NODE_ENV !== "production"
+          ? furniture.cover_url.replace("://localhost", "://kong")
+          : furniture.cover_url;
+      const originalBuffer = await fetchAllowedImage(sourceUrl, {
+        allowedHosts: getAllowedImageHosts(),
+      });
 
       // 2. Optimize image with sharp (max 1024px for Replicate inpainting model)
-      const originalBuffer = Buffer.from(imageResponse.data);
-
       const optimizedBuffer = await sharp(originalBuffer)
         .resize({ width: 1024, height: 1024, fit: "inside", withoutEnlargement: true })
         .jpeg({ quality: 85 })
         .toBuffer();
-
-      console.log(`[AI] Optimized: ${originalBuffer.length} -> ${optimizedBuffer.length} bytes`);
 
       // 3. Create a full white mask (same size as optimized image)
       const { width: optW, height: optH } = await sharp(optimizedBuffer).metadata();
@@ -103,7 +96,6 @@ export const aiController = {
       const maskBase64 = `data:image/jpeg;base64,${maskBuffer.toString("base64")}`;
 
       // 5. Call Replicate (stability-ai/stable-diffusion-inpainting)
-      console.log(`[AI] Calling Replicate with prompt: "${prompt}"`);
       const output = await replicate.run(
         "stability-ai/stable-diffusion-inpainting:95b7223104132402a9ae91cc677285bc5eb997834bd2349fa486f53910fd68b3",
         {
@@ -119,74 +111,37 @@ export const aiController = {
         }
       );
 
-      console.log(
-        `[AI] Replicate raw output type: ${typeof output}`,
-        Array.isArray(output) ? `array[${output.length}]` : ""
-      );
-
       // Handle both old SDK (string/array of strings) and new SDK (FileOutput objects)
-      let generatedUrl;
-      if (Array.isArray(output) && output.length > 0) {
-        const first = output[0];
-        // New SDK: FileOutput has a .url() method
-        generatedUrl = typeof first?.url === "function" ? first.url().toString() : String(first);
-      } else if (output) {
-        generatedUrl = typeof output?.url === "function" ? output.url().toString() : String(output);
+      const first = Array.isArray(output) ? output[0] : output;
+      const generatedUrl =
+        typeof first?.url === "function" ? first.url().toString() : String(first);
+      if (!first || !generatedUrl || generatedUrl === "undefined") {
+        throw httpError(502, "Generation impossible");
       }
 
-      console.log(`[AI] Generated URL: ${generatedUrl}`);
-
-      if (!generatedUrl || generatedUrl === "undefined") {
-        throw new Error("Replicate returned no usable output URL");
-      }
-
-      // 6. Download generated image from Replicate
-      const generatedResponse = await axios.get(generatedUrl, { responseType: "arraybuffer" });
-      const generatedBuffer = Buffer.from(generatedResponse.data);
+      // 6. Download generated image from Replicate (hote Replicate uniquement)
+      const generatedBuffer = await fetchAllowedImage(generatedUrl, {
+        allowedHosts: [".replicate.delivery"],
+      });
 
       // 7. Upload to Supabase Storage bucket
       const filename = `${Date.now()}_lifestyle.jpg`;
       const { error: uploadError } = await supabase.storage
         .from(BUCKET_NAME)
-        .upload(filename, generatedBuffer, {
-          contentType: "image/jpeg",
-          upsert: false,
-        });
+        .upload(filename, generatedBuffer, { contentType: "image/jpeg", upsert: false });
 
       if (uploadError) {
         console.error("[AI] Supabase upload error:", uploadError.message);
-        // Fallback: return Replicate URL directly
-        return res.status(200).json({
-          url: generatedUrl,
-          originalUrl: imageUrl,
-          prompt,
-          source: "replicate_direct",
-        });
+        return res.status(200).json({ url: generatedUrl, prompt, source: "replicate_direct" });
       }
 
-      // 8. Get permanent public URL from Supabase
+      // 8. Get permanent public URL from Supabase (kong -> localhost pour le navigateur en local)
       const { data: publicUrlData } = supabase.storage.from(BUCKET_NAME).getPublicUrl(filename);
-
-      // FIX: Replace internal Docker URL (kong) with public URL (localhost) for the browser
       const publicUrl = publicUrlData.publicUrl.replace("http://kong:", "http://localhost:");
 
-      console.log(`[AI] Uploaded to Supabase: ${publicUrl}`);
-
-      res.status(200).json({
-        url: publicUrl,
-        originalUrl: imageUrl,
-        prompt,
-        source: "supabase",
-      });
+      return res.status(200).json({ url: publicUrl, prompt, source: "supabase" });
     } catch (error) {
-      const errorMsg = error.response?.data
-        ? new TextDecoder().decode(error.response.data)
-        : error.message;
-      console.error("[AI] Generation Error:", errorMsg);
-      res.status(500).json({
-        error: "Failed to generate scene",
-        details: errorMsg,
-      });
+      return next(error);
     }
   },
 };

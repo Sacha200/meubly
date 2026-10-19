@@ -3,6 +3,14 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 const storage = vi.hoisted(() => ({ listBuckets: vi.fn(), createBucket: vi.fn() }));
 vi.mock("../../supabase.js", () => ({ supabase: { storage } }));
 vi.mock("replicate", () => ({ default: vi.fn() }));
+vi.mock("../../repositories/furnitureRepository.js", () => ({
+  furnitureRepository: {
+    findSummary: vi.fn().mockResolvedValue({
+      furniture_id: "3f2b6c1e-0000-4000-8000-000000000001",
+      cover_url: "https://www.ikea.com/x.jpg",
+    }),
+  },
+}));
 
 describe("aiController bucket", () => {
   beforeEach(async () => {
@@ -67,12 +75,15 @@ describe("generateScene", () => {
 
     const { aiController } = await import("../../controllers/aiController.js");
     const res = { status: vi.fn().mockReturnThis(), json: vi.fn() };
+    const next = vi.fn();
     await aiController.generateScene(
-      { body: { imageUrl: "https://img.example/x.jpg", prompt: "salon" } },
-      res
+      { body: { furnitureId: "3f2b6c1e-0000-4000-8000-000000000001", prompt: "salon" } },
+      res,
+      next
     );
 
     expect(getSpy).toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ statusCode: 502 }));
     getSpy.mockRestore();
     delete process.env.REPLICATE_API_TOKEN;
   });
