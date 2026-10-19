@@ -84,6 +84,8 @@ Tables (snake_case, `public`) : `profile`, `category` (hierarchique `parent_id`)
 - Le role `ADMIN` ne s'attribue que dans le tableau de bord Supabase (`profile.role`) ; aucun chemin applicatif ne doit le permettre.
 - `meubly-back/.env` ne definit pas `SUPABASE_URL` : hors Docker, `npm start` echoue sans variables exportees.
 - `.gitignore` ignore `*.md` sauf exceptions : ajouter une exception pour tout nouveau document a versionner.
+- Stack dev Docker : `node_modules` vit dans un volume anonyme, reinstalle seulement si nodemon/vite manque. Apres un changement de dependances : `up -d --build --renew-anon-volumes meubly-back meubly-front`.
+- Node 22 obligatoire (images Docker, `engines` du back) : supabase-js >= 2.118 plante a l'import sous Node 20.
 - Fins de ligne forcees en LF (`.gitattributes`) ; Prettier echoue sur du CRLF.
 
 ## Skills utiles (installes dans `.claude/skills`)
