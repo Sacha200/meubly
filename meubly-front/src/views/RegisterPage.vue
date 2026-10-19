@@ -214,11 +214,9 @@ export default {
           return;
         }
 
-        const { user, profile } = await registerUser(this.formData);
+        const { user } = await registerUser(this.formData);
 
         if (user) {
-          console.log("User:", user);
-          console.log("Profil créé:", profile);
           // Diriger vers l'écran de vérification (optionnel) :
           // l'utilisateur peut soit coller le token, soit cliquer le lien dans l'email.
           this.$router.push({
