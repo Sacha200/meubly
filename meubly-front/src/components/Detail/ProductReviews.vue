@@ -56,11 +56,35 @@
           >
             {{ review.comment }}
           </p>
+          <div
+            v-if="isAdmin && reviewToDelete === review.review_id"
+            role="group"
+            :aria-label="`Confirmer la suppression de l'avis de ${review.author_name}`"
+            class="mt-2 flex flex-wrap items-center gap-2 text-xs"
+          >
+            <span class="text-[#3A3A3A] dark:text-gray-200"
+              >Supprimer définitivement cet avis ?</span
+            >
+            <button
+              type="button"
+              class="px-2 py-1 rounded bg-red-600 text-white focus:outline-none focus:ring-2 focus:ring-red-400"
+              @click="removeAsAdmin(review)"
+            >
+              Confirmer la suppression
+            </button>
+            <button
+              type="button"
+              class="px-2 py-1 rounded bg-gray-200 text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400"
+              @click="reviewToDelete = null"
+            >
+              Annuler
+            </button>
+          </div>
           <button
-            v-if="isAdmin"
+            v-else-if="isAdmin"
             type="button"
             class="mt-2 text-xs underline text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 rounded"
-            @click="removeAsAdmin(review)"
+            @click="reviewToDelete = review.review_id"
           >
             Supprimer cet avis (admin)
             <span class="sr-only">de {{ review.author_name }}</span>
@@ -192,6 +216,7 @@ const currentPage = ref(1);
 const limit = ref(5);
 const totalItems = ref(0);
 const myReview = ref(null);
+const reviewToDelete = ref(null);
 
 const form = reactive({
   rating: 5,
@@ -321,6 +346,7 @@ async function removeMine() {
 
 async function removeAsAdmin(review) {
   errorMessage.value = "";
+  reviewToDelete.value = null;
   try {
     await deleteReviewAsAdmin(review.review_id);
     await Promise.all([loadMyReview(), loadReviews(currentPage.value)]);
