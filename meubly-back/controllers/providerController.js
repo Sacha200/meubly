@@ -43,18 +43,7 @@ export const providerController = {
     try {
       const { id } = req.params;
       await providerService.deleteProvider(id);
-      res.status(200).json({ message: "Provider deleted" });
-    } catch (error) {
-      next(error);
-    }
-  },
-
-  async getAllOffers(req, res, next) {
-    const { categoryId } = req.params;
-    try {
-      // Compare route aggregates offers from all providers
-      const data = await providerService.compareCategory(categoryId);
-      res.status(200).json(data);
+      res.status(204).send();
     } catch (error) {
       next(error);
     }
