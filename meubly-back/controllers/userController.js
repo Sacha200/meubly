@@ -1,26 +1,26 @@
 import { userService } from "../services/userService.js";
 
 export const userController = {
-  async getAll(req, res) {
+  async getAll(req, res, next) {
     try {
       const users = await userService.getAllUsers();
       res.status(200).json(users);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      next(error);
     }
   },
 
-  async getById(req, res) {
+  async getById(req, res, next) {
     try {
       const { id } = req.params;
       const user = await userService.getUserById(id);
       res.status(200).json(user);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      next(error);
     }
   },
 
-  async create(req, res) {
+  async create(req, res, next) {
     // Basic validation
     const { firstName, lastName, email, password, role } = req.body;
     if (!firstName || !lastName || !email || !password || !role) {
@@ -40,27 +40,27 @@ export const userController = {
       const newUser = await userService.createUser(req.body);
       res.status(201).json(newUser);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      next(error);
     }
   },
 
-  async update(req, res) {
+  async update(req, res, next) {
     try {
       const { id } = req.params;
       const updated = await userService.updateUser(id, req.body);
       res.status(200).json(updated);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      next(error);
     }
   },
 
-  async delete(req, res) {
+  async delete(req, res, next) {
     try {
       const { id } = req.params;
       await userService.deleteUser(id);
       res.status(200).json({ message: "User deleted" });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      next(error);
     }
   },
 };

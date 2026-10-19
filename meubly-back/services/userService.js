@@ -1,3 +1,4 @@
+import { httpError } from "../utils/httpError.js";
 import { userRepository } from "../repositories/userRepository.js";
 
 export const userService = {
@@ -7,7 +8,7 @@ export const userService = {
 
   async getUserById(id) {
     const user = await userRepository.findById(id);
-    if (!user) throw new Error("User not found");
+    if (!user) throw httpError(404, "Utilisateur introuvable");
     return user;
   },
 

@@ -1,3 +1,4 @@
+import { httpError } from "../utils/httpError.js";
 import { favoritesRepository } from "../repositories/favoritesRepository.js";
 import { furnitureRepository } from "../repositories/furnitureRepository.js";
 import { createClient } from "@supabase/supabase-js";
@@ -15,7 +16,7 @@ export const favoritesService = {
 
     const furniture = await furnitureRepository.findById(furnitureId);
     if (!furniture) {
-      throw new Error("Furniture not found");
+      throw httpError(404, "Furniture not found");
     }
 
     const { data: existing } = await scopedSupabase

@@ -2,7 +2,7 @@ import { reviewService } from "../services/reviewService.js";
 import { validationResult } from "express-validator";
 
 export const reviewController = {
-  async list(req, res) {
+  async list(req, res, next) {
     // Validation result handling could be here or middleware.
     // The route definition uses 'handleValidation', so we assume req is valid here or we check it.
     // But 'handleValidation' middleware provided in the snippet handles it.
@@ -14,12 +14,11 @@ export const reviewController = {
       const result = await reviewService.listByProduct(productId, { page, limit });
       res.status(200).json(result);
     } catch (error) {
-      console.error("Erreur lors de la récupération des avis:", error);
-      res.status(500).json({ error: "Impossible de récupérer les avis pour ce produit." });
+      next(error);
     }
   },
 
-  async createOrUpdate(req, res) {
+  async createOrUpdate(req, res, next) {
     try {
       const { id } = req.params;
       const { rating, comment = "", authorName } = req.body;
@@ -47,8 +46,7 @@ export const reviewController = {
 
       res.status(result.action === "created" ? 201 : 200).json(result);
     } catch (error) {
-      console.error("Erreur lors de la création ou mise à jour d'un avis:", error);
-      res.status(500).json({ error: "Impossible d'enregistrer l'avis." });
+      next(error);
     }
   },
 };
