@@ -4,8 +4,12 @@ import helmet from "helmet";
 import v1Router from "./routes/v1.js";
 import { requestLogger } from "./middlewares/loggerMiddleware.js";
 import { errorHandler } from "./middlewares/errorMiddleware.js";
+import { globalLimiter } from "./middlewares/rateLimit.js";
 
 export const app = express();
+
+// Render place un proxy devant l'app : l'IP client est dans X-Forwarded-For.
+app.set("trust proxy", 1);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -47,7 +51,7 @@ app.use(
   })
 );
 
-app.use("/api/v1", v1Router);
+app.use("/api/v1", globalLimiter, v1Router);
 app.use("/api/v1", (req, res) => res.status(404).json({ error: "Route introuvable" }));
 app.use(errorHandler);
 

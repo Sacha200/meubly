@@ -3,6 +3,7 @@ import { body, param, query } from "express-validator";
 import { reviewController } from "../../controllers/reviewController.js";
 import { requireAuth } from "../../middlewares/authMiddleware.js";
 import { requireAdmin } from "../../middlewares/roleMiddleware.js";
+import { reviewWriteLimiter } from "../../middlewares/rateLimit.js";
 import { handleValidation } from "./validation.js";
 
 const router = express.Router();
@@ -34,6 +35,7 @@ router.get(
 router.post(
   "/furnitures/:id/reviews",
   requireAuth,
+  reviewWriteLimiter,
   [
     furnitureId,
     body("rating")
@@ -52,6 +54,7 @@ router.post(
 router.delete(
   "/furnitures/:id/reviews/me",
   requireAuth,
+  reviewWriteLimiter,
   furnitureId,
   handleValidation,
   reviewController.deleteMine
