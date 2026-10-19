@@ -30,12 +30,6 @@ export async function createTestUser({ metadata = {} } = {}) {
   if (error) throw error;
   const id = data.user.id;
 
-  // Tant que le trigger de creation de profil (migration 007) n'existe pas.
-  const { error: profileError } = await admin
-    .from("profile")
-    .upsert({ user_id: id, email }, { onConflict: "user_id", ignoreDuplicates: true });
-  if (profileError) throw profileError;
-
   const anon = anonClient();
   const { data: session, error: signInError } = await anon.auth.signInWithPassword({
     email,
