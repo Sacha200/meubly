@@ -1,4 +1,5 @@
 import API_BASE from "./apiBase";
+import { authFetch } from "./authHeaders";
 
 // Fonction pour récupérer tous les meubles
 export async function getFurnitures({
@@ -60,27 +61,14 @@ export async function searchFurnitures(searchQuery = "", opts = {}) {
 }
 
 // Fonction pour mettre à jour un meuble
-export async function updateFurniture(id, productData) {
-  try {
-    const response = await fetch(`${API_BASE}/furnitures/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(productData),
-    });
-    if (!response.ok) {
-      const data = await response.json();
-      throw new Error(data.error || "Erreur lors de la mise à jour du produit");
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Erreur détaillée:", error);
-    throw error;
-  }
+/** Mise a jour d'un meuble (admin) : requiert la session de l'administrateur. */
+export function updateFurniture(id, productData) {
+  return authFetch(`${API_BASE}/furnitures/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(productData),
+  });
 }
-
-// ===========================
-// AVIS PRODUITS
-// ===========================
 
 export async function listFurnitureReviews(productId, { page = 1, limit = 5 } = {}) {
   const url = new URL(`${API_BASE}/furnitures/${productId}/reviews`);

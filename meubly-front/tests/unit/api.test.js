@@ -89,13 +89,15 @@ describe("getFurnitureById", () => {
 });
 
 describe("updateFurniture", () => {
-  it("envoie un PATCH JSON", async () => {
+  it("envoie un PATCH JSON authentifie", async () => {
+    withSession();
     fetch.mockResolvedValueOnce(okJson({ furniture_id: "a1", title: "X" }));
     await updateFurniture("a1", { title: "X" });
     const [url, init] = fetch.mock.calls[0];
     expect(url).toBe(`${API_BASE}/furnitures/a1`);
     expect(init.method).toBe("PATCH");
     expect(JSON.parse(init.body)).toEqual({ title: "X" });
+    expect(init.headers.Authorization).toBe("Bearer tok");
   });
 });
 

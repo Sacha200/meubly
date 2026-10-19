@@ -9,8 +9,17 @@ vi.mock("../../src/supabase", () => ({
 }));
 
 const { supabase } = await import("../../src/supabase");
-const { registerUser, listUsers, blockUser, unblockUser, deleteUser } =
-  await import("../../src/clientapi");
+const {
+  registerUser,
+  listUsers,
+  blockUser,
+  unblockUser,
+  deleteUser,
+  listProviders,
+  createProvider,
+  updateProvider,
+  deleteProvider,
+} = await import("../../src/clientapi");
 
 const ID = "3f2b6c1e-0000-4000-8000-000000000099";
 const ok = (body, status = 200) => ({ ok: true, status, json: async () => body });
@@ -80,5 +89,49 @@ describe("usersApi", () => {
     supabase.auth.getSession.mockResolvedValue({ data: { session: null }, error: null });
     await expect(blockUser(ID)).rejects.toThrow("Utilisateur non connecte");
     expect(fetch).not.toHaveBeenCalled();
+  });
+});
+
+describe("providersApi", () => {
+  it("cree un partenaire avec le jeton et uniquement les champs du contrat", async () => {
+    withSession();
+    fetch.mockResolvedValueOnce(ok({ id: ID }, 201));
+    await createProvider({
+      name: "IKEA",
+      url: "https://www.ikea.com",
+      logoUrl: null,
+      isActive: true,
+      apiKey: "secret",
+      priority: 2,
+    });
+    const [url, init] = fetch.mock.calls[0];
+    expect(url).toBe(`${API_BASE}/providers`);
+    expect(init.method).toBe("POST");
+    expect(init.headers.Authorization).toBe("Bearer tok");
+    expect(JSON.parse(init.body)).toEqual({
+      name: "IKEA",
+      url: "https://www.ikea.com",
+      logoUrl: null,
+      isActive: true,
+    });
+  });
+
+  it("modifie et supprime avec le jeton", async () => {
+    withSession();
+    fetch.mockResolvedValue({ ok: true, status: 204, json: async () => ({}) });
+    await updateProvider(ID, { isActive: false });
+    await deleteProvider(ID);
+    expect(
+      fetch.mock.calls.map(([url, init]) => [init.method, url, init.headers.Authorization])
+    ).toEqual([
+      ["PATCH", `${API_BASE}/providers/${ID}`, "Bearer tok"],
+      ["DELETE", `${API_BASE}/providers/${ID}`, "Bearer tok"],
+    ]);
+  });
+
+  it("liste les partenaires (lecture publique)", async () => {
+    fetch.mockResolvedValueOnce(ok([]));
+    await listProviders();
+    expect(fetch.mock.calls[0][0]).toBe(`${API_BASE}/providers`);
   });
 });
