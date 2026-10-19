@@ -2,7 +2,7 @@
 import { defineStore } from "pinia";
 import { supabase } from "../supabase";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api/v1";
+import API_BASE from "../api/apiBase";
 
 export const useFurnitureStore = defineStore("furniture", {
   state: () => ({
@@ -141,7 +141,7 @@ export const useFurnitureStore = defineStore("furniture", {
       this.page = 1;
     },
 
-    async generateLifestyleImage(imageUrl, prompt) {
+    async generateLifestyleImage(furnitureId, prompt) {
       try {
         const {
           data: { session },
@@ -154,7 +154,7 @@ export const useFurnitureStore = defineStore("furniture", {
             "Content-Type": "application/json",
             Authorization: `Bearer ${session.access_token}`,
           },
-          body: JSON.stringify({ imageUrl, prompt }),
+          body: JSON.stringify({ furnitureId, prompt }),
         });
 
         if (!res.ok) {

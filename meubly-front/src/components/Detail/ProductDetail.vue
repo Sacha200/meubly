@@ -360,7 +360,7 @@ export default {
 
       this.aiLoading = true;
       try {
-        const result = await this.generateLifestyleImage(this.product.cover_url, this.aiPrompt);
+        const result = await this.generateLifestyleImage(this.product.furniture_id, this.aiPrompt);
         this.generatedImage = result.url;
       } catch (error) {
         alert("Erreur lors de la génération : " + error.message);

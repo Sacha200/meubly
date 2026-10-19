@@ -15,7 +15,7 @@
           @offers-loaded="handleOffersLoaded"
           @page-change="handlePageChange"
         />
-        <!-- <ProductReviews :product-id="product.furniture_id" /> -->
+        <ProductReviews :product-id="product.furniture_id" />
         <div class="" v-if="totalOffers > 0"></div>
       </div>
     </div>
@@ -28,6 +28,7 @@ import AppHeader from "../components/AppHeader.vue";
 import AppFooter from "../components/AppFooter.vue";
 import ProductDetail from "../components/Detail/ProductDetail.vue";
 import TableComparison from "../components/Detail/TableComparison.vue";
+import ProductReviews from "../components/Detail/ProductReviews.vue";
 import { getFurnitureById } from "../api/furnituresApi";
 
 export default {
@@ -36,6 +37,7 @@ export default {
     AppFooter,
     ProductDetail,
     TableComparison,
+    ProductReviews,
   },
   data() {
     return {

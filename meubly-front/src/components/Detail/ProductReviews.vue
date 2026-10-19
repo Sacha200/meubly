@@ -56,6 +56,15 @@
           >
             {{ review.comment }}
           </p>
+          <button
+            v-if="isAdmin"
+            type="button"
+            class="mt-2 text-xs underline text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 rounded"
+            @click="removeAsAdmin(review)"
+          >
+            Supprimer cet avis (admin)
+            <span class="sr-only">de {{ review.author_name }}</span>
+          </button>
         </li>
       </ul>
 
@@ -84,7 +93,7 @@
 
     <section class="border-t border-gray-200 dark:border-gray-700 pt-6">
       <h4 class="text-xl font-semibold text-[#3A3A3A] dark:text-white font-['Poppins-SemiBold']">
-        Laisser un avis
+        {{ myReview ? "Modifier votre avis" : "Laisser un avis" }}
       </h4>
 
       <p v-if="!isAuthenticated" class="mt-2 text-sm text-[#767676] dark:text-gray-300">
@@ -99,6 +108,7 @@
           <select
             id="rating"
             v-model.number="form.rating"
+            required
             class="mt-2 md:mt-0 w-full md:w-auto border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-surface text-[#3A3A3A] dark:text-white"
           >
             <option v-for="n in [5, 4, 3, 2, 1]" :key="n" :value="n">
@@ -109,16 +119,20 @@
 
         <div>
           <label for="comment" class="block text-sm font-medium text-[#3A3A3A] dark:text-white"
-            >Votre commentaire</label
+            >Votre commentaire (facultatif)</label
           >
           <textarea
             id="comment"
             v-model="form.comment"
             rows="4"
             maxlength="1000"
+            aria-describedby="comment-count"
             class="mt-2 w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-surface text-[#3A3A3A] dark:text-white"
             placeholder="Partagez votre expérience..."
           ></textarea>
+          <p id="comment-count" class="mt-1 text-xs text-[#767676] dark:text-gray-300">
+            {{ form.comment.length }} / 1000
+          </p>
         </div>
 
         <div class="flex flex-col gap-2">
@@ -127,10 +141,21 @@
             :disabled="submitting"
             class="self-start px-4 py-2 rounded-md bg-[#B88E2F] text-white font-semibold hover:bg-[#a77f29] transition disabled:opacity-50"
           >
-            {{ submitting ? "Envoi en cours..." : "Publier mon avis" }}
+            {{ submitting ? "Envoi en cours..." : myReview ? "Mettre à jour" : "Publier mon avis" }}
           </button>
-          <p v-if="submitError" class="text-sm text-red-600">{{ submitError }}</p>
-          <p v-if="successMessage" class="text-sm text-green-600">{{ successMessage }}</p>
+          <button
+            v-if="myReview"
+            type="button"
+            :disabled="submitting"
+            class="self-start text-sm underline text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 rounded"
+            @click="removeMine"
+          >
+            Supprimer mon avis
+          </button>
+          <p v-if="submitError" role="alert" class="text-sm text-red-600">{{ submitError }}</p>
+          <p v-if="successMessage" role="status" class="text-sm text-green-600">
+            {{ successMessage }}
+          </p>
         </div>
       </form>
     </section>
@@ -140,7 +165,13 @@
 <script setup>
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useAuthStore } from "../../stores/authStore";
-import { listFurnitureReviews, submitFurnitureReview } from "../../api/furnituresApi";
+import {
+  deleteMyFurnitureReview,
+  deleteReviewAsAdmin,
+  getMyFurnitureReview,
+  listFurnitureReviews,
+  submitFurnitureReview,
+} from "../../api/furnituresApi";
 
 const props = defineProps({
   productId: {
@@ -160,6 +191,7 @@ const submitting = ref(false);
 const currentPage = ref(1);
 const limit = ref(5);
 const totalItems = ref(0);
+const myReview = ref(null);
 
 const form = reactive({
   rating: 5,
@@ -167,6 +199,8 @@ const form = reactive({
 });
 
 const isAuthenticated = computed(() => authStore.isAuthenticated);
+// Affichage seulement : la suppression est autorisee (ou refusee) par le back.
+const isAdmin = computed(() => authStore.role === "ADMIN");
 const totalPages = computed(() => {
   if (!totalItems.value) return 1;
   return Math.max(1, Math.ceil(totalItems.value / limit.value));
@@ -230,11 +264,6 @@ async function handleSubmit() {
     return;
   }
 
-  if (!form.comment.trim()) {
-    submitError.value = "Merci de partager un commentaire sur le produit.";
-    return;
-  }
-
   if (!authStore.user?.id) {
     submitError.value = "Vous devez être connecté pour publier un avis.";
     return;
@@ -243,18 +272,13 @@ async function handleSubmit() {
   submitting.value = true;
 
   try {
-    const payload = {
+    const { action, review } = await submitFurnitureReview(props.productId, {
       rating: form.rating,
       comment: form.comment.trim(),
-      userId: authStore.user.id,
-      authorName: authStore.user.user_metadata?.username || authStore.user.email?.split("@")[0],
-    };
-
-    const { action } = await submitFurnitureReview(props.productId, payload);
+    });
     successMessage.value =
       action === "updated" ? "Votre avis a été mis à jour avec succès." : "Merci pour votre avis !";
-
-    form.comment = "";
+    myReview.value = review;
     await loadReviews(1);
   } catch (error) {
     console.error("Erreur lors de l'envoi de l'avis:", error);
@@ -264,12 +288,59 @@ async function handleSubmit() {
   }
 }
 
+async function loadMyReview() {
+  myReview.value = null;
+  form.rating = 5;
+  form.comment = "";
+  if (!authStore.user?.id) return;
+  try {
+    myReview.value = await getMyFurnitureReview(props.productId);
+    if (myReview.value) {
+      form.rating = myReview.value.rating;
+      form.comment = myReview.value.comment || "";
+    }
+  } catch (error) {
+    console.error("Erreur lors du chargement de votre avis:", error);
+  }
+}
+
+async function removeMine() {
+  submitError.value = "";
+  successMessage.value = "";
+  submitting.value = true;
+  try {
+    await deleteMyFurnitureReview(props.productId);
+    successMessage.value = "Votre avis a été supprimé.";
+    await Promise.all([loadMyReview(), loadReviews(1)]);
+  } catch (error) {
+    submitError.value = error.message || "Impossible de supprimer votre avis.";
+  } finally {
+    submitting.value = false;
+  }
+}
+
+async function removeAsAdmin(review) {
+  errorMessage.value = "";
+  try {
+    await deleteReviewAsAdmin(review.review_id);
+    await Promise.all([loadMyReview(), loadReviews(currentPage.value)]);
+  } catch (error) {
+    errorMessage.value = error.message || "Impossible de supprimer cet avis.";
+  }
+}
+
 watch(
   () => props.productId,
   () => {
     currentPage.value = 1;
     loadReviews(1);
+    loadMyReview();
   }
+);
+
+watch(
+  () => authStore.user?.id,
+  () => loadMyReview()
 );
 
 onMounted(() => {
@@ -277,5 +348,6 @@ onMounted(() => {
     authStore.init();
   }
   loadReviews();
+  loadMyReview();
 });
 </script>

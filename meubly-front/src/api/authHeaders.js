@@ -25,7 +25,7 @@ export async function authFetch(url, init = {}) {
   const response = await fetch(url, { ...init, headers });
   if (!response.ok) {
     const body = await response.json().catch(() => ({}));
-    throw new Error(body.error || `Erreur HTTP: ${response.status}`);
+    throw new Error(body.error || body.errors?.[0]?.msg || `Erreur HTTP: ${response.status}`);
   }
   return response.status === 204 ? null : response.json();
 }
