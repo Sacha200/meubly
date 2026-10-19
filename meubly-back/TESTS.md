@@ -130,16 +130,17 @@ export default defineConfig({
 });
 ```
 
-### Variables d'environnement pour les tests
+### Tests sur base reelle (`test:db`)
 
-Créez un fichier `.env.test` :
-
-```env
-NODE_ENV=test
-PORT=5001
-SUPABASE_URL=your_test_supabase_url
-SUPABASE_ANON_KEY=your_test_supabase_key
+```bash
+npm run test:db
 ```
+
+- Config : `vitest.db.config.js`, fichiers `tests/db/**/*.db.test.js`, executes en serie.
+- Prerequis : stack Supabase locale demarree (`docker compose up -d`) et migrations appliquees (`bash bd/supabase/apply-local.sh bd/supabase/migrations/00{6,7,8,9}_*.sql`).
+- `tests/db/env.js` charge le `.env` **racine** (sans rien afficher) et `tests/db/guard.js` refuse toute URL Supabase non locale : ces tests ne visent jamais la production.
+- Couvrent les politiques RLS (anon / utilisateur / service role) et le parcours des avis via l'API reelle.
+- Exclus de `npm run test:run`.
 
 ## 🚨 Bonnes pratiques
 

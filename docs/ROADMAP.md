@@ -28,6 +28,8 @@ Fini quand : `npm run lint && npm run test:run` verts des deux cotes, en CI.
 
 Objectif : plus aucune donnee exposee.
 
+Statut : realisee le 2026-10-19 sur `feat/phase-1-security` (plan : `docs/superpowers/plans/2026-10-19-phase-1-security.md`), migrations 006-009 appliquees et testees sur la stack locale. Mise en production (migrations cloud, nomination admin, verification advisors) en attente d'accord. Reportes en phase 5 : vulnerabilites `npm audit` exigeant une version majeure (dont `sharp`, runtime).
+
 - Matrice de droits role x table x operation (`docs/security-matrix.md`).
 - Migration RLS : lecture publique catalogue (`furniture`, `offer` actives, `category`, `partner` actifs, `furniture_image`) ; `favorite` et `profile` limites au proprietaire ; ecritures reservees service role. Teste d'abord sur une branche Supabase.
 - `requireAuth` + `requireAdmin` sur toutes les ecritures ; `requireAdmin` lit `profile.role` ; role contraint (`CHECK role in ('USER','ADMIN')`).

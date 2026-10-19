@@ -61,12 +61,25 @@ Documentation detaillee :
 | Couche | Technologies | Usage |
 |---|---|---|
 | Frontend | Vue 3, Vite, Pinia, PrimeVue, Tailwind | Interface utilisateur |
-| Backend | Node.js, Express, express-validator, Supabase Auth, Vitest | API metier |
+| Backend | Node.js, Express, express-validator, express-rate-limit, Supabase Auth, Vitest | API metier |
 | Data Platform | Supabase self-hosted (Kong, Auth, REST, Realtime, Storage) | Auth + donnees + API |
 | Base de donnees | PostgreSQL 15 | Stockage relationnel |
 | Ingestion | Service `bd/ingestion` (CRON, CSV/JSON, IKEA adapter) | Import de donnees |
 | Qualite | SonarQube Community, Vitest, Cypress | Analyse qualite + tests |
 | Email dev | Mailpit | Sandbox SMTP locale |
+
+---
+
+## Securite et roles
+
+Detail complet (roles, politiques RLS, garde de chaque route) : [`docs/security-matrix.md`](docs/security-matrix.md).
+
+- **Comptes :** geres uniquement par Supabase Auth (aucun hash de mot de passe stocke par l'application). Le profil est cree par un trigger avec `role = 'USER'`.
+- **Ecritures :** toute route d'ecriture exige un jeton (`requireAuth`) ; le catalogue, les partenaires et les comptes exigent en plus `ADMIN` (`requireAdmin`). Un compte bloque recoit 403.
+- **RLS :** active sur toutes les tables publiques (`bd/supabase/migrations/009_rls.sql`) : lecture publique du catalogue et des avis, `profile` / `favorite` / avis limites a leur proprietaire.
+- **Limitation de debit :** 300 requetes / 15 min / IP sur l'API, 5 generations IA / heure et 20 ecritures d'avis / heure par utilisateur.
+- **Avis :** un avis par utilisateur et par meuble (note 1-5, commentaire optionnel de 1000 caracteres max), modifiable et supprimable par son auteur, supprimable par un admin.
+- **Nommer un administrateur :** tableau de bord Supabase > Table Editor > `profile` > ligne du compte > `role = ADMIN`, puis se reconnecter. Aucun chemin applicatif ne permet d'obtenir ce role.
 
 ---
 
