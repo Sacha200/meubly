@@ -34,6 +34,13 @@ describe("profile lie a Supabase Auth (base locale)", () => {
     });
   });
 
+  it("cree un profil sans username quand les metadonnees n'en ont pas", async () => {
+    // Prod : username etait NOT NULL et bloquait les comptes crees sans metadonnees.
+    const user = await newUser();
+    const profile = await profileOf(user.id);
+    expect(profile).toMatchObject({ role: "USER", username: null, email: user.email });
+  });
+
   it("synchronise l'email du profil", async () => {
     const user = await newUser();
     const next = `renamed_${Date.now()}@meubly.test`;

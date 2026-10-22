@@ -14,7 +14,10 @@ UPDATE public.profile SET role = upper(role) WHERE role <> upper(role);
 DELETE FROM public.profile p
 WHERE NOT EXISTS (SELECT 1 FROM auth.users u WHERE u.id = p.user_id);
 
--- 3. Comptes Auth sans profil
+-- 3. Comptes Auth sans profil. username est facultatif : la prod l'avait en NOT NULL, ce qui
+-- bloquait tout compte cree sans metadonnees (tableau de bord, anciens clients).
+ALTER TABLE public.profile ALTER COLUMN username DROP NOT NULL;
+
 INSERT INTO public.profile (user_id, email, username, lastname, role)
 SELECT u.id, u.email, u.raw_user_meta_data ->> 'username', u.raw_user_meta_data ->> 'lastname', 'USER'
 FROM auth.users u
