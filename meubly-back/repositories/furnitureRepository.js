@@ -1,6 +1,21 @@
 import { supabase } from "../supabase.js";
 
 export const furnitureRepository = {
+  /**
+   * Existence et image de couverture d'un meuble, sans erreur s'il est absent.
+   * @param {string} id
+   * @returns {Promise<{ furniture_id: string, cover_url: string | null } | null>}
+   */
+  async findSummary(id) {
+    const { data, error } = await supabase
+      .from("furniture")
+      .select("furniture_id, cover_url")
+      .eq("furniture_id", id)
+      .maybeSingle();
+    if (error) throw error;
+    return data;
+  },
+
   async findById(id) {
     const { data, error } = await supabase
       .from("furniture")

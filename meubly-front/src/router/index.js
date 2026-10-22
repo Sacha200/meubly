@@ -32,18 +32,6 @@ const router = createRouter({
       meta: { roles: ["ADMIN"] },
       component: () => import("../views/Admin/user/listView.vue"),
     },
-    {
-      path: "/admin/users/create",
-      name: "AdminUserCreate",
-      meta: { roles: ["ADMIN"] },
-      component: () => import("../views/Admin/user/createView.vue"),
-    },
-    {
-      path: "/admin/users/:id/edit",
-      name: "AdminUserUpdate",
-      meta: { roles: ["ADMIN"] },
-      component: () => import("../views/Admin/user/updateView.vue"),
-    },
 
     // Routes d'administration - Fournisseurs
     {

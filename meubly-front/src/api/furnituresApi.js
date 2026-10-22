@@ -1,4 +1,5 @@
 import API_BASE from "./apiBase";
+import { authFetch } from "./authHeaders";
 
 // Fonction pour récupérer tous les meubles
 export async function getFurnitures({
@@ -60,59 +61,51 @@ export async function searchFurnitures(searchQuery = "", opts = {}) {
 }
 
 // Fonction pour mettre à jour un meuble
-export async function updateFurniture(id, productData) {
-  try {
-    const response = await fetch(`${API_BASE}/furnitures/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(productData),
-    });
-    if (!response.ok) {
-      const data = await response.json();
-      throw new Error(data.error || "Erreur lors de la mise à jour du produit");
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Erreur détaillée:", error);
-    throw error;
-  }
+/** Mise a jour d'un meuble (admin) : requiert la session de l'administrateur. */
+export function updateFurniture(id, productData) {
+  return authFetch(`${API_BASE}/furnitures/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(productData),
+  });
 }
 
-// ===========================
-// AVIS PRODUITS
-// ===========================
-
-export async function listFurnitureReviews(productId, { page = 1, limit = 5 } = {}) {
-  const url = new URL(`${API_BASE}/furnitures/${productId}/reviews`);
+/** Avis publics d'un meuble, pagines, avec resume (moyenne, total, repartition). */
+export async function listFurnitureReviews(furnitureId, { page = 1, limit = 5 } = {}) {
+  const url = new URL(`${API_BASE}/furnitures/${furnitureId}/reviews`);
   if (page) url.searchParams.set("page", String(page));
   if (limit) url.searchParams.set("limit", String(limit));
 
   const response = await fetch(url.toString());
   const data = await response.json();
-
   if (!response.ok) {
-    const message =
-      data?.error || data?.errors?.[0]?.msg || "Erreur lors de la récupération des avis";
-    throw new Error(message);
+    throw new Error(
+      data?.error || data?.errors?.[0]?.msg || "Erreur lors de la récupération des avis"
+    );
   }
-
   return data;
 }
 
-export async function submitFurnitureReview(productId, payload) {
-  const response = await fetch(`${API_BASE}/furnitures/${productId}/reviews`, {
+/** Avis de l'utilisateur connecte sur ce meuble, ou null. */
+export async function getMyFurnitureReview(furnitureId) {
+  const { review } = await authFetch(`${API_BASE}/furnitures/${furnitureId}/reviews/me`);
+  return review;
+}
+
+/** Cree ou met a jour son avis (un par meuble). Le nom affiche vient du profil cote back. */
+export function submitFurnitureReview(furnitureId, { rating, comment }) {
+  return authFetch(`${API_BASE}/furnitures/${furnitureId}/reviews`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    body: JSON.stringify({ rating, comment }),
   });
+}
 
-  const data = await response.json();
+export function deleteMyFurnitureReview(furnitureId) {
+  return authFetch(`${API_BASE}/furnitures/${furnitureId}/reviews/me`, { method: "DELETE" });
+}
 
-  if (!response.ok) {
-    const message =
-      data?.error || data?.errors?.[0]?.msg || "Erreur lors de l'enregistrement de l'avis";
-    throw new Error(message);
-  }
-
-  return data;
+/** Suppression d'un avis abusif (admin). */
+export function deleteReviewAsAdmin(reviewId) {
+  return authFetch(`${API_BASE}/reviews/${reviewId}`, { method: "DELETE" });
 }

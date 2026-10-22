@@ -19,7 +19,7 @@ Feuille de route : `docs/ROADMAP.md`. Architecture : `docs/diagrams/architecture
 # Back (meubly-back) - app.js = app Express (testable), server.js = point d'entree
 npm run dev            # nodemon server.js
 npm run test:run       # vitest run (tests/db exclus)
-npm run test:db        # tests sur vraie base, refuse toute URL Supabase non locale
+npm run test:db        # tests sur la stack locale (RLS, API reelle) ; charge le .env RACINE, refuse toute URL Supabase non locale
 npm run test:coverage
 
 # Front (meubly-front)
@@ -35,6 +35,7 @@ npm run format:check   # Prettier ; npm run format pour corriger
 # Stack locale
 docker compose up -d --build
 docker compose --profile app -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+bash bd/supabase/apply-local.sh bd/supabase/migrations/NNN_x.sql   # migration sur la base LOCALE (supabase_admin)
 ```
 
 Node 22 en local. Shell principal Windows (PowerShell), Git Bash disponible.
@@ -42,8 +43,9 @@ Node 22 en local. Shell principal Windows (PowerShell), Git Bash disponible.
 ## Architecture back (meubly-back)
 
 Couches strictes : `routes/v1/*` -> `controllers/*` -> `services/*` -> `repositories/*` -> client Supabase (`supabase.js`).
-- Les repositories sont les SEULS a appeler `supabase.from(...)`. Pas de requete Supabase dans un controller ou un middleware.
-- Le client global utilise la service role : il contourne le RLS. Toute route d'ecriture doit donc etre protegee par `requireAuth` (+ `requireAdmin` si admin) au niveau du routeur.
+- Les repositories sont les SEULS a appeler `supabase.from(...)` et `supabase.auth.admin` (`authAdminRepository.js`). Pas de requete Supabase dans un controller ou un middleware.
+- Le client global utilise la service role : il contourne le RLS. Toute route d'ecriture doit donc etre protegee par `requireAuth` (+ `requireAdmin` si admin) au niveau du routeur. Matrice des droits : `docs/security-matrix.md` (a tenir a jour pour toute nouvelle route ou table).
+- Rate limiting (`express-rate-limit`) : global sur `/api/v1`, plus des limites par utilisateur sur l'IA et les avis.
 - Validation des entrees a la frontiere (route) : express-validator est deja utilise (`routes/v1/reviews.js`), garder ce pattern ou Zod de facon coherente par module.
 - Erreurs : lever des erreurs avec `statusCode`, laisser `middlewares/errorMiddleware.js` repondre. Ne pas renvoyer `error.message` brut d'une erreur Supabase au client.
 - ESM (`"type": "module"`), imports avec extension `.js`. Prettier : `.prettierrc` (double quotes, semi, width 100).
@@ -60,7 +62,7 @@ Couches strictes : `routes/v1/*` -> `controllers/*` -> `services/*` -> `reposito
 
 ## Base de donnees
 
-Tables (snake_case, `public`) : `profile`, `category` (hierarchique `parent_id`), `furniture`, `furniture_category`, `furniture_image`, `partner`, `offer`, `partner_product`, `favorite`.
+Tables (snake_case, `public`) : `profile`, `category` (hierarchique `parent_id`), `furniture`, `furniture_category`, `furniture_image`, `partner`, `offer`, `partner_product`, `favorite`, `review`. RLS active sur toutes (`009_rls.sql`) ; `profile.user_id` -> FK `auth.users`, profil cree par le trigger `handle_new_user`.
 - Les noms `"User"`, `"Provider"`, `"Furniture"` etc. sont OBSOLETES (renommes par `bd/supabase/migrations/005_*`). Toute occurrence restante est un bug.
 - `furniture.cached_min_price` / `cached_nb_offers` sont denormalises : toute ecriture d'offre doit les maintenir.
 - Nouvelles migrations : fichier numerote dans `bd/supabase/migrations/NNN_description.sql`, idempotent, avec politiques RLS pour toute nouvelle table.
@@ -78,9 +80,12 @@ Tables (snake_case, `public`) : `profile`, `category` (hierarchique `parent_id`)
 
 - Ne rien executer a l'import d'un module back (pas de `listen`, pas d'appel reseau) : les tests importent `app.js` directement.
 - supabase-js ne leve pas sur erreur HTTP : toujours lire `error` dans `{ data, error }`.
-- `routes/v1/favorites.js` applique `requireAuth` sans prefixe : toute route inconnue sous `/api/v1` repond 401 (a corriger en phase 1).
+- Un `router.use(requireAuth)` sans prefixe dans un routeur v1 s'appliquerait a toute l'API : mettre la garde par route.
+- Le role `ADMIN` ne s'attribue que dans le tableau de bord Supabase (`profile.role`) ; aucun chemin applicatif ne doit le permettre.
 - `meubly-back/.env` ne definit pas `SUPABASE_URL` : hors Docker, `npm start` echoue sans variables exportees.
 - `.gitignore` ignore `*.md` sauf exceptions : ajouter une exception pour tout nouveau document a versionner.
+- Stack dev Docker : `node_modules` vit dans un volume anonyme, reinstalle seulement si nodemon/vite manque. Apres un changement de dependances : `up -d --build --renew-anon-volumes meubly-back meubly-front`.
+- Node 22 obligatoire (images Docker, `engines` du back) : supabase-js >= 2.118 plante a l'import sous Node 20.
 - Fins de ligne forcees en LF (`.gitattributes`) ; Prettier echoue sur du CRLF.
 
 ## Skills utiles (installes dans `.claude/skills`)

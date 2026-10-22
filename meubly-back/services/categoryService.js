@@ -1,3 +1,4 @@
+import { httpError } from "../utils/httpError.js";
 import { categoryRepository } from "../repositories/categoryRepository.js";
 
 export const categoryService = {
@@ -8,23 +9,23 @@ export const categoryService = {
   async getCategoryById(id) {
     // Note: id is UUID now, so isNaN check might be wrong if it expects number.
     // Assuming UUID is string.
-    if (!id) throw new Error("Invalid category id");
+    if (!id) throw httpError(400, "Identifiant de categorie invalide");
 
     const category = await categoryRepository.findById(id);
-    if (!category) throw new Error("Category not found");
+    if (!category) throw httpError(404, "Categorie introuvable");
 
     return category;
   },
 
   async createCategory(categoryData) {
     if (!categoryData.label || typeof categoryData.label !== "string") {
-      throw new Error("label is required");
+      throw httpError(400, "Le libelle est obligatoire");
     }
     return await categoryRepository.create(categoryData);
   },
 
   async updateCategory(id, { label, cover_url, parent_id }) {
-    if (!id) throw new Error("Invalid category id");
+    if (!id) throw httpError(400, "Identifiant de categorie invalide");
 
     const payload = {};
     if (typeof label === "string") payload.label = label;
@@ -35,7 +36,7 @@ export const categoryService = {
   },
 
   async deleteCategory(id) {
-    if (!id) throw new Error("Invalid category id");
+    if (!id) throw httpError(400, "Identifiant de categorie invalide");
     await categoryRepository.delete(id);
   },
 };

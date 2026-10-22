@@ -1,63 +1,17 @@
-import bcrypt from "bcryptjs";
 import { supabase } from "../supabase";
 
-const SALT_ROUNDS = 12;
-
-// Fonction pour l'inscription avec Supabase
+// Inscription : Supabase Auth gere le mot de passe ; le profil est cree en base par trigger.
 export async function registerUser(userData) {
-  try {
-    // 1. Hash du mot de passe pour notre table User
-    const password_hash = await bcrypt.hash(userData.password, SALT_ROUNDS);
-
-    // 2. Inscription de l'utilisateur via Supabase Auth (gère son propre hash)
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email: userData.email,
-      password: userData.password,
-      options: {
-        data: {
-          username: userData.username,
-        },
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-        shouldCreateUser: true,
-      },
-    });
-
-    if (authError) {
-      throw authError;
-    }
-
-    // 3. Si l'inscription Auth réussit, on ajoute l'utilisateur dans la table User
-    if (authData?.user) {
-      const { data: userProfile, error: userError } = await supabase
-        .from("profile")
-        .insert([
-          {
-            user_id: authData.user.id,
-            username: authData.user.user_metadata.username,
-            email: authData.user.email,
-            password_hash,
-          },
-        ])
-        .select();
-
-      if (userError) {
-        throw userError;
-      }
-
-      // Note: Supabase envoie déjà l'email de confirmation (si autoconfirm=false).
-      // Éviter un resend immédiat pour ne pas déclencher d'erreurs SMTP/rate-limit.
-
-      return {
-        user: authData.user,
-        profile: userProfile[0],
-      };
-    }
-
-    return authData;
-  } catch (error) {
-    console.error("Erreur détaillée:", error);
-    throw error;
-  }
+  const { data, error } = await supabase.auth.signUp({
+    email: userData.email,
+    password: userData.password,
+    options: {
+      data: { username: userData.username, lastname: userData.lastname },
+      emailRedirectTo: `${window.location.origin}/auth/callback`,
+    },
+  });
+  if (error) throw error;
+  return { user: data.user };
 }
 
 // Fonction pour la connexion avec Supabase

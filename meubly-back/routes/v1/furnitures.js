@@ -4,7 +4,6 @@ import { requireAuth } from "../../middlewares/authMiddleware.js";
 import { requireAdmin } from "../../middlewares/roleMiddleware.js";
 
 const router = express.Router();
-router.use(express.json());
 
 // Get all furnitures
 router.get("/furnitures", furnitureController.getAll);

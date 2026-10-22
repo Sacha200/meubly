@@ -1,68 +1,47 @@
 import { supabase } from "../supabase.js";
 
-function isRelationMissing(error) {
-  if (!error) return false;
-  return (
-    error.code === "42P01" ||
-    String(error.message ?? "")
-      .toLowerCase()
-      .includes("relation") ||
-    String(error.details ?? "")
-      .toLowerCase()
-      .includes("does not exist")
-  );
-}
+const LIST_COLUMNS = "review_id, rating, comment, created_at, updated_at, profile(username)";
+const OWN_COLUMNS = "review_id, furniture_id, rating, comment, created_at, updated_at";
 
 export const reviewRepository = {
-  async findReviewsByProduct(productId, from, to) {
-    try {
-      const { data, error, count } = await supabase
-        .from("review")
-        .select(
-          "review_id, product_id, user_id, rating, comment, author_name, created_at, updated_at",
-          { count: "exact" }
-        )
-        .eq("product_id", productId)
-        .order("created_at", { ascending: false })
-        .range(from, to);
-
-      if (error) throw error;
-      return { data, count };
-    } catch (error) {
-      if (isRelationMissing(error)) {
-        console.warn("[ReviewRepository] Table review missing - returning empty.");
-        return { data: [], count: 0 };
-      }
-      throw error;
-    }
+  async findByFurniture(furnitureId, from, to) {
+    const { data, error, count } = await supabase
+      .from("review")
+      .select(LIST_COLUMNS, { count: "exact" })
+      .eq("furniture_id", furnitureId)
+      .order("created_at", { ascending: false })
+      .range(from, to);
+    if (error) throw error;
+    return { data, count };
   },
 
-  async getAllRatings(productId) {
-    try {
-      const { data, error } = await supabase
-        .from("review")
-        .select("rating")
-        .eq("product_id", productId);
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      if (isRelationMissing(error)) {
-        return [];
-      }
-      throw error;
-    }
-  },
-
-  async findByProductAndUser(productId, userId) {
+  async getAllRatings(furnitureId) {
     const { data, error } = await supabase
       .from("review")
-      .select("review_id")
-      .eq("product_id", productId)
+      .select("rating")
+      .eq("furniture_id", furnitureId);
+    if (error) throw error;
+    return data;
+  },
+
+  async findByFurnitureAndUser(furnitureId, userId) {
+    const { data, error } = await supabase
+      .from("review")
+      .select(OWN_COLUMNS)
+      .eq("furniture_id", furnitureId)
       .eq("user_id", userId)
       .maybeSingle();
+    if (error) throw error;
+    return data;
+  },
 
-    if (error && error.code !== "PGRST116") throw error;
+  async create(payload) {
+    const { data, error } = await supabase
+      .from("review")
+      .insert(payload)
+      .select(OWN_COLUMNS)
+      .single();
+    if (error) throw error;
     return data;
   },
 
@@ -71,17 +50,19 @@ export const reviewRepository = {
       .from("review")
       .update(payload)
       .eq("review_id", reviewId)
-      .select()
+      .select(OWN_COLUMNS)
       .single();
-
     if (error) throw error;
     return data;
   },
 
-  async create(payload) {
-    const { data, error } = await supabase.from("review").insert([payload]).select().single();
-
+  /** @returns {Promise<number>} nombre de lignes supprimees */
+  async deleteById(reviewId) {
+    const { error, count } = await supabase
+      .from("review")
+      .delete({ count: "exact" })
+      .eq("review_id", reviewId);
     if (error) throw error;
-    return data;
+    return count ?? 0;
   },
 };
