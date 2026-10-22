@@ -3,7 +3,7 @@ import { body } from "express-validator";
 import { aiController } from "../../controllers/aiController.js";
 import { requireAuth } from "../../middlewares/authMiddleware.js";
 import { aiLimiter } from "../../middlewares/rateLimit.js";
-import { handleValidation } from "./validation.js";
+import { handleValidation, isPgUuid } from "./validation.js";
 
 const router = express.Router();
 
@@ -11,7 +11,7 @@ router.post(
   "/generate-scene",
   requireAuth,
   [
-    body("furnitureId").isUUID().withMessage("Identifiant de meuble invalide."),
+    isPgUuid(body("furnitureId")).withMessage("Identifiant de meuble invalide."),
     body("prompt")
       .isString()
       .trim()

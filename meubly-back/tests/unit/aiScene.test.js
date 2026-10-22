@@ -82,6 +82,17 @@ describe("POST /ai/generate-scene", () => {
     expect((await generate({ furnitureId: FURNITURE, prompt: "x".repeat(201) })).status).toBe(400);
   });
 
+  it("accepte un uuid Postgres hors norme RFC (meubles de demo)", async () => {
+    const res = await generate({
+      furnitureId: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2",
+      prompt: "salon",
+    });
+    expect(res.status).not.toBe(400);
+    expect(furnitureRepository.findSummary).toHaveBeenCalledWith(
+      "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2"
+    );
+  });
+
   it("404 pour un meuble inconnu", async () => {
     furnitureRepository.findSummary.mockResolvedValue(null);
     expect((await generate({ furnitureId: FURNITURE, prompt: "salon" })).status).toBe(404);

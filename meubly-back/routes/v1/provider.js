@@ -3,12 +3,12 @@ import { body, param } from "express-validator";
 import { providerController } from "../../controllers/providerController.js";
 import { requireAuth } from "../../middlewares/authMiddleware.js";
 import { requireAdmin } from "../../middlewares/roleMiddleware.js";
-import { handleValidation } from "./validation.js";
+import { handleValidation, isPgUuid } from "./validation.js";
 
 const router = express.Router();
 
 const HTTP_URL = { protocols: ["http", "https"], require_protocol: true };
-const idParam = param("id").isUUID().withMessage("Identifiant invalide.");
+const idParam = isPgUuid(param("id")).withMessage("Identifiant invalide.");
 const providerFields = (creating) => [
   creating
     ? body("name").isString().trim().isLength({ min: 1, max: 100 })

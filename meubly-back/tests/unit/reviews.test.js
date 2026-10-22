@@ -28,6 +28,7 @@ const { reviewRepository } = await import("../../repositories/reviewRepository.j
 
 const FURNITURE = "3f2b6c1e-0000-4000-8000-000000000001";
 const REVIEW_ID = "3f2b6c1e-0000-4000-8000-0000000000aa";
+const SEED_FURNITURE = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2";
 const BASE = `/api/v1/furnitures/${FURNITURE}/reviews`;
 const ROW = {
   review_id: REVIEW_ID,
@@ -165,5 +166,11 @@ describe("API des avis", () => {
 
   it("400 sur un identifiant de meuble non UUID", async () => {
     expect((await request(app).get("/api/v1/furnitures/42/reviews")).status).toBe(400);
+  });
+
+  it("accepte un uuid Postgres hors norme RFC (meubles de demo)", async () => {
+    // Les 8 meubles de demo ont des ids aaaaaaaa-... : valides pour Postgres, refuses par isUUID.
+    const res = await request(app).get(`/api/v1/furnitures/${SEED_FURNITURE}/reviews`);
+    expect(res.status).toBe(200);
   });
 });

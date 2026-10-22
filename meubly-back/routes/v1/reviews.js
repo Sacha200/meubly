@@ -4,11 +4,11 @@ import { reviewController } from "../../controllers/reviewController.js";
 import { requireAuth } from "../../middlewares/authMiddleware.js";
 import { requireAdmin } from "../../middlewares/roleMiddleware.js";
 import { reviewWriteLimiter } from "../../middlewares/rateLimit.js";
-import { handleValidation } from "./validation.js";
+import { handleValidation, isPgUuid } from "./validation.js";
 
 const router = express.Router();
 
-const furnitureId = param("id").isUUID().withMessage("Identifiant de meuble invalide.");
+const furnitureId = isPgUuid(param("id")).withMessage("Identifiant de meuble invalide.");
 
 router.get(
   "/furnitures/:id/reviews",
@@ -64,7 +64,7 @@ router.delete(
   "/reviews/:reviewId",
   requireAuth,
   requireAdmin,
-  param("reviewId").isUUID().withMessage("Identifiant d'avis invalide."),
+  isPgUuid(param("reviewId")).withMessage("Identifiant d'avis invalide."),
   handleValidation,
   reviewController.deleteAny
 );

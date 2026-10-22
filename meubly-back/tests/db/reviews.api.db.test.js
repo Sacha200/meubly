@@ -12,10 +12,12 @@ describe("parcours avis via l'API (base locale)", () => {
   beforeAll(async () => {
     ({ app } = await import("../../app.js"));
     user = await createTestUser({ metadata: { username: "parcours_avis" } });
+    // Meuble de demo a l'id hors norme RFC (aaaaaaaa-...) : le parcours doit fonctionner aussi
+    // pour ces ids, presents en local comme en prod.
     const { data, error } = await adminClient()
       .from("furniture")
       .select("furniture_id")
-      .limit(1)
+      .eq("furniture_id", "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2")
       .single();
     if (error) throw error;
     furnitureId = data.furniture_id;
