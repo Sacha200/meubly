@@ -11,6 +11,7 @@ import AdminFurnituresView from "../views/Admin/furnitures/listView.vue";
 import AdminUpdateFurnitureView from "../views/Admin/furnitures/updateView.vue";
 import SupabaseAuthCallbackView from "../views/SupabaseAuthCallbackView.vue";
 import VerifyEmailCodeView from "../views/VerifyEmailCodeView.vue";
+import ResetPasswordView from "../views/ResetPasswordView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,6 +24,8 @@ const router = createRouter({
     { path: "/favoris", name: "Favorites", component: FavoritesView },
     { path: "/register", name: "Register", component: RegisterPage },
     { path: "/auth/callback", name: "AuthCallback", component: SupabaseAuthCallbackView },
+    // Doit rester egal a RESET_PASSWORD_PATH (src/api/authApi.js), cible du lien envoye par email
+    { path: "/reinitialiser-mot-de-passe", name: "ResetPassword", component: ResetPasswordView },
     { path: "/verify-email", name: "VerifyEmail", component: VerifyEmailCodeView },
 
     // Routes d'administration - Utilisateurs

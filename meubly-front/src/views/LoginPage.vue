@@ -55,6 +55,14 @@
       <div class="max-w-md mx-auto bg-white dark:bg-surface p-8 rounded-lg shadow-md">
         <h1 class="text-center mb-8">Connexion</h1>
 
+        <p
+          v-if="passwordWasReset"
+          role="status"
+          class="mb-6 rounded border border-green-700 bg-green-50 p-3 text-sm text-green-800 dark:bg-green-900/30 dark:text-green-300"
+        >
+          Mot de passe modifié, connectez-vous avec votre nouveau mot de passe.
+        </p>
+
         <form @submit.prevent="handleLogin" class="space-y-6">
           <!-- Email -->
           <div>
@@ -82,6 +90,16 @@
               required
             />
             <span class="error-message">{{ fieldErrors.password }}</span>
+            <div class="mt-2 text-right">
+              <button
+                ref="forgotButton"
+                type="button"
+                class="text-sm text-primary-700 underline hover:text-primary-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-700 dark:text-primary-300"
+                @click="showForgotPassword = true"
+              >
+                Mot de passe oublié ?
+              </button>
+            </div>
           </div>
 
           <!-- Boutons -->
@@ -132,6 +150,11 @@
         </form>
       </div>
     </div>
+    <ForgotPasswordDialog
+      v-if="showForgotPassword"
+      :initial-email="formData.email"
+      @close="closeForgotPassword"
+    />
     <AppFooter />
   </div>
 </template>
@@ -143,6 +166,7 @@ import { useAuthStore } from "../stores/authStore";
 import Toast from "primevue/toast";
 import AppHeader from "../components/AppHeader.vue";
 import AppFooter from "../components/AppFooter.vue";
+import ForgotPasswordDialog from "../components/Auth/ForgotPasswordDialog.vue";
 
 export default {
   name: "LoginPage",
@@ -150,6 +174,7 @@ export default {
     Toast,
     AppHeader,
     AppFooter,
+    ForgotPasswordDialog,
   },
   data() {
     return {
@@ -165,10 +190,22 @@ export default {
       loading: false,
       errorMessage: "",
       showResendConfirmation: false,
+      showForgotPassword: false,
       mailpitUrl: import.meta.env.VITE_MAILPIT_URL || "http://localhost:8025",
     };
   },
+  computed: {
+    // Retour de la page de reinitialisation (ResetPasswordView)
+    passwordWasReset() {
+      return this.$route?.query?.reset === "ok";
+    },
+  },
   methods: {
+    closeForgotPassword() {
+      this.showForgotPassword = false;
+      this.$nextTick(() => this.$refs.forgotButton?.focus());
+    },
+
     validateForm() {
       const errors = [];
 
