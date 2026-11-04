@@ -5,12 +5,13 @@ import v1Router from "./routes/v1.js";
 import { requestLogger } from "./middlewares/loggerMiddleware.js";
 import { errorHandler } from "./middlewares/errorMiddleware.js";
 import { globalLimiter } from "./middlewares/rateLimit.js";
-import { clientIpDiagnostic } from "./middlewares/clientIpDiagnostic.js";
-
 export const app = express();
 
-// Render place un proxy devant l'app : l'IP client est dans X-Forwarded-For.
-app.set("trust proxy", 1);
+// Prod Render : Cloudflare puis le proxy Render. X-Forwarded-For mesure le 2026-11-04 :
+// "client, relais, relais" (une valeur envoyee par le client reste a gauche, donc ignoree).
+// 3 = nombre de sauts de confiance, req.ip est alors l'IP vue par Cloudflare. A remesurer si
+// l'hebergement change (avec 1, req.ip etait un relais : compteurs partages entre visiteurs).
+app.set("trust proxy", 3);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -52,7 +53,7 @@ app.use(
   })
 );
 
-app.use("/api/v1", clientIpDiagnostic, globalLimiter, v1Router);
+app.use("/api/v1", globalLimiter, v1Router);
 app.use("/api/v1", (req, res) => res.status(404).json({ error: "Route introuvable" }));
 app.use(errorHandler);
 

@@ -265,7 +265,7 @@ Docs : `docs/security-matrix.md` (create), `README.md`, `CLAUDE.md`, `docs/ROADM
 **Interfaces:**
 - Dependance : `express-rate-limit` version exacte `8.7.0`.
 - Produces : `globalLimiter` (300 requetes / 15 min / IP, `standardHeaders: "draft-8"`, `legacyHeaders: false`, saute `/api/v1/health`) ; `aiLimiter` (5 / heure, cle `req.user.id`) ; `reviewWriteLimiter` (20 / heure, cle `req.user.id`). Reponse 429 `{ error: "Trop de requetes, reessayez plus tard" }`.
-- `app.set("trust proxy", 1)` (Render) ; `globalLimiter` monte sur `/api/v1` ; `aiLimiter` et `reviewWriteLimiter` places apres `requireAuth`.
+- `app.set("trust proxy", 3)` (Render, mesure le 2026-11-04 : Cloudflare + proxy Render) ; `globalLimiter` monte sur `/api/v1` ; `aiLimiter` et `reviewWriteLimiter` places apres `requireAuth`.
 
 - [ ] **Step 1: Tests qui echouent** : 6e appel `generate-scene` du meme utilisateur -> 429 alors qu'un autre utilisateur passe ; 21e POST d'avis -> 429 ; `GET /api/v1/health` jamais limite. Utiliser `vi.resetModules()` + import dynamique de `app.js` pour un store neuf par test.
 - [ ] **Step 2:** Run, FAIL.

@@ -162,7 +162,7 @@ Toutes idempotentes, executables sur la prod ET sur la stack locale malgre la de
   suivie, taille maximale (ex. 10 Mo) et type `image/*`. `prompt` : chaine 3 a 200 caracteres.
   Le correctif Docker `localhost -> kong` est conserve uniquement hors production.
 - **Rate limiting** (`express-rate-limit`, nouvelle dependance, version stable a verifier) :
-  `app.set("trust proxy", 1)` (Render) ; limite globale sur `/api/v1` ; limite stricte par utilisateur sur
+  `app.set("trust proxy", 3)` (Render, mesure 2026-11-04) ; limite globale sur `/api/v1` ; limite stricte par utilisateur sur
   `/ai/generate-scene` (cout Replicate) et sur les ecritures d'avis. Store memoire (une seule instance Render).
   La connexion et l'inscription passent par Supabase Auth, qui a ses propres limites.
 - **Erreurs** : `errorHandler` renvoie un message generique pour tout 5xx ; les messages 4xx viennent
