@@ -28,7 +28,18 @@ Fini quand : `npm run lint && npm run test:run` verts des deux cotes, en CI.
 
 Objectif : plus aucune donnee exposee.
 
-Statut : realisee le 2026-10-19 sur `feat/phase-1-security` (plan : `docs/superpowers/plans/2026-10-19-phase-1-security.md`), migrations 006-009 appliquees et testees sur la stack locale. Mise en production (migrations cloud, nomination admin, verification advisors) en attente d'accord. Reportes en phase 5 : vulnerabilites `npm audit` exigeant une version majeure (dont `sharp`, runtime).
+Statut : **terminee et en production le 2026-11-04** (plan : `docs/superpowers/plans/2026-10-19-phase-1-security.md`). Code fusionne par la PR #3, migrations 006-010 appliquees en prod, admin nomme, advisors securite sans ERROR, verification manuelle en prod (comptes, blocage, avis, IA, limite de debit). Ajouts pendant la mise en production : mot de passe oublie (PR #4, SMTP Brevo sur le domaine `prixoli.fr`), IP client derriere Cloudflare (`trust proxy 3`, PR #5 et #6), suppression de `pgjwt` (010, PR #7) puis passage de Postgres 15 a 17.11 en prod. Reportes en phase 5 : vulnerabilites `npm audit` exigeant une version majeure (dont `sharp`, runtime).
+
+Points restes ouverts (a reprendre dans la phase indiquee) :
+- Advisors WARN acceptes ou a trancher : protection des mots de passe compromis (plan Pro, accepte) ; `pg_trgm` dans `public` (a deplacer, phase 2) ; tables visibles dans le schema GraphQL (lints 0026/0027) alors que l'application n'utilise pas GraphQL : desactiver `pg_graphql` ou revoquer, a decider.
+- Postgres 17 en prod, 15 en local : aligner l'image locale avec la baseline de la phase 2.
+- Render en Oregon, Supabase a Paris (~140 ms par aller-retour base) : recreer le service en Europe (phase 6).
+- Le front lit encore `profile` via le SDK a la connexion (`loginUser`) : a passer par l'API (phase 4).
+- `review.updated_at` est fixe par l'horloge du serveur, `created_at` par Postgres : laisser Postgres fixer les deux (phase 2).
+- Bloquer un compte ne ferme pas ses sessions (sans risque : renouvellement refuse, 403 a chaque requete) ; a revoquer explicitement si besoin.
+- Scene IA : le modele `stable-diffusion-inpainting` deforme le meuble ; evaluer un modele d'edition qui conserve le produit (phase 4).
+- En-tete plus etroit que la page sur la fiche produit a certaines largeurs (phase 4).
+- Renommage Meubly -> Prixoli (marque, domaine, emails) : lot separe.
 
 - Matrice de droits role x table x operation (`docs/security-matrix.md`).
 - Migration RLS : lecture publique catalogue (`furniture`, `offer` actives, `category`, `partner` actifs, `furniture_image`) ; `favorite` et `profile` limites au proprietaire ; ecritures reservees service role. Teste d'abord sur une branche Supabase.
@@ -86,4 +97,4 @@ Une par PR, apres que la CI protege : Vite + plugin-vue, Vitest, Pinia, Tailwind
 
 ## Phase 6 - Exploitation
 
-Supervision (logs structures, erreurs front type Sentry), sauvegardes, upgrade Postgres cloud, documentation de deploiement par environnement, ADR dans `docs/adr/`.
+Supervision (logs structures, erreurs front type Sentry), sauvegardes, service back en Europe (Render), documentation de deploiement par environnement, ADR dans `docs/adr/`.

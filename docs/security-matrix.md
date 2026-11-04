@@ -67,6 +67,8 @@ Droits revoques : toute ecriture `anon` ; tout acces `anon` a `profile` et `favo
 
 Limite globale : 300 requetes / 15 min / IP sur `/api/v1` (hors `/health`). Route inconnue : 404.
 
+Identification de l'IP en prod (mesure du 2026-11-04) : une requete traverse Cloudflare puis le proxy Render, `X-Forwarded-For` vaut "client, relais, relais", et une valeur envoyee par le client reste a gauche du client. D'ou `app.set("trust proxy", 3)` : `req.ip` est l'IP vue par Cloudflare, une adresse falsifiee est ignoree, et un faux `CF-Connecting-IP` est rejete par Cloudflare (403). A remesurer si l'hebergement change (avec `1`, les visiteurs partageaient des compteurs).
+
 ## Nommer un administrateur
 
 1. Supabase > projet `rlxyptqvtpdhrdpdoiwy` > Table Editor > `profile`.
@@ -80,4 +82,6 @@ Retirer le role : remettre `USER` de la meme maniere.
 
 - **SSRF :** la generation IA recoit un `furnitureId`, et non une URL. L'image est lue en base, puis telechargee uniquement depuis une liste blanche (`AI_IMAGE_HOSTS`, par defaut `www.ikea.com`, `images.unsplash.com` et l'hote Supabase). Elle exige `https`, refuse les redirections, limite la taille a 10 Mo et impose un type `image/*`.
 - **Erreurs :** une erreur 5xx renvoie un message generique ; aucun message Supabase ni `stack` (hors developpement) n'est renvoye.
-- **Mots de passe :** geres uniquement par Supabase Auth. Aucun hash n'est stocke par l'application.
+- **Mots de passe :** geres uniquement par Supabase Auth. Aucun hash n'est stocke par l'application. Regles Auth en prod : 10 caracteres minimum, minuscule, majuscule et chiffre. La protection contre les mots de passe compromis (HaveIBeenPwned) exige le plan Pro : avertissement des advisors accepte.
+- **Reinitialisation :** `resetPasswordForEmail` (message neutre, que le compte existe ou non), lien PKCE valable 1 h, `updateUser` puis deconnexion globale. Les liens generes depuis le tableau de bord Supabase utilisent le flux implicite (`#access_token`) et sont refuses par le front : passer par « Mot de passe oublie ? ».
+- **Blocage d'un compte :** `ban_duration` Supabase. Les sessions existantes ne sont pas fermees, mais leur renouvellement est refuse et `requireAuth` repond 403 a chaque requete.

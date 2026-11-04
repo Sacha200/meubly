@@ -87,6 +87,11 @@ Tables (snake_case, `public`) : `profile`, `category` (hierarchique `parent_id`)
 - Stack dev Docker : `node_modules` vit dans un volume anonyme, reinstalle seulement si nodemon/vite manque. Apres un changement de dependances : `up -d --build --renew-anon-volumes meubly-back meubly-front`.
 - Node 22 obligatoire (images Docker, `engines` du back) : supabase-js >= 2.118 plante a l'import sous Node 20.
 - Fins de ligne forcees en LF (`.gitattributes`) ; Prettier echoue sur du CRLF.
+- `trust proxy 3` (`app.js`) est mesure sur Render (Cloudflare + proxy Render). Ne pas le baisser sans remesurer `X-Forwarded-For` en prod : avec 1, la limite de debit partageait les compteurs entre visiteurs.
+- Postgres 17 en prod, 15 dans la stack locale : verifier qu'une migration passe sur les deux.
+- Liens magiques ou de recuperation generes depuis le tableau de bord Supabase : flux implicite (`#access_token`), refuses par le front PKCE. Utiliser « Mot de passe oublie ? ».
+- Modeles d'email (`bd/supabase/email-templates/`) : a recopier a la main dans le tableau de bord, rien ne les deploie.
+- Tableau de bord Supabase : versions et bouton de mise a jour Postgres dans Settings > General > Service versions (pas Infrastructure).
 
 ## Skills utiles (installes dans `.claude/skills`)
 
