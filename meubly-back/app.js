@@ -5,6 +5,7 @@ import v1Router from "./routes/v1.js";
 import { requestLogger } from "./middlewares/loggerMiddleware.js";
 import { errorHandler } from "./middlewares/errorMiddleware.js";
 import { globalLimiter } from "./middlewares/rateLimit.js";
+import { clientIpDiagnostic } from "./middlewares/clientIpDiagnostic.js";
 
 export const app = express();
 
@@ -51,7 +52,7 @@ app.use(
   })
 );
 
-app.use("/api/v1", globalLimiter, v1Router);
+app.use("/api/v1", clientIpDiagnostic, globalLimiter, v1Router);
 app.use("/api/v1", (req, res) => res.status(404).json({ error: "Route introuvable" }));
 app.use(errorHandler);
 
