@@ -63,7 +63,7 @@ Documentation detaillee :
 | Frontend | Vue 3, Vite, Pinia, PrimeVue, Tailwind | Interface utilisateur |
 | Backend | Node.js, Express, express-validator, express-rate-limit, Supabase Auth, Vitest | API metier |
 | Data Platform | Supabase self-hosted (Kong, Auth, REST, Realtime, Storage) | Auth + donnees + API |
-| Base de donnees | PostgreSQL 15 | Stockage relationnel |
+| Base de donnees | PostgreSQL 17 en prod (Supabase cloud), 15 en local | Stockage relationnel |
 | Ingestion | Service `bd/ingestion` (CRON, CSV/JSON, IKEA adapter) | Import de donnees |
 | Qualite | SonarQube Community, Vitest, Cypress | Analyse qualite + tests |
 | Email dev | Mailpit | Sandbox SMTP locale |
@@ -77,7 +77,9 @@ Detail complet (roles, politiques RLS, garde de chaque route) : [`docs/security-
 - **Comptes :** geres uniquement par Supabase Auth (aucun hash de mot de passe stocke par l'application). Le profil est cree par un trigger avec `role = 'USER'`.
 - **Ecritures :** toute route d'ecriture exige un jeton (`requireAuth`) ; le catalogue, les partenaires et les comptes exigent en plus `ADMIN` (`requireAdmin`). Un compte bloque recoit 403.
 - **RLS :** active sur toutes les tables publiques (`bd/supabase/migrations/009_rls.sql`) : lecture publique du catalogue et des avis, `profile` / `favorite` / avis limites a leur proprietaire.
-- **Limitation de debit :** 300 requetes / 15 min / IP sur l'API, 5 generations IA / heure et 20 ecritures d'avis / heure par utilisateur.
+- **Limitation de debit :** 300 requetes / 15 min / IP sur l'API, 5 generations IA / heure et 20 ecritures d'avis / heure par utilisateur. En prod, l'IP est celle vue par Cloudflare (`trust proxy 3`, voir `meubly-back/app.js`).
+- **Mot de passe oublie :** lien « Mot de passe oublie ? » sur la page de connexion, email de reinitialisation (lien valable 1 h, a ouvrir dans le meme navigateur : flux PKCE), page `/reinitialiser-mot-de-passe`, puis deconnexion de toutes les sessions. Regles : 10 caracteres minimum, une majuscule, une minuscule, un chiffre.
+- **Emails en prod :** SMTP Brevo, expediteur `no-reply@prixoli.fr`. Les modeles sont versionnes dans `bd/supabase/email-templates/` et recopies a la main dans le tableau de bord Supabase (Authentication > Emails > Templates).
 - **Avis :** un avis par utilisateur et par meuble (note 1-5, commentaire optionnel de 1000 caracteres max), modifiable et supprimable par son auteur, supprimable par un admin.
 - **Nommer un administrateur :** tableau de bord Supabase > Table Editor > `profile` > ligne du compte > `role = ADMIN`, puis se reconnecter. Aucun chemin applicatif ne permet d'obtenir ce role.
 
@@ -85,7 +87,7 @@ Detail complet (roles, politiques RLS, garde de chaque route) : [`docs/security-
 
 ## Prerequis
 
-- Node.js 20+ recommande
+- Node.js 22 (obligatoire : supabase-js >= 2.118 plante a l'import sous Node 20)
 - npm 10+
 - Docker Desktop + Docker Compose v2
 
