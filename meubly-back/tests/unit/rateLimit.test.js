@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, beforeAll } from "vitest";
 import request from "supertest";
 import { bearer, mockAuth } from "../helpers/authMock.js";
 
@@ -62,4 +62,37 @@ describe("limitation de debit", () => {
     expect((await request(app).get("/api/v1/nope")).status).toBe(429);
     expect((await request(app).get("/api/v1/health")).status).toBe(200);
   }, 30_000); // 301 requetes : lent par construction, surtout quand les suites tournent en parallele
+});
+
+/**
+ * Chaine X-Forwarded-For mesuree en prod (Render) le 2026-11-04 :
+ * "client, relais, relais" ; un X-Forwarded-For envoye par le client reste a gauche du client.
+ */
+describe("identification du visiteur derriere Cloudflare et le proxy Render", () => {
+  // Une seule app : chaque test utilise ses propres adresses, et recharger app.js a chaque test
+  // fait depasser le delai quand toutes les suites tournent en parallele.
+  let app;
+  beforeAll(async () => {
+    app = await freshApp();
+  });
+  const counterKey = (res) => res.headers["ratelimit-policy"].match(/pk=:([^:]+):/)[1];
+  const hit = (xff) => request(app).get("/api/v1/nope").set("X-Forwarded-For", xff);
+
+  it("garde le meme compteur pour un visiteur quels que soient les relais traverses", async () => {
+    const a = await hit("203.0.113.7, 198.51.100.1, 10.0.0.1");
+    const b = await hit("203.0.113.7, 198.51.100.2, 10.0.0.2");
+    expect(counterKey(b)).toBe(counterKey(a));
+  });
+
+  it("ignore une adresse falsifiee par le client", async () => {
+    const honest = await hit("203.0.113.7, 198.51.100.1, 10.0.0.1");
+    const spoofed = await hit("1.2.3.4, 203.0.113.7, 198.51.100.1, 10.0.0.1");
+    expect(counterKey(spoofed)).toBe(counterKey(honest));
+  });
+
+  it("separe deux visiteurs passant par les memes relais", async () => {
+    const a = await hit("203.0.113.7, 198.51.100.1, 10.0.0.1");
+    const b = await hit("203.0.113.8, 198.51.100.1, 10.0.0.1");
+    expect(counterKey(b)).not.toBe(counterKey(a));
+  });
 });
