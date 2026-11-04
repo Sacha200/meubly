@@ -80,6 +80,53 @@ export async function logoutUser() {
   }
 }
 
+/** Chemin de la page ou le lien de reinitialisation ramene l'utilisateur. */
+export const RESET_PASSWORD_PATH = "/reinitialiser-mot-de-passe";
+
+const INVALID_LINK_MESSAGE = "Ce lien n'est plus valide. Refaites une demande de réinitialisation.";
+
+/**
+ * Envoie l'email de reinitialisation. Supabase repond de la meme facon que le compte
+ * existe ou non : l'appelant affiche toujours un message neutre.
+ * @param {string} email
+ * @throws {Error} message en francais, jamais le message brut de Supabase
+ */
+export async function requestPasswordReset(email) {
+  const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+    redirectTo: `${window.location.origin}${RESET_PASSWORD_PATH}`,
+  });
+  if (!error) return;
+  if (error.code === "over_email_send_rate_limit" || error.status === 429) {
+    throw new Error("Trop de demandes. Réessayez dans quelques minutes.");
+  }
+  throw new Error("Envoi impossible pour le moment. Réessayez plus tard.");
+}
+
+/**
+ * Enregistre le nouveau mot de passe (session ouverte par le lien de reinitialisation),
+ * puis ferme toutes les sessions du compte : l'utilisateur se reconnecte avec le nouveau
+ * mot de passe, ce qui recharge aussi son role.
+ * @param {string} password
+ * @throws {Error} message en francais
+ */
+export async function updatePassword(password) {
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) {
+    switch (error.code) {
+      case "same_password":
+        throw new Error("Le nouveau mot de passe doit être différent de l'ancien.");
+      case "weak_password":
+        throw new Error("Ce mot de passe est trop faible.");
+      case "session_not_found":
+      case "reauthentication_needed":
+        throw new Error(INVALID_LINK_MESSAGE);
+      default:
+        throw new Error("Enregistrement impossible pour le moment. Réessayez plus tard.");
+    }
+  }
+  await supabase.auth.signOut({ scope: "global" });
+}
+
 // Fonction pour vérifier si l'utilisateur est connecté
 export async function isUserLoggedIn() {
   const {

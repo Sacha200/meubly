@@ -137,6 +137,7 @@
 
 <script>
 import { registerUser } from "../api/authApi";
+import { PASSWORD_MIN_LENGTH } from "../utils/passwordRules";
 import Toast from "primevue/toast";
 import AppHeader from "../components/AppHeader.vue";
 import AppFooter from "../components/AppFooter.vue";
@@ -183,8 +184,8 @@ export default {
         );
       }
 
-      if (this.formData.password.length < 8) {
-        errors.push("Le mot de passe doit contenir au moins 8 caractères");
+      if (this.formData.password.length < PASSWORD_MIN_LENGTH) {
+        errors.push(`Le mot de passe doit contenir au moins ${PASSWORD_MIN_LENGTH} caractères`);
       }
       if (!/[A-Z]/.test(this.formData.password)) {
         errors.push("Le mot de passe doit contenir au moins une majuscule");
