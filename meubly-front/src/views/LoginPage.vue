@@ -191,7 +191,7 @@ export default {
       errorMessage: "",
       showResendConfirmation: false,
       showForgotPassword: false,
-      mailpitUrl: import.meta.env.VITE_MAILPIT_URL || "http://localhost:8025",
+      mailpitUrl: import.meta.env.VITE_MAILPIT_URL || "http://localhost:54324",
     };
   },
   computed: {

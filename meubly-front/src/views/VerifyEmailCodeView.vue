@@ -91,7 +91,7 @@ export default {
       email: this.$route?.query?.email || "",
       token: "",
       loading: false,
-      mailpitUrl: import.meta.env.VITE_MAILPIT_URL || "http://localhost:8025",
+      mailpitUrl: import.meta.env.VITE_MAILPIT_URL || "http://localhost:54324",
       isLocal: !!import.meta.env.VITE_MAILPIT_URL || import.meta.env.DEV,
     };
   },
