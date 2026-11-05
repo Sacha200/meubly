@@ -150,7 +150,7 @@
 - [x] **Step 4: Migration.** Enums gardes (`DO $$ ... EXCEPTION WHEN duplicate_object`), colonnes `ADD COLUMN IF NOT EXISTS`, `UPDATE offer SET status = CASE WHEN is_active THEN 'active' ELSE 'removed' END, last_seen_at = coalesce(updated_at, now())`, `furniture_id`/`partner_id` NOT NULL, CHECK nommes `offer_*_check`, `ALTER COLUMN price TYPE numeric(10,2)` selon step 1, `offer_unique_listing UNIQUE NULLS NOT DISTINCT (furniture_id, partner_id, seller_name, condition)`, index `offer_partner_id_idx`, remplacement de `catalog_read` par `offer_read_active` sur `offer` (`USING (status = 'active')`, anon + authenticated), `COMMENT ON COLUMN` pour `price` (TTC euros, eco-participation comprise) et `total_price`.
 - [x] **Step 5: Lancer.** `db reset` puis `npm run test:db` -> vert. `npm run test:run` back -> vert (le back lit encore `is_active`, toujours present).
 - [x] **Step 6: Commit + PR.** `feat(db): enrich offer (status, shipping, delivery, condition, seller)`.
-- [ ] **Step 7: Prod (accord).** `db push --dry-run`, accord, `db push`, advisors (pas de FK non indexee sur `offer`). Smoke : `GET /api/v1/furnitures/<id>/offers` prod -> 200.
+- [x] **Step 7: Prod (accord).** `db push --dry-run`, accord, `db push`, advisors (pas de FK non indexee sur `offer`). Smoke : `GET /api/v1/furnitures/<id>/offers` prod -> 200.
 
 ### Task 7: Colonnes meuble et partenaire
 
@@ -163,12 +163,12 @@
 **Interfaces:**
 - Produces : `furniture.brand text`, `gtin text` (index unique partiel `WHERE gtin IS NOT NULL`, CHECK `gtin ~ '^([0-9]{8}|[0-9]{12,14})$'`), `manufacturer_ref text`, `weight_kg numeric CHECK (> 0)`, `attributes jsonb NOT NULL DEFAULT '{}' CHECK (jsonb_typeof(attributes) = 'object')`, CHECK `> 0` sur les 3 dimensions, `COMMENT ON COLUMN` "centimetres" ; `partner.is_affiliate boolean NOT NULL DEFAULT false`. API provider : champ `isAffiliate` (booleen) en lecture et en ecriture admin.
 
-- [ ] **Step 1: Tests DB.** `schema.db.test.js` : refus de `size_width = 0`, `weight_kg = 0`, `gtin = 'abc'`, `attributes = '[]'` ; deux meubles avec le meme `gtin` -> le second echoue ; deux avec `gtin` NULL -> acceptes ; nouveau partenaire -> `is_affiliate = false`.
-- [ ] **Step 2: Tests unitaires.** `GET /api/v1/providers/:id` renvoie `isAffiliate` ; `PATCH` admin avec `isAffiliate: true` ecrit `is_affiliate: true` ; `isAffiliate: "oui"` -> 400 (`body("isAffiliate").optional().isBoolean({ strict: true })`, comme `isActive`).
-- [ ] **Step 3: Lancer** -> echecs attendus.
-- [ ] **Step 4: Migration + code.** Migration selon Interfaces. `partnerRepository` COLUMNS + `is_affiliate` ; `providerService` mappe `isAffiliate <-> is_affiliate` comme `isActive`.
-- [ ] **Step 5: Lancer.** `db reset`, `npm run test:db`, `npm run test:run`, lint -> verts.
-- [ ] **Step 6: Commit + PR.** `feat(db): furniture identifiers and attributes, partner is_affiliate`.
+- [x] **Step 1: Tests DB.** `schema.db.test.js` : refus de `size_width = 0`, `weight_kg = 0`, `gtin = 'abc'`, `attributes = '[]'` ; deux meubles avec le meme `gtin` -> le second echoue ; deux avec `gtin` NULL -> acceptes ; nouveau partenaire -> `is_affiliate = false`.
+- [x] **Step 2: Tests unitaires.** `GET /api/v1/providers/:id` renvoie `isAffiliate` ; `PATCH` admin avec `isAffiliate: true` ecrit `is_affiliate: true` ; `isAffiliate: "oui"` -> 400 (`body("isAffiliate").optional().isBoolean({ strict: true })`, comme `isActive`).
+- [x] **Step 3: Lancer** -> echecs attendus.
+- [x] **Step 4: Migration + code.** Migration selon Interfaces. `partnerRepository` COLUMNS + `is_affiliate` ; `providerService` mappe `isAffiliate <-> is_affiliate` comme `isActive`.
+- [x] **Step 5: Lancer.** `db reset`, `npm run test:db`, `npm run test:run`, lint -> verts.
+- [x] **Step 6: Commit + PR.** `feat(db): furniture identifiers and attributes, partner is_affiliate`.
 - [ ] **Step 7: Prod (accord).** Migration poussee AVANT ou AVEC le deploiement du back (le back lit `is_affiliate`) : `db push` d'abord, puis fusion de la PR. Advisors.
 
 ### Task 8: Horodatages, historique de prix, caches, tables de suivi

@@ -1,6 +1,6 @@
 import { supabase } from "../supabase.js";
 
-const COLUMNS = "partner_id, name, website_base_url, logo_url, is_active, created_at";
+const COLUMNS = "partner_id, name, website_base_url, logo_url, is_active, is_affiliate, created_at";
 
 /** Acces a la table `partner` (enseignes / marchands). */
 export const partnerRepository = {

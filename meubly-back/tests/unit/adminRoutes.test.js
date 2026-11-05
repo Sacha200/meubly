@@ -22,6 +22,7 @@ const PARTNER_ROW = {
   website_base_url: "https://www.ikea.com",
   logo_url: null,
   is_active: true,
+  is_affiliate: true,
   api_key_hash: "secret-hash",
   created_at: "2026-01-01T00:00:00Z",
 };
@@ -83,9 +84,40 @@ describe("/providers sur la table partner", () => {
         url: "https://www.ikea.com",
         logoUrl: null,
         isActive: true,
+        isAffiliate: true,
         createdAt: "2026-01-01T00:00:00Z",
       },
     ]);
+  });
+
+  it("renvoie isAffiliate sur un partenaire, false si la colonne est absente", async () => {
+    partnerRepository.findById.mockResolvedValue({ ...PARTNER_ROW, is_affiliate: undefined });
+    const res = await request(app).get(`/api/v1/providers/${ID}`);
+    expect(res.status).toBe(200);
+    expect(res.body.isAffiliate).toBe(false);
+  });
+
+  it("un ADMIN marque un partenaire comme affilie", async () => {
+    partnerRepository.update.mockResolvedValue(PARTNER_ROW);
+    const res = await send(
+      "patch",
+      `/api/v1/providers/${ID}`,
+      { isAffiliate: true },
+      bearer("admin")
+    );
+    expect(res.status).toBe(200);
+    expect(partnerRepository.update).toHaveBeenCalledWith(ID, { is_affiliate: true });
+  });
+
+  it("400 si isAffiliate n'est pas un booleen", async () => {
+    const res = await send(
+      "patch",
+      `/api/v1/providers/${ID}`,
+      { isAffiliate: "oui" },
+      bearer("admin")
+    );
+    expect(res.status).toBe(400);
+    expect(partnerRepository.update).not.toHaveBeenCalled();
   });
 
   it("400 sans nom a la creation", async () => {
