@@ -195,7 +195,7 @@
 - [x] **Step 5: Migration `click_out_ingestion_run`.** Tables, index, RLS activee sans politique, `REVOKE ALL ... FROM anon, authenticated`.
 - [x] **Step 6: Lancer.** `db reset`, `npm run test:db`, `npm run test:run`, lint -> verts.
 - [x] **Step 7: Commit + PR.** `feat(db): price history, offer cache triggers, click_out, ingestion_run`.
-- [ ] **Step 8: Prod (accord).** `db push --dry-run` (3 migrations, ordre), accord, `db push`, puis fusion (le retrait de `updated_at` cote back est compatible avec ou sans trigger). Controles lecture : `count(price_history) = count(offer)`, 0 ecart de cache. Advisors : 0 FK non indexee.
+- [x] **Step 8: Prod (accord).** `db push --dry-run` (3 migrations, ordre), accord, `db push`, puis fusion (le retrait de `updated_at` cote back est compatible avec ou sans trigger). Controles lecture : `count(price_history) = count(offer)`, 0 ecart de cache. Advisors : 0 FK non indexee.
 
 ### Task 9: Back sur le nouveau statut d'offre
 
@@ -207,10 +207,10 @@
 **Interfaces:**
 - Produces : `offerRepository.findByFurnitureId(furnitureId: string): Promise<Offer[]>` filtre `status = 'active'`, tri `total_price` croissant NULLS LAST puis `price`, colonnes `offer_id, external_title, url_website, price, shipping_cost, total_price, eco_fee, availability, delivery_min_days, delivery_max_days, delivery_mode, assembly_included, return_days, condition, seller_name, last_seen_at, updated_at, furniture_id, partner(name, logo_url, is_affiliate)`. Plus aucune reference a `is_active` d'offre dans le back.
 
-- [ ] **Step 1: Test.** Le mock Supabase de la suite verifie `.eq("status", "active")` et l'absence de `is_active` ; la reponse expose `total_price` et `partner.is_affiliate`.
-- [ ] **Step 2: Lancer** -> echec.
-- [ ] **Step 3: Code.** `offerRepository.findByFurnitureId` selon Interfaces. Verifier le front : `grep -rn "is_active\|price" meubly-front/src/components/Detail` ; aucun changement attendu (champs ajoutes seulement) ; `npm run build` front vert.
-- [ ] **Step 4: Lancer.** `npm run test:run`, `npm run test:db`, lint -> verts. `grep -rn "is_active" meubly-back --include=*.js | grep -v node_modules` -> seulement `partner` (`partnerRepository`, `providerService`).
+- [x] **Step 1: Test.** Le mock Supabase de la suite verifie `.eq("status", "active")` et l'absence de `is_active` ; la reponse expose `total_price` et `partner.is_affiliate`.
+- [x] **Step 2: Lancer** -> echec.
+- [x] **Step 3: Code.** `offerRepository.findByFurnitureId` selon Interfaces. Verifier le front : `grep -rn "is_active\|price" meubly-front/src/components/Detail` ; aucun changement attendu (champs ajoutes seulement) ; `npm run build` front vert.
+- [x] **Step 4: Lancer.** `npm run test:run`, `npm run test:db`, lint -> verts. `grep -rn "is_active" meubly-back --include=*.js | grep -v node_modules` -> seulement `partner` (`partnerRepository`, `providerService`).
 - [ ] **Step 5: Commit + PR**, fusion par le proprietaire, deploiement Render. Smoke prod : `GET /api/v1/furnitures/<id>/offers` -> 200 avec `total_price`.
 
 ### Task 10: Offre, phase "contracter"
