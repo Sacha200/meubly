@@ -31,3 +31,6 @@ bd/ingestion/ikea_seed.sql
 
 # Espace de travail des plans superpowers
 .superpowers/
+
+# Graphify (graphe de code local, regenere par `graphify update .`)
+graphify-out/
