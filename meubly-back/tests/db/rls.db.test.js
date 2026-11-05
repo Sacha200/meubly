@@ -132,6 +132,55 @@ describe("RLS (base locale)", () => {
     });
   });
 
+  describe("historique de prix et tables de suivi", () => {
+    const IKEA = "8d2e3d7c-1f4a-4a2c-8c3f-0b9cf7f8e2a1";
+    const offers = {};
+
+    beforeAll(async () => {
+      for (const status of ["active", "removed"]) {
+        const { data, error } = await admin
+          .from("offer")
+          .insert({
+            furniture_id: furnitureId,
+            partner_id: IKEA,
+            url_website: "https://www.ikea.com/rls-ph",
+            price: 10,
+            status,
+            seller_name: `rls-ph-${status}`,
+          })
+          .select("offer_id")
+          .single();
+        if (error) throw error;
+        offers[status] = data.offer_id;
+      }
+    });
+
+    it("anon lit l'historique d'une offre active, pas celui d'une offre retiree", async () => {
+      const read = (offerId) => anon.from("price_history").select("price").eq("offer_id", offerId);
+      expect((await read(offers.active)).data).toHaveLength(1);
+      expect((await read(offers.removed)).data).toEqual([]);
+    });
+
+    it("anon n'ecrit pas l'historique de prix", async () => {
+      expect(
+        denied(
+          await anon.from("price_history").insert({ offer_id: offers.active, price: 1 }).select()
+        )
+      ).toBe(true);
+    });
+
+    it.each([
+      ["click_out", () => ({ offer_id: offers.active })],
+      ["ingestion_run", () => ({ partner_id: IKEA })],
+    ])("%s : ni lecture ni ecriture pour anon et authenticated", async (table, row) => {
+      for (const client of [anon, a.client]) {
+        const read = await client.from(table).select("*").limit(1);
+        expect(Boolean(read.error) || read.data.length === 0).toBe(true);
+        expect(denied(await client.from(table).insert(row()).select())).toBe(true);
+      }
+    });
+  });
+
   it("n'a plus la fonction morte update_nb_offers", async () => {
     const { error } = await admin.rpc("update_nb_offers");
     expect(error).not.toBeNull();
