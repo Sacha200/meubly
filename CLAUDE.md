@@ -99,7 +99,10 @@ Tables (snake_case, `public`) : `profile`, `category` (hierarchique `parent_id`)
 - `web-design-guidelines` : audit UI/accessibilite d'un composant.
 - `ui-ux-pro-max` : direction visuelle, palettes, patterns UX.
 - Process (plugin superpowers) : `brainstorming` avant une fonctionnalite, `test-driven-development`, `systematic-debugging` sur un bug, `verification-before-completion` avant de conclure. `/simplify` et `/code-review` en fin de lot.
+
 ## graphify
+
+Prerequis local : `uv tool install "graphifyy[sql]"` (paquet PyPI officiel, deux y ; pas le paquet npm du meme nom). Les hooks de `.claude/settings.json` appellent `graphify hook-guard` en mode conseil (sans `--strict`). Graphe : `graphify update .` (AST local, aucun appel LLM), sortie `graphify-out/` non versionnee, exclusions dans `.graphifyignore`. Les requetes marchent mieux avec des noms de symboles anglais (`offerRepository`, `findByFurnitureId`) qu'en francais.
 
 This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
 
