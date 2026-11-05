@@ -170,6 +170,9 @@ describe("fetchAllowedImage", () => {
       }
       process.env.NODE_ENV = "development";
       await expect(fetchAllowedImage(local, opts)).resolves.toBeInstanceOf(Buffer);
+      // Stack Supabase CLI joignable depuis le conteneur back
+      const fromContainer = "http://host.docker.internal:54321/storage/v1/object/public/a.jpg";
+      await expect(fetchAllowedImage(fromContainer, opts)).resolves.toBeInstanceOf(Buffer);
     } finally {
       process.env.NODE_ENV = previous;
     }

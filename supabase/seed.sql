@@ -21,7 +21,9 @@ VALUES
   ('f0000000-0000-4000-8000-000000000003', 'MALM cadre de lit', 'Cadre de lit haut, 2 rangements', NULL, NULL, NULL, 249, 2),
   ('f0000000-0000-4000-8000-000000000004', 'HEMNES commode 8 tiroirs', 'Commode en pin massif', NULL, NULL, NULL, 299, 1),
   ('f0000000-0000-4000-8000-000000000005', 'LACK table basse', 'Table basse legere', NULL, NULL, NULL, 29.99, 1),
-  ('f0000000-0000-4000-8000-000000000006', 'BILLY bibliotheque', 'Bibliotheque blanche', NULL, NULL, NULL, 59.99, 1);
+  ('f0000000-0000-4000-8000-000000000006', 'BILLY bibliotheque', 'Bibliotheque blanche', NULL, NULL, NULL, 59.99, 1),
+  -- Id hors norme RFC, comme 8 meubles de la prod : utilise par tests/db/reviews.api.db.test.js
+  ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2', 'Table a manger extensible (140-200 cm)', 'Table extensible', NULL, NULL, NULL, 349, 1);
 
 INSERT INTO public.furniture_category (furniture_id, category_id) VALUES
   ('f0000000-0000-4000-8000-000000000001', 'c0000000-0000-4000-8000-000000000002'),
@@ -29,7 +31,8 @@ INSERT INTO public.furniture_category (furniture_id, category_id) VALUES
   ('f0000000-0000-4000-8000-000000000003', 'c0000000-0000-4000-8000-000000000003'),
   ('f0000000-0000-4000-8000-000000000004', 'c0000000-0000-4000-8000-000000000003'),
   ('f0000000-0000-4000-8000-000000000005', 'c0000000-0000-4000-8000-000000000001'),
-  ('f0000000-0000-4000-8000-000000000006', 'c0000000-0000-4000-8000-000000000001');
+  ('f0000000-0000-4000-8000-000000000006', 'c0000000-0000-4000-8000-000000000001'),
+  ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2', 'c0000000-0000-4000-8000-000000000001');
 
 -- Une offre IKEA par meuble, plus des offres de demo sur 3 meubles.
 INSERT INTO public.offer (furniture_id, partner_id, external_title, url_website, price) VALUES
@@ -39,6 +42,7 @@ INSERT INTO public.offer (furniture_id, partner_id, external_title, url_website,
   ('f0000000-0000-4000-8000-000000000004', '8d2e3d7c-1f4a-4a2c-8c3f-0b9cf7f8e2a1', 'HEMNES commode', 'https://www.ikea.com/fr/fr/p/hemnes', 299),
   ('f0000000-0000-4000-8000-000000000005', '8d2e3d7c-1f4a-4a2c-8c3f-0b9cf7f8e2a1', 'LACK table basse', 'https://www.ikea.com/fr/fr/p/lack', 29.99),
   ('f0000000-0000-4000-8000-000000000006', '8d2e3d7c-1f4a-4a2c-8c3f-0b9cf7f8e2a1', 'BILLY bibliotheque', 'https://www.ikea.com/fr/fr/p/billy', 59.99),
+  ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2', '8d2e3d7c-1f4a-4a2c-8c3f-0b9cf7f8e2a1', 'Table extensible', 'https://www.ikea.com/fr/fr/p/table', 349),
   ('f0000000-0000-4000-8000-000000000001', 'd0000000-0000-4000-8000-000000000001', 'Canape KIVIK 3 places', 'https://demo-meubles.example/kivik', 549),
   ('f0000000-0000-4000-8000-000000000001', 'd0000000-0000-4000-8000-000000000002', 'KIVIK 3 places gris', 'https://demo-deco.example/kivik', 579),
   ('f0000000-0000-4000-8000-000000000002', 'd0000000-0000-4000-8000-000000000001', 'FRIHETEN angle convertible', 'https://demo-meubles.example/friheten', 479),

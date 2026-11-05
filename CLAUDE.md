@@ -7,11 +7,11 @@ Feuille de route : `docs/ROADMAP.md`. Architecture : `docs/diagrams/architecture
 
 | Env | Front | Back | Base |
 |---|---|---|---|
-| Local | Vite :5173 | nodemon :5000 | Supabase self-hosted (docker compose, Kong :8000) |
+| Local | Vite :5173 | nodemon :5000 | Supabase CLI 2.122.1 (`supabase start`, API :54321, DB :54322, Studio :54323, Mailpit :54324, PG 17) |
 | Prod | Vercel | Render | Supabase cloud `rlxyptqvtpdhrdpdoiwy` (eu-west-3) |
 
 - Toute action sur le projet Supabase cloud (MCP Supabase) touche la PRODUCTION : lecture libre, mais DDL/DML uniquement apres accord explicite, et de preference sur une branche Supabase d'abord.
-- Ne jamais lire, afficher ni commiter le contenu de `.env` (racine, `meubly-back/.env`). Les noms de variables sont dans `.env.example` (local uniquement : pas encore versionne, ses cles JWT restent a verifier).
+- Ne jamais lire, afficher ni commiter le contenu de `.env` (racine, `meubly-back/.env`). Les noms de variables sont dans `.env.example` (versionne, sans secret ; valeurs locales via `npx supabase@2.122.1 status`).
 
 ## Commandes
 
@@ -32,10 +32,16 @@ npm run test:e2e       # cypress, necessite la stack complete
 npm run lint           # ESLint flat config, 0 erreur exigee
 npm run format:check   # Prettier ; npm run format pour corriger
 
-# Stack locale
-docker compose up -d --build
+# Base locale (Supabase CLI, version figee : toujours npx supabase@2.122.1)
+npx supabase@2.122.1 start            # demarre la stack (Docker Desktop requis)
+npx supabase@2.122.1 db reset         # rejoue supabase/migrations + supabase/seed.sql
+npx supabase@2.122.1 migration new x  # cree supabase/migrations/<timestamp>_x.sql
+npx supabase@2.122.1 db diff --linked -s public   # ecart schema local vs prod (lecture)
+npx supabase@2.122.1 db push --dry-run            # ce qui partirait en prod (push reel : accord explicite)
+# login/link : a lancer par le proprietaire dans son propre terminal (TTY requis)
+
+# Application en Docker (back + front sur la stack CLI)
 docker compose --profile app -f docker-compose.yml -f docker-compose.dev.yml up -d --build
-bash bd/supabase/apply-local.sh bd/supabase/migrations/NNN_x.sql   # migration sur la base LOCALE (supabase_admin)
 ```
 
 Node 22 en local. Shell principal Windows (PowerShell), Git Bash disponible.
@@ -62,10 +68,11 @@ Couches strictes : `routes/v1/*` -> `controllers/*` -> `services/*` -> `reposito
 
 ## Base de donnees
 
-Tables (snake_case, `public`) : `profile`, `category` (hierarchique `parent_id`), `furniture`, `furniture_category`, `furniture_image`, `partner`, `offer`, `partner_product`, `favorite`, `review`. RLS active sur toutes (`009_rls.sql`) ; `profile.user_id` -> FK `auth.users`, profil cree par le trigger `handle_new_user`.
-- Les noms `"User"`, `"Provider"`, `"Furniture"` etc. sont OBSOLETES (renommes par `bd/supabase/migrations/005_*`). Toute occurrence restante est un bug.
+Tables (snake_case, `public`) : `profile`, `category` (hierarchique `parent_id`), `furniture`, `furniture_category`, `furniture_image`, `partner`, `offer`, `partner_product`, `favorite`, `review`. RLS active sur toutes ; `profile.user_id` -> FK `auth.users`, profil cree par le trigger `handle_new_user`.
+- Les noms `"User"`, `"Provider"`, `"Furniture"` etc. sont OBSOLETES (renommes par la migration archivee `bd/supabase/migrations/archive/005_*`). Toute occurrence restante est un bug.
 - `furniture.cached_min_price` / `cached_nb_offers` sont denormalises : toute ecriture d'offre doit les maintenir.
-- Nouvelles migrations : fichier numerote dans `bd/supabase/migrations/NNN_description.sql`, idempotent, avec politiques RLS pour toute nouvelle table.
+- Schema de reference : `supabase/migrations/` (baseline `20261104210953_baseline.sql` tiree de la prod, puis une migration par evolution). Nouvelles migrations via `migration new`, idempotentes, avec politiques RLS pour toute nouvelle table. Les anciennes 001-010 sont archivees, plus rejouees.
+- Seed local synthetique : `supabase/seed.sql` (jamais en prod). Catalogue prod en local : `scripts/import-prod-catalog.md`.
 
 ## Workflow attendu
 
@@ -88,7 +95,9 @@ Tables (snake_case, `public`) : `profile`, `category` (hierarchique `parent_id`)
 - Node 22 obligatoire (images Docker, `engines` du back) : supabase-js >= 2.118 plante a l'import sous Node 20.
 - Fins de ligne forcees en LF (`.gitattributes`) ; Prettier echoue sur du CRLF.
 - `trust proxy 3` (`app.js`) est mesure sur Render (Cloudflare + proxy Render). Ne pas le baisser sans remesurer `X-Forwarded-For` en prod : avec 1, la limite de debit partageait les compteurs entre visiteurs.
-- Postgres 17 en prod, 15 dans la stack locale : verifier qu'une migration passe sur les deux.
+- `db dump` ne capture ni les triggers sur `auth.users` ni les REVOKE de droits : toute nouvelle baseline doit etre completee a la main et verifiee par comparaison des droits (voir la fin de la baseline).
+- Les conteneurs de la stack CLI portent l'etiquette compose `meubly` : ne jamais lancer `docker compose down --remove-orphans`, il les supprimerait.
+- Depuis un conteneur, la stack CLI se joint via `host.docker.internal:54321` (pas `localhost`).
 - Liens magiques ou de recuperation generes depuis le tableau de bord Supabase : flux implicite (`#access_token`), refuses par le front PKCE. Utiliser « Mot de passe oublie ? ».
 - Modeles d'email (`bd/supabase/email-templates/`) : a recopier a la main dans le tableau de bord, rien ne les deploie.
 - Tableau de bord Supabase : versions et bouton de mise a jour Postgres dans Settings > General > Service versions (pas Infrastructure).

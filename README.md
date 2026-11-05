@@ -6,7 +6,7 @@
 Le projet combine :
 - un frontend **Vue 3** pour l'experience utilisateur ;
 - un backend **Express.js** pour la logique metier ;
-- une stack **Supabase self-hosted** pour l'authentification, les donnees, le realtime et le storage ;
+- **Supabase** pour l'authentification, les donnees et le storage (cloud en prod, stack Supabase CLI en local) ;
 - des integrations IA/media (Gemini, Replicate, OpenRouter, Unsplash) pour l'enrichissement de contenu.
 
 ---
@@ -33,7 +33,7 @@ flowchart TB
 
         subgraph ROW2["&nbsp;"]
             direction LR
-            SUPA["🗄️ Supabase Stack<br/>Kong (API Gateway)<br/>Auth · REST · Storage<br/>Realtime · PostgreSQL"]
+            SUPA["🗄️ Supabase CLI (hors compose)<br/>API :54321 · Auth · REST<br/>Storage · PostgreSQL 17"]
             ING["📥 Ingestion<br/>CSV / JSON · IKEA<br/>CRON jobs"]
         end
     end
@@ -62,8 +62,8 @@ Documentation detaillee :
 |---|---|---|
 | Frontend | Vue 3, Vite, Pinia, PrimeVue, Tailwind | Interface utilisateur |
 | Backend | Node.js, Express, express-validator, express-rate-limit, Supabase Auth, Vitest | API metier |
-| Data Platform | Supabase self-hosted (Kong, Auth, REST, Realtime, Storage) | Auth + donnees + API |
-| Base de donnees | PostgreSQL 17 en prod (Supabase cloud), 15 en local | Stockage relationnel |
+| Data Platform | Supabase (cloud en prod, Supabase CLI 2.122.1 en local) | Auth + donnees + API |
+| Base de donnees | PostgreSQL 17 (prod et local) | Stockage relationnel |
 | Ingestion | Service `bd/ingestion` (CRON, CSV/JSON, IKEA adapter) | Import de donnees |
 | Qualite | SonarQube Community, Vitest, Cypress | Analyse qualite + tests |
 | Email dev | Mailpit | Sandbox SMTP locale |
@@ -76,7 +76,7 @@ Detail complet (roles, politiques RLS, garde de chaque route) : [`docs/security-
 
 - **Comptes :** geres uniquement par Supabase Auth (aucun hash de mot de passe stocke par l'application). Le profil est cree par un trigger avec `role = 'USER'`.
 - **Ecritures :** toute route d'ecriture exige un jeton (`requireAuth`) ; le catalogue, les partenaires et les comptes exigent en plus `ADMIN` (`requireAdmin`). Un compte bloque recoit 403.
-- **RLS :** active sur toutes les tables publiques (`bd/supabase/migrations/009_rls.sql`) : lecture publique du catalogue et des avis, `profile` / `favorite` / avis limites a leur proprietaire.
+- **RLS :** active sur toutes les tables publiques (schema : `supabase/migrations/`) : lecture publique du catalogue et des avis, `profile` / `favorite` / avis limites a leur proprietaire.
 - **Limitation de debit :** 300 requetes / 15 min / IP sur l'API, 5 generations IA / heure et 20 ecritures d'avis / heure par utilisateur. En prod, l'IP est celle vue par Cloudflare (`trust proxy 3`, voir `meubly-back/app.js`).
 - **Mot de passe oublie :** lien « Mot de passe oublie ? » sur la page de connexion, email de reinitialisation (lien valable 1 h, a ouvrir dans le meme navigateur : flux PKCE), page `/reinitialiser-mot-de-passe`, puis deconnexion de toutes les sessions. Regles : 10 caracteres minimum, une majuscule, une minuscule, un chiffre.
 - **Emails en prod :** SMTP Brevo, expediteur `no-reply@prixoli.fr`. Les modeles sont versionnes dans `bd/supabase/email-templates/` et recopies a la main dans le tableau de bord Supabase (Authentication > Emails > Templates).
@@ -93,220 +93,76 @@ Detail complet (roles, politiques RLS, garde de chaque route) : [`docs/security-
 
 ---
 
-## Configuration environnement
+## Base locale (Supabase CLI)
 
-Depuis la racine du projet :
+La base locale est la stack officielle Supabase CLI, en Postgres 17 comme la prod. Version figee : toujours `npx supabase@2.122.1`.
+
+```bash
+npx supabase@2.122.1 start      # demarre la stack (Docker Desktop requis)
+npx supabase@2.122.1 status     # URL et cles locales (cles de demo publiques)
+npx supabase@2.122.1 db reset   # recree la base : supabase/migrations + supabase/seed.sql
+npx supabase@2.122.1 stop
+```
+
+| Service | URL |
+|---|---|
+| API Supabase | `http://127.0.0.1:54321` (`http://host.docker.internal:54321` depuis un conteneur) |
+| PostgreSQL | `postgresql://postgres:postgres@127.0.0.1:54322/postgres` |
+| Studio | `http://127.0.0.1:54323` |
+| Mailpit (emails locaux) | `http://127.0.0.1:54324` |
+
+- Schema : `supabase/migrations/` (baseline tiree de la prod le 2026-11-04, puis une migration par evolution ; nouvelles migrations via `migration new <nom>`). Les anciennes migrations 001-010 sont archivees dans `bd/supabase/migrations/archive/`.
+- Donnees : `supabase/seed.sql`, synthetique (quelques meubles, IKEA et deux marchands de demo). Catalogue prod complet : `scripts/import-prod-catalog.md`.
+- Liaison au projet cloud (`login`, `link`) : a lancer dans son propre terminal (TTY requis).
+
+---
+
+## Configuration environnement
 
 ```bash
 cp .env.example .env
 ```
 
-Puis renseigner les variables importantes dans `.env` :
-- Supabase (`ANON_KEY`, `SERVICE_ROLE_KEY`, `JWT_SECRET`, etc.)
-- APIs externes (`GEMINI_API_KEY`, `REPLICATE_API_TOKEN`, `OPENROUTER_API_KEY`, `UNSPLASH_ACCESS_KEY`)
-- SonarQube (optionnel : `SONAR_PORT`, `SONAR_DB_*`)
+Renseigner `SUPABASE_PUBLIC_URL`, `ANON_KEY` et `SERVICE_ROLE_KEY` avec les valeurs de `npx supabase@2.122.1 status`, puis, au besoin, les cles API externes (`REPLICATE_API_TOKEN`, `OPENROUTER_API_KEY`, `UNSPLASH_ACCESS_KEY`). `.env` n'est jamais versionne.
 
 ---
 
 ## Demarrage rapide (sans Docker pour front/back)
 
-### 1) Backend
-
 ```bash
-cd meubly-back
-npm install
-npm run dev
+cd meubly-back && npm install && npm run dev     # http://localhost:5000
+cd meubly-front && npm install && npm run dev    # http://localhost:5173
 ```
-
-Backend disponible sur `http://localhost:5000`.
-
-### 2) Frontend
-
-```bash
-cd meubly-front
-npm install
-npm run dev
-```
-
-Frontend disponible sur `http://localhost:5173`.
 
 ---
 
-## Demarrage Docker
+## Demarrage Docker (front et back)
 
-### Profils disponibles
+La stack CLI doit tourner (`supabase start`). Compose ne contient que l'application et les outils :
 
-Le `docker-compose.yml` utilise des profils pour isoler les services optionnels :
-
-| Profil | Services activés | Commande |
+| Profil | Services | Commande |
 |---|---|---|
-| *(aucun)* | Stack Supabase + `meubly-back` + `meubly-front` | `docker compose up -d --build` |
-| `app` | Uniquement front/back en hot reload (override dev) | `docker compose --profile app -f docker-compose.yml -f docker-compose.dev.yml up -d --build` |
-| `ingestion` | + service `ingestion` (CRON IKEA/CSV) | `docker compose --profile ingestion up -d ingestion` |
-| `sonar` | + `sonarqube` + `sonarqube_db` | `docker compose --profile sonar up -d` |
-
-### Option A - Stack complete (mode "production-like")
-
-```bash
-docker compose up -d --build
-```
-
-### Option B - Mode developpement app (hot reload front/back)
-
-```bash
-docker compose --profile app -f docker-compose.yml -f docker-compose.dev.yml up -d --build
-```
-
-Ce mode utilise (`docker-compose.dev.yml`) :
-- `nodemon` pour `meubly-back`
-- `vite --host 0.0.0.0 --port 5173` pour `meubly-front`
-- `CHOKIDAR_USEPOLLING=true` pour la detection de changements sous Windows
-- bind mounts de code source pour edition en direct sans rebuild
-
-Suivre les logs en mode dev :
+| `app` | `meubly-back` + `meubly-front` en hot reload | `docker compose --profile app -f docker-compose.yml -f docker-compose.dev.yml up -d --build` |
+| `ingestion` | service `ingestion` (gele pendant la phase 2) | `docker compose --profile ingestion up -d ingestion` |
+| `sonar` | `sonarqube` + `sonarqube_db` | `docker compose --profile sonar up -d` |
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.dev.yml logs -f meubly-back
-docker compose -f docker-compose.yml -f docker-compose.dev.yml logs -f meubly-front
+docker compose -f docker-compose.yml -f docker-compose.dev.yml stop meubly-back meubly-front
 ```
 
-Arreter le mode dev :
+> Ne pas lancer `docker compose down --remove-orphans` : les conteneurs de la stack CLI portent aussi l'etiquette `meubly` et seraient supprimes.
 
-```bash
-docker compose -f docker-compose.yml -f docker-compose.dev.yml down
-```
-
-### Verifier l'etat des services
-
-```bash
-# Etat de tous les conteneurs (nom, image, ports, statut)
-docker compose ps
-
-# Sante des services Supabase (healthcheck)
-docker compose ps --format "table {{.Name}}\t{{.Status}}\t{{.Ports}}"
-```
-
-Noms de conteneurs utiles :
-
-| Conteneur | Role |
-|---|---|
-| `back` | API Express Meubly |
-| `front` | Frontend Vue 3 |
-| `supabase-db` | PostgreSQL 15 |
-| `supabase-kong` | API Gateway Supabase |
-| `supabase-auth` | GoTrue (authentification) |
-| `supabase-rest` | PostgREST (API auto) |
-| `supabase-realtime` | Websockets temps reel |
-| `supabase-storage` | Stockage de fichiers |
-| `supabase-studio` | Interface Supabase Studio |
-| `supabase-analytics` | Logflare (logs) |
-| `supabase-pooler` | Supavisor (pooler PG) |
-| `mailpit` | Sandbox SMTP locale |
-| `ingestion` | Service import donnees |
-| `sonarqube` | Analyse qualite code |
-
-### Logs par service
-
-```bash
-# Logs globaux en temps reel
-docker compose logs -f
-
-# Logs d'un service specifique
-docker compose logs -f meubly-back
-docker compose logs -f meubly-front
-docker compose logs -f db          # PostgreSQL
-docker compose logs -f kong         # API Gateway
-docker compose logs -f auth         # Authentification
-docker compose logs -f storage      # Stockage
-docker compose logs -f analytics    # Logflare
-```
-
-### Rebuild cible
-
-```bash
-# Rebuild uniquement le backend
-docker compose up -d --build meubly-back
-
-# Rebuild uniquement le frontend
-docker compose up -d --build meubly-front
-
-# Redemarrer un service sans rebuild
-docker compose restart meubly-back
-docker compose restart meubly-front
-```
-
-### Stopper / Nettoyer
-
-```bash
-# Stopper la stack (conserve les volumes et donnees)
-docker compose down
-
-# Stopper et supprimer les conteneurs orphelins
-docker compose down --remove-orphans
-
-# Reset complet : supprime volumes (DB, Storage, Analytics)
-docker compose down -v
-```
-
-### Repartir d'une base propre
-
-> **Attention :** supprime toutes les donnees locales (PostgreSQL, Storage, etc.)
-
-```bash
-docker compose down -v
-docker compose up -d --build
-```
-
-Sur base fraiche, le schema Meubly est automatiquement initialise via :
-- `bd/supabase/full_schema_model.sql` (monte dans `docker-entrypoint-initdb.d`)
-
-> Le premier demarrage peut prendre 1 a 2 minutes (init schema + migrations Supabase).
-> Surveiller la sante du service `db` : `docker compose logs -f db`
-
-### Acces shell dans un conteneur
-
-```bash
-# Shell dans le backend (Express)
-docker compose exec -it back sh
-
-# Shell PostgreSQL (psql)
-docker compose exec -it supabase-db bash
-# puis : psql -U postgres -d postgres
-
-# Shell dans Kong (debug config)
-docker compose exec -it supabase-kong sh
-```
-
-### Flux Git quotidien (pull/push)
-
-```bash
-# 1) Recuperer les dernieres modifications
-git pull
-
-# 2) Rebuild si Dockerfiles ou dependances ont change
-docker compose up -d --build
-
-# 3) Verifier l'etat des services
-docker compose ps
-
-# 4) Pousser vos changements (workflow classique)
-git checkout -b feat/<ma_feature>
-git add .
-git commit -m "feat: <description courte>"
-git push -u origin feat/<ma_feature>
-# Ouvrir une Pull Request sur GitHub
-```
+Apres un changement de dependances : `up -d --build --renew-anon-volumes meubly-back meubly-front`.
 
 ### Problemes frequents
 
 | Symptome | Cause probable | Solution |
 |---|---|---|
-| `supabase-db` ne passe pas `healthy` | Premier init lent ou schema en erreur | `docker compose logs -f db` ; attendre 2 min |
-| `kong` ne demarre pas | `analytics` pas encore healthy | Relancer : `docker compose restart kong` |
-| Port `5000` ou `5173` deja utilise | Autre processus sur le port | `docker compose down` puis verifier avec `netstat -ano` |
-| Hot reload inactif sous Windows | Polling desactive | S'assurer que `CHOKIDAR_USEPOLLING=true` est present dans le dev override |
-| `AUTH_JWT_SECRET` manquant | `.env` incomplet | Copier `.env.example` vers `.env` et renseigner les cles |
-| Image storage inaccessible | `imgproxy` pas demarree | `docker compose up -d imgproxy storage` |
+| Tests DB : "ANON_KEY / SERVICE_ROLE_KEY absentes" | `.env` racine incomplet | Recopier les valeurs de `supabase status` |
+| Le back en conteneur ne joint pas Supabase | Stack CLI arretee | `npx supabase@2.122.1 start` |
+| Port `5000` ou `5173` deja utilise | Autre processus | verifier avec `netstat -ano` |
+| Hot reload inactif sous Windows | Polling desactive | `CHOKIDAR_USEPOLLING=true` dans le dev override |
 
 ---
 
@@ -381,9 +237,9 @@ docker run --rm `
 |---|---|
 | Frontend | `http://localhost:5173` |
 | Backend API | `http://localhost:5000/api/v1` |
-| Supabase Gateway (Kong) | `http://localhost:8000` |
-| Supabase Studio | `http://localhost:3000` |
-| Mailpit UI | `http://localhost:8025` |
+| API Supabase (CLI) | `http://127.0.0.1:54321` |
+| Supabase Studio | `http://127.0.0.1:54323` |
+| Mailpit UI | `http://127.0.0.1:54324` |
 | SonarQube | `http://localhost:9000` |
 
 ---
@@ -413,14 +269,10 @@ docker compose up -d --build meubly-front
 # Redemarrer un service (sans rebuild)
 docker compose restart meubly-back
 
-# Stopper la stack (donnees conservees)
-docker compose down
+# Stopper front/back (la stack Supabase CLI se stoppe avec `npx supabase@2.122.1 stop`)
+docker compose stop meubly-back meubly-front
 
-# Nettoyer les conteneurs orphelins
-docker compose down --remove-orphans
-
-# Reset complet (supprime les volumes, donc la DB locale)
-docker compose down -v
+# Base locale propre : `npx supabase@2.122.1 db reset` (jamais `down --remove-orphans`)
 
 # Inspecter les variables d'environnement d'un service
 docker compose exec back env | sort
@@ -433,9 +285,8 @@ docker stats
 
 ## Base de donnees et SQL
 
-- Les scripts SQL sont dans `bd/supabase/`.
-- Sur base fraiche (`docker compose down -v`), le schema initial Meubly est initialise via :
-  - `bd/supabase/full_schema_model.sql`
+- Schema de reference : `supabase/migrations/` (voir "Base locale (Supabase CLI)").
+- `bd/supabase/` : modeles d'emails, anciennes migrations archivees et scripts historiques (plus utilises pour initialiser la base).
 
 ---
 

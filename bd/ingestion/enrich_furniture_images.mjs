@@ -45,7 +45,7 @@ function loadEnv() {
 loadEnv();
 
 // ── Config ────────────────────────────────────────────────────────────────────
-const SUPABASE_URL  = process.env.SUPABASE_URL || process.env.API_EXTERNAL_URL || 'http://localhost:8000';
+const SUPABASE_URL  = process.env.SUPABASE_URL || process.env.API_EXTERNAL_URL || 'http://127.0.0.1:54321';
 const SUPABASE_KEY  = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SERVICE_ROLE_KEY;
 const IKEA_API_BASE = 'https://sik.search.blue.cdtapps.com/fr/fr';
 const IKEA_PARTNER_ID = '8d2e3d7c-1f4a-4a2c-8c3f-0b9cf7f8e2a1';
