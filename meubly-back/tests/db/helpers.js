@@ -1,4 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
+import pg from "pg";
+import { assertLocalSupabase } from "./guard.js";
 
 const TEST_PASSWORD = "Test-password-123!";
 const noSession = { auth: { persistSession: false, autoRefreshToken: false } };
@@ -42,6 +44,19 @@ export async function createTestUser({ metadata = {} } = {}) {
     global: { headers: { Authorization: `Bearer ${token}` } },
   });
   return { id, email, token, client };
+}
+
+/**
+ * Connexion SQL directe a la base LOCALE (stack CLI), pour verifier le catalogue Postgres.
+ * Appelant : `await client.end()` en fin de suite.
+ * @returns {Promise<pg.Client>}
+ */
+export async function sqlClient() {
+  const url = process.env.LOCAL_DB_URL || "postgresql://postgres:postgres@127.0.0.1:54322/postgres";
+  assertLocalSupabase(url);
+  const client = new pg.Client({ connectionString: url });
+  await client.connect();
+  return client;
 }
 
 /** Supprime le compte (et par cascade profil, favoris, avis). */
