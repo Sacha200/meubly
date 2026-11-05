@@ -16,6 +16,7 @@ const providerFields = (creating) => [
   body("url").optional({ values: "null" }).isURL(HTTP_URL).withMessage("URL invalide."),
   body("logoUrl").optional({ values: "null" }).isURL(HTTP_URL).withMessage("URL invalide."),
   body("isActive").optional().isBoolean({ strict: true }),
+  body("isAffiliate").optional().isBoolean({ strict: true }),
 ];
 
 router.get("/providers", providerController.getAll);

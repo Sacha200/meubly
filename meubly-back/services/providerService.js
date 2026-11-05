@@ -4,7 +4,7 @@ import { httpError } from "../utils/httpError.js";
 /**
  * Contrat HTTP `/providers` <-> table `partner`.
  * @param {Record<string, any>} row ligne `partner`
- * @returns {{ id: string, name: string, url: string | null, logoUrl: string | null, isActive: boolean, createdAt: string | null }}
+ * @returns {{ id: string, name: string, url: string | null, logoUrl: string | null, isActive: boolean, isAffiliate: boolean, createdAt: string | null }}
  */
 export function toProviderDto(row) {
   return {
@@ -13,17 +13,19 @@ export function toProviderDto(row) {
     url: row.website_base_url ?? null,
     logoUrl: row.logo_url ?? null,
     isActive: row.is_active ?? false,
+    isAffiliate: row.is_affiliate ?? false,
     createdAt: row.created_at ?? null,
   };
 }
 
 /** Ne garde que les champs connus du DTO, traduits en colonnes `partner`. */
-function toPartnerRow({ name, url, logoUrl, isActive }) {
+function toPartnerRow({ name, url, logoUrl, isActive, isAffiliate }) {
   const row = {};
   if (name !== undefined) row.name = name;
   if (url !== undefined) row.website_base_url = url;
   if (logoUrl !== undefined) row.logo_url = logoUrl;
   if (isActive !== undefined) row.is_active = isActive;
+  if (isAffiliate !== undefined) row.is_affiliate = isAffiliate;
   return row;
 }
 
