@@ -1,0 +1,9 @@
+# Graphify : ne cartographier que le code du projet
+.claude/
+.agents/
+volumes/
+data/
+graphify-out/
+bd/catalog_data.sql
+bd/seed_cloud.sql
+docs/slide-bilan-technique.html
