@@ -54,16 +54,16 @@
 **Interfaces:**
 - Produces : commande `npx supabase@<VERSION> ...` (VERSION notee dans README et CLAUDE.md, reutilisee par toutes les taches) ; stack locale API `http://127.0.0.1:54321`, DB `postgresql://postgres:postgres@127.0.0.1:54322/postgres`, Studio :54323, Mailpit :54324 (valeurs par defaut CLI, a confirmer par `supabase status`) ; seed avec partenaire IKEA `8d2e3d7c-1f4a-4a2c-8c3f-0b9cf7f8e2a1` et au moins 2 partenaires de demo.
 
-- [ ] **Step 1: Figer la version de la CLI.** `npx supabase@latest --version` ; noter la version X.Y.Z et l'utiliser partout sous la forme `npx supabase@X.Y.Z`. Lire `--help` de `db dump`, `db pull`, `db diff`, `migration repair`, `link` pour cette version (flag `--linked` ou `--remote` selon la version).
-- [ ] **Step 2: Init.** `npx supabase@X.Y.Z init` a la racine. Dans `config.toml` : `project_id = "meubly"`, `[db] major_version = 17`, `[auth] site_url = "http://localhost:5173"`, `additional_redirect_urls = ["http://localhost:5173/**"]`, `minimum_password_length = 10`, `password_requirements = "lower_upper_letters_digits"` (aligne sur la prod, verifier les noms de cles dans le `config.toml` genere).
-- [ ] **Step 3: Lier (lecture seule).** Le proprietaire lance `! npx supabase@X.Y.Z login` puis `! npx supabase@X.Y.Z link --project-ref rlxyptqvtpdhrdpdoiwy` (mot de passe DB saisi par lui). `link` n'ecrit rien en prod.
-- [ ] **Step 4: Baseline.** `npx supabase@X.Y.Z db dump --<linked|remote> -f supabase/migrations/<ts>_baseline.sql` (schema seul, `<ts>` = horodatage UTC du jour au format `YYYYMMDDHHMMSS`). Ne PAS utiliser `db pull` ici : il ecrit l'historique distant (tache 2). Relire le fichier : pas de secret, pas de donnees.
-- [ ] **Step 5: Archiver.** `git mv` des fichiers 001 a 010 vers `bd/supabase/migrations/archive/`, avec un `README.md` de 3 lignes (pourquoi, plus rejoues, reference baseline).
-- [ ] **Step 6: Seed.** `supabase/seed.sql` : 3 categories (dont une enfant via `parent_id`), 6 meubles (2 avec dimensions), partenaire IKEA avec l'UUID de prod, 2 partenaires de demo (UUID quelconques), 1 offre IKEA par meuble et 1 a 2 offres de demo sur 3 meubles, liens `furniture_category`. Colonnes autorisees : celles de la baseline sauf `offer.is_active`. Aucun utilisateur (les tests en creent).
-- [ ] **Step 7: Reset local.** `npx supabase@X.Y.Z start` puis `npx supabase@X.Y.Z db reset`. Attendu : baseline + seed appliques sans erreur.
-- [ ] **Step 8: Diff vs prod.** `npx supabase@X.Y.Z db diff --<linked|remote> -s public,storage` (ou `--from local --to remote` selon la version). Attendu : aucune difference. Tout ecart est corrige dans la baseline (pas dans une migration) et explique dans la PR.
-- [ ] **Step 9: Procedure d'import complet.** `scripts/import-prod-catalog.md` : `db dump --data-only` des tables catalogue (`category`, `furniture`, `furniture_category`, `furniture_image`, `partner`, `offer`, `partner_product`) vers un fichier hors git (`data/` ignore, verifier `.gitignore`), puis `psql` sur `127.0.0.1:54322`. Sens prod -> local uniquement. Mentionner que `bd/ingestion/cloud_to_local.mjs` ecrit en realite vers le cloud et ne doit pas servir.
-- [ ] **Step 10: Commit.** `chore(db): supabase cli baseline from prod, seed, archive 001-010`.
+- [x] **Step 1: Figer la version de la CLI.** `npx supabase@latest --version` ; noter la version X.Y.Z et l'utiliser partout sous la forme `npx supabase@X.Y.Z`. Lire `--help` de `db dump`, `db pull`, `db diff`, `migration repair`, `link` pour cette version (flag `--linked` ou `--remote` selon la version).
+- [x] **Step 2: Init.** `npx supabase@X.Y.Z init` a la racine. Dans `config.toml` : `project_id = "meubly"`, `[db] major_version = 17`, `[auth] site_url = "http://localhost:5173"`, `additional_redirect_urls = ["http://localhost:5173/**"]`, `minimum_password_length = 10`, `password_requirements = "lower_upper_letters_digits"` (aligne sur la prod, verifier les noms de cles dans le `config.toml` genere).
+- [x] **Step 3: Lier (lecture seule).** Le proprietaire lance `! npx supabase@X.Y.Z login` puis `! npx supabase@X.Y.Z link --project-ref rlxyptqvtpdhrdpdoiwy` (mot de passe DB saisi par lui). `link` n'ecrit rien en prod.
+- [x] **Step 4: Baseline.** `npx supabase@X.Y.Z db dump --<linked|remote> -f supabase/migrations/<ts>_baseline.sql` (schema seul, `<ts>` = horodatage UTC du jour au format `YYYYMMDDHHMMSS`). Ne PAS utiliser `db pull` ici : il ecrit l'historique distant (tache 2). Relire le fichier : pas de secret, pas de donnees.
+- [x] **Step 5: Archiver.** `git mv` des fichiers 001 a 010 vers `bd/supabase/migrations/archive/`, avec un `README.md` de 3 lignes (pourquoi, plus rejoues, reference baseline).
+- [x] **Step 6: Seed.** `supabase/seed.sql` : 3 categories (dont une enfant via `parent_id`), 6 meubles (2 avec dimensions), partenaire IKEA avec l'UUID de prod, 2 partenaires de demo (UUID quelconques), 1 offre IKEA par meuble et 1 a 2 offres de demo sur 3 meubles, liens `furniture_category`. Colonnes autorisees : celles de la baseline sauf `offer.is_active`. Aucun utilisateur (les tests en creent).
+- [x] **Step 7: Reset local.** `npx supabase@X.Y.Z start` puis `npx supabase@X.Y.Z db reset`. Attendu : baseline + seed appliques sans erreur.
+- [x] **Step 8: Diff vs prod.** `npx supabase@X.Y.Z db diff --<linked|remote> -s public,storage` (ou `--from local --to remote` selon la version). Attendu : aucune difference. Tout ecart est corrige dans la baseline (pas dans une migration) et explique dans la PR.
+- [x] **Step 9: Procedure d'import complet.** `scripts/import-prod-catalog.md` : `db dump --data-only` des tables catalogue (`category`, `furniture`, `furniture_category`, `furniture_image`, `partner`, `offer`, `partner_product`) vers un fichier hors git (`data/` ignore, verifier `.gitignore`), puis `psql` sur `127.0.0.1:54322`. Sens prod -> local uniquement. Mentionner que `bd/ingestion/cloud_to_local.mjs` ecrit en realite vers le cloud et ne doit pas servir.
+- [x] **Step 10: Commit.** `chore(db): supabase cli baseline from prod, seed, archive 001-010`.
 
 ### Task 2: Stack applicative sur la CLI et tests DB
 
@@ -77,13 +77,13 @@
 - Consumes : stack CLI de la tache 1.
 - Produces : `.env` racine avec `SUPABASE_PUBLIC_URL=http://127.0.0.1:54321`, `ANON_KEY`, `SERVICE_ROLE_KEY` (valeurs de `supabase status`) ; `npm run test:db` vert sur la stack CLI.
 
-- [ ] **Step 1: Compose.** Retirer les services listes. `meubly-back` : `SUPABASE_URL: http://host.docker.internal:54321`, `extra_hosts: ["host.docker.internal:host-gateway"]`, plus de `depends_on: kong`. `meubly-front` (build args et dev) : `VITE_SUPABASE_URL: http://localhost:54321`. Garder `ingestion` et SonarQube.
-- [ ] **Step 2: env de test.** `tests/db/env.js` : valeur par defaut `http://127.0.0.1:54321` au lieu de `http://localhost:8000` ; message d'erreur qui renvoie a `npx supabase status`. `guard.js` inchange (`127.0.0.1`, `localhost`, `host.docker.internal` deja admis ; retirer `kong`).
-- [ ] **Step 3: `.env.example`.** Remplacer les variables self-hosted par `SUPABASE_PUBLIC_URL`, `ANON_KEY`, `SERVICE_ROLE_KEY` (+ cles API applicatives existantes), commentaire "valeurs : `npx supabase status`". Le proprietaire met a jour son `.env` (pause : lui demander, ne pas le faire).
-- [ ] **Step 4: Tests DB.** `cd meubly-back && npm run test:db`. Attendu : toutes les suites existantes (`favorites`, `profile`, `review`, `reviews.api`, `rls`) vertes sur la stack CLI. Le test mot de passe oublie se verifie via Mailpit :54324.
-- [ ] **Step 5: App.** `docker compose --profile app -f docker-compose.yml -f docker-compose.dev.yml up -d --build --renew-anon-volumes meubly-back meubly-front` ; `curl http://localhost:5000/api/v1/health` -> 200 ; `GET /api/v1/furnitures` renvoie les meubles du seed.
-- [ ] **Step 6: Docs.** CLAUDE.md (commandes : `npx supabase@X.Y.Z start|stop|db reset|migration new|db push`, suppression de `apply-local.sh`, piege "PG 15 local" retire, convention `supabase/migrations/<timestamp>_x.sql`), README (demarrage local), `architecture.md` (ports).
-- [ ] **Step 7: Lint/CI.** `npm run lint && npm run format:check && npm run test:run` dans `meubly-back` et `meubly-front`. Commit `chore(dev): run local stack on supabase cli`.
+- [x] **Step 1: Compose.** Retirer les services listes. `meubly-back` : `SUPABASE_URL: http://host.docker.internal:54321`, `extra_hosts: ["host.docker.internal:host-gateway"]`, plus de `depends_on: kong`. `meubly-front` (build args et dev) : `VITE_SUPABASE_URL: http://localhost:54321`. Garder `ingestion` et SonarQube.
+- [x] **Step 2: env de test.** `tests/db/env.js` : valeur par defaut `http://127.0.0.1:54321` au lieu de `http://localhost:8000` ; message d'erreur qui renvoie a `npx supabase status`. `guard.js` inchange (`127.0.0.1`, `localhost`, `host.docker.internal` deja admis ; retirer `kong`).
+- [x] **Step 3: `.env.example`.** Remplacer les variables self-hosted par `SUPABASE_PUBLIC_URL`, `ANON_KEY`, `SERVICE_ROLE_KEY` (+ cles API applicatives existantes), commentaire "valeurs : `npx supabase status`". Le proprietaire met a jour son `.env` (pause : lui demander, ne pas le faire).
+- [x] **Step 4: Tests DB.** `cd meubly-back && npm run test:db`. Attendu : toutes les suites existantes (`favorites`, `profile`, `review`, `reviews.api`, `rls`) vertes sur la stack CLI. Le test mot de passe oublie se verifie via Mailpit :54324.
+- [x] **Step 5: App.** `docker compose --profile app -f docker-compose.yml -f docker-compose.dev.yml up -d --build --renew-anon-volumes meubly-back meubly-front` ; `curl http://localhost:5000/api/v1/health` -> 200 ; `GET /api/v1/furnitures` renvoie les meubles du seed.
+- [x] **Step 6: Docs.** CLAUDE.md (commandes : `npx supabase@X.Y.Z start|stop|db reset|migration new|db push`, suppression de `apply-local.sh`, piege "PG 15 local" retire, convention `supabase/migrations/<timestamp>_x.sql`), README (demarrage local), `architecture.md` (ports).
+- [x] **Step 7: Lint/CI.** `npm run lint && npm run format:check && npm run test:run` dans `meubly-back` et `meubly-front`. Commit `chore(dev): run local stack on supabase cli`.
 
 ### Task 3: Realigner l'historique de migrations prod (ecriture prod, accord requis)
 
@@ -93,10 +93,10 @@
 - Consumes : baseline `<ts>_baseline.sql` fusionnee sur `master`.
 - Produces : `supabase migration list --<linked|remote>` montre la baseline appliquee en local ET en prod, et rien d'autre.
 
-- [ ] **Step 1: Etat avant.** `npx supabase@X.Y.Z migration list --<linked|remote>`. Attendu cote prod : 20261022194147, 20261022210811, 20261022211505, 20261022211900, 20261104123706.
-- [ ] **Step 2: Accord.** Montrer au proprietaire les deux commandes ci-dessous (elles ne touchent que la table d'historique `supabase_migrations.schema_migrations`, aucun objet du schema) et attendre son "oui".
-- [ ] **Step 3: Repair.** `migration repair --status reverted 20261022194147 20261022210811 20261022211505 20261022211900 20261104123706 --<linked|remote>` puis `migration repair --status applied <ts_baseline> --<linked|remote>`.
-- [ ] **Step 4: Verifier.** `migration list` : une seule ligne, baseline, LOCAL = REMOTE. `db push --dry-run` : "Remote database is up to date". `db diff` vide.
+- [x] **Step 1: Etat avant.** `npx supabase@X.Y.Z migration list --<linked|remote>`. Attendu cote prod : 20261022194147, 20261022210811, 20261022211505, 20261022211900, 20261104123706.
+- [x] **Step 2: Accord.** Montrer au proprietaire les deux commandes ci-dessous (elles ne touchent que la table d'historique `supabase_migrations.schema_migrations`, aucun objet du schema) et attendre son "oui".
+- [x] **Step 3: Repair.** `migration repair --status reverted 20261022194147 20261022210811 20261022211505 20261022211900 20261104123706 --<linked|remote>` puis `migration repair --status applied <ts_baseline> --<linked|remote>`.
+- [x] **Step 4: Verifier.** `migration list` : une seule ligne, baseline, LOCAL = REMOTE. `db push --dry-run` : "Remote database is up to date". `db diff` vide.
 
 ### Task 4: Extensions (`pg_trgm` deplace, `pg_graphql` retire, index trigram)
 
@@ -105,11 +105,11 @@
 **Files:**
 - Create: `supabase/migrations/<ts>_extensions_trgm_graphql.sql`, `meubly-back/tests/db/schema.db.test.js`
 
-- [ ] **Step 1: Test.** `schema.db.test.js` > "recherche par titre" : via `adminClient()`, `from("furniture").select("furniture_id").ilike("title", "%<mot d'un titre du seed>%")` renvoie >= 1 ligne et `error` null. (Garantit que la recherche du back marche apres le deplacement de l'extension.)
-- [ ] **Step 2: Migration.** `ALTER EXTENSION pg_trgm SET SCHEMA extensions` (garde : seulement si `extnamespace` = `public`) ; `DROP EXTENSION IF EXISTS pg_graphql` ; `CREATE INDEX IF NOT EXISTS furniture_title_trgm_idx ON public.furniture USING gin (title extensions.gin_trgm_ops)`.
-- [ ] **Step 3: Verifier.** `db reset` ; `npm run test:db` vert ; dans Studio local, `EXPLAIN SELECT ... WHERE title ILIKE '%x%'` cite `furniture_title_trgm_idx` (si le planner prefere un seq scan sur 6 lignes, le noter : c'est attendu sur le seed).
-- [ ] **Step 4: Commit + PR.** `chore(db): move pg_trgm to extensions, drop pg_graphql, trigram index on title`.
-- [ ] **Step 5: Prod (accord).** Apres fusion : `db push --dry-run` (cette seule migration), accord, `db push`, advisors : plus de WARN `extension_in_public` ni 0026/0027. Smoke : `GET https://<back prod>/api/v1/furnitures?q=malm` -> 200 et resultats.
+- [x] **Step 1: Test.** `schema.db.test.js` > "recherche par titre" : via `adminClient()`, `from("furniture").select("furniture_id").ilike("title", "%<mot d'un titre du seed>%")` renvoie >= 1 ligne et `error` null. (Garantit que la recherche du back marche apres le deplacement de l'extension.)
+- [x] **Step 2: Migration.** `ALTER EXTENSION pg_trgm SET SCHEMA extensions` (garde : seulement si `extnamespace` = `public`) ; `DROP EXTENSION IF EXISTS pg_graphql` ; `CREATE INDEX IF NOT EXISTS furniture_title_trgm_idx ON public.furniture USING gin (title extensions.gin_trgm_ops)`.
+- [x] **Step 3: Verifier.** `db reset` ; `npm run test:db` vert ; dans Studio local, `EXPLAIN SELECT ... WHERE title ILIKE '%x%'` cite `furniture_title_trgm_idx` (si le planner prefere un seq scan sur 6 lignes, le noter : c'est attendu sur le seed).
+- [x] **Step 4: Commit + PR.** `chore(db): move pg_trgm to extensions, drop pg_graphql, trigram index on title`.
+- [x] **Step 5: Prod (accord).** Apres fusion : `db push --dry-run` (cette seule migration), accord, `db push`, advisors : plus de WARN `extension_in_public` ni 0026/0027. Smoke : `GET https://<back prod>/api/v1/furnitures?q=malm` -> 200 et resultats.
 
 ### Task 5: Nettoyage des donnees prod (ecriture prod, accord requis)
 
@@ -121,12 +121,12 @@
 **Interfaces:**
 - Produces : le script, sans `BEGIN`/`COMMIT` (l'appelant ouvre la transaction), executable plusieurs fois sans effet supplementaire, avec `RAISE EXCEPTION` si une paire (meuble, partenaire) reste en double.
 
-- [ ] **Step 1: Test.** `cleanup.db.test.js` (sur le seed) : connexion `pg` locale (`postgresql://postgres:postgres@127.0.0.1:54322/postgres` ; ajouter `pg` en devDependency du back), `BEGIN`, execution du fichier, assertions, seconde execution (aucune erreur, memes comptes), `ROLLBACK` : le seed reste intact. Assertions : 0 offre hors IKEA `8d2e3d7c-...`, 0 partenaire hors IKEA, les meubles du seed qui n'avaient que des offres de demo ont disparu, `cached_min_price`/`cached_nb_offers` = min/count des offres IKEA actives. Second cas : inserer dans la transaction une paire IKEA en double -> le script leve une erreur.
-- [ ] **Step 2: Script.** Ordre spec 6.2 : (1) supprimer offres non IKEA ; (2) supprimer meubles sans aucune offre QUI avaient des offres de demo (capturer leurs ids dans une table temporaire AVANT l'etape 1, pour ne pas toucher le meuble deja sans offre, spec 6.2-6), en supprimant d'abord leurs `furniture_category`, `furniture_image`, `partner_product`, `favorite`, `review` ; (3) supprimer `partner_product` puis partenaires hors IKEA ; (4) controle doublons -> `RAISE EXCEPTION` ; (5) recalcul des caches sur offres `is_active = true` (la colonne existe encore a ce stade) ; `RAISE NOTICE` des comptes avant/apres.
-- [ ] **Step 3: Verifier local.** `npm run test:db` vert ; comptes du seed inchanges apres la suite.
-- [ ] **Step 4: Commit + PR.** `chore(db): one-off script removing demo offers and partners`.
-- [ ] **Step 5: Filet prod.** Le proprietaire lance `! npx supabase@X.Y.Z db dump --<linked|remote> --data-only -f data/prod-backup-2026-11-phase2.sql` (hors git, verifier `.gitignore` sur `data/`).
-- [ ] **Step 6: Prod (accord).** Comptes avant via MCP `execute_sql` en lecture (attendus : 140 offres hors IKEA, 15 partenaires hors IKEA, 19 meubles demo-seuls, 0 favori/avis dessus). Accord. Execution via `execute_sql` du contenu `BEGIN; <script> COMMIT;`. Comptes apres : 7 897 offres, 1 partenaire, 7 898 meubles, 0 doublon, caches coherents (requete de controle du step 1). Signaler au proprietaire le meuble restant sans offre.
+- [x] **Step 1: Test.** `cleanup.db.test.js` (sur le seed) : connexion `pg` locale (`postgresql://postgres:postgres@127.0.0.1:54322/postgres` ; ajouter `pg` en devDependency du back), `BEGIN`, execution du fichier, assertions, seconde execution (aucune erreur, memes comptes), `ROLLBACK` : le seed reste intact. Assertions : 0 offre hors IKEA `8d2e3d7c-...`, 0 partenaire hors IKEA, les meubles du seed qui n'avaient que des offres de demo ont disparu, `cached_min_price`/`cached_nb_offers` = min/count des offres IKEA actives. Second cas : inserer dans la transaction une paire IKEA en double -> le script leve une erreur.
+- [x] **Step 2: Script.** Ordre spec 6.2 : (1) supprimer offres non IKEA ; (2) supprimer meubles sans aucune offre QUI avaient des offres de demo (capturer leurs ids dans une table temporaire AVANT l'etape 1, pour ne pas toucher le meuble deja sans offre, spec 6.2-6), en supprimant d'abord leurs `furniture_category`, `furniture_image`, `partner_product`, `favorite`, `review` ; (3) supprimer `partner_product` puis partenaires hors IKEA ; (4) controle doublons -> `RAISE EXCEPTION` ; (5) recalcul des caches sur offres `is_active = true` (la colonne existe encore a ce stade) ; `RAISE NOTICE` des comptes avant/apres.
+- [x] **Step 3: Verifier local.** `npm run test:db` vert ; comptes du seed inchanges apres la suite.
+- [x] **Step 4: Commit + PR.** `chore(db): one-off script removing demo offers and partners`.
+- [x] **Step 5: Filet prod.** Le proprietaire lance `! npx supabase@X.Y.Z db dump --<linked|remote> --data-only -f data/prod-backup-2026-11-phase2.sql` (hors git, verifier `.gitignore` sur `data/`).
+- [x] **Step 6: Prod (accord).** Comptes avant via MCP `execute_sql` en lecture (attendus : 140 offres hors IKEA, 15 partenaires hors IKEA, 19 meubles demo-seuls, 0 favori/avis dessus). Accord. Execution via `execute_sql` du contenu `BEGIN; <script> COMMIT;`. Comptes apres : 7 897 offres, 1 partenaire, 7 898 meubles, 0 doublon, caches coherents (requete de controle du step 1). Signaler au proprietaire le meuble restant sans offre.
 
 ### Task 6: Offre, phase "etendre"
 
@@ -139,17 +139,17 @@
 **Interfaces:**
 - Produces : enums `public.offer_status('active','stale','removed')`, `public.offer_availability('in_stock','out_of_stock','unknown')`, `public.delivery_mode('parcel','curbside','room_of_choice','installed','unknown')`, `public.offer_condition('new','used','refurbished')` ; colonnes et contraintes du tableau spec 6.3 ; `status` initialise depuis `is_active` ; politique `offer_read_active`. `is_active` reste (tache 10).
 
-- [ ] **Step 1: Verif typage.** Lecture prod : `select count(*) from offer where price <> round(price, 2)`. Si 0, `numeric(10,2)` ; sinon garder `numeric` et le noter dans la PR.
-- [ ] **Step 2: Tests.** `offer.db.test.js` (service role, nettoyage en `afterAll`) :
+- [x] **Step 1: Verif typage.** Lecture prod : `select count(*) from offer where price <> round(price, 2)`. Si 0, `numeric(10,2)` ; sinon garder `numeric` et le noter dans la PR.
+- [x] **Step 2: Tests.** `offer.db.test.js` (service role, nettoyage en `afterAll`) :
   - `total_price` = `price + shipping_cost` ; NULL quand `shipping_cost` NULL.
   - refus (erreur) : `price = -1`, `shipping_cost = -1`, `eco_fee > price`, `delivery_min_days = 5` et `max = 2`, `return_days = -1`, `furniture_id` NULL.
   - defauts : `status = 'active'`, `availability = 'unknown'`, `delivery_mode = 'unknown'`, `condition = 'new'`, `last_seen_at` et `created_at` non NULL.
   - unicite (Review Focus 2) : deux offres meme `(furniture_id, partner_id)`, `seller_name` NULL, `condition 'new'` -> la seconde echoue ; meme chose avec `condition 'used'` -> acceptee ; `seller_name 'X'` -> acceptee.
   - `rls.db.test.js` : anon voit une offre `active`, ne voit pas une offre `stale` ni `removed`.
-- [ ] **Step 3: Lancer.** `npm run test:db` -> echec (colonnes absentes).
-- [ ] **Step 4: Migration.** Enums gardes (`DO $$ ... EXCEPTION WHEN duplicate_object`), colonnes `ADD COLUMN IF NOT EXISTS`, `UPDATE offer SET status = CASE WHEN is_active THEN 'active' ELSE 'removed' END, last_seen_at = coalesce(updated_at, now())`, `furniture_id`/`partner_id` NOT NULL, CHECK nommes `offer_*_check`, `ALTER COLUMN price TYPE numeric(10,2)` selon step 1, `offer_unique_listing UNIQUE NULLS NOT DISTINCT (furniture_id, partner_id, seller_name, condition)`, index `offer_partner_id_idx`, remplacement de `catalog_read` par `offer_read_active` sur `offer` (`USING (status = 'active')`, anon + authenticated), `COMMENT ON COLUMN` pour `price` (TTC euros, eco-participation comprise) et `total_price`.
-- [ ] **Step 5: Lancer.** `db reset` puis `npm run test:db` -> vert. `npm run test:run` back -> vert (le back lit encore `is_active`, toujours present).
-- [ ] **Step 6: Commit + PR.** `feat(db): enrich offer (status, shipping, delivery, condition, seller)`.
+- [x] **Step 3: Lancer.** `npm run test:db` -> echec (colonnes absentes).
+- [x] **Step 4: Migration.** Enums gardes (`DO $$ ... EXCEPTION WHEN duplicate_object`), colonnes `ADD COLUMN IF NOT EXISTS`, `UPDATE offer SET status = CASE WHEN is_active THEN 'active' ELSE 'removed' END, last_seen_at = coalesce(updated_at, now())`, `furniture_id`/`partner_id` NOT NULL, CHECK nommes `offer_*_check`, `ALTER COLUMN price TYPE numeric(10,2)` selon step 1, `offer_unique_listing UNIQUE NULLS NOT DISTINCT (furniture_id, partner_id, seller_name, condition)`, index `offer_partner_id_idx`, remplacement de `catalog_read` par `offer_read_active` sur `offer` (`USING (status = 'active')`, anon + authenticated), `COMMENT ON COLUMN` pour `price` (TTC euros, eco-participation comprise) et `total_price`.
+- [x] **Step 5: Lancer.** `db reset` puis `npm run test:db` -> vert. `npm run test:run` back -> vert (le back lit encore `is_active`, toujours present).
+- [x] **Step 6: Commit + PR.** `feat(db): enrich offer (status, shipping, delivery, condition, seller)`.
 - [ ] **Step 7: Prod (accord).** `db push --dry-run`, accord, `db push`, advisors (pas de FK non indexee sur `offer`). Smoke : `GET /api/v1/furnitures/<id>/offers` prod -> 200.
 
 ### Task 7: Colonnes meuble et partenaire
