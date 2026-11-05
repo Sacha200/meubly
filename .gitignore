@@ -3,6 +3,7 @@
 !**/README.md
 !CLAUDE.md
 !docs/**/*.md
+!scripts/*.md
 !.claude/**/*.md
 
 # Env files (local secrets)
@@ -11,6 +12,8 @@
 
 # Local Supabase volumes
 volumes/db/data/
+# Dumps prod (sauvegardes, import local du catalogue) : jamais versionnes
+data/
 volumes/storage/
 volumes/snippets/
 volumes/functions/
