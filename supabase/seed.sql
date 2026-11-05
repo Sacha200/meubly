@@ -47,3 +47,18 @@ INSERT INTO public.offer (furniture_id, partner_id, external_title, url_website,
   ('f0000000-0000-4000-8000-000000000001', 'd0000000-0000-4000-8000-000000000002', 'KIVIK 3 places gris', 'https://demo-deco.example/kivik', 579),
   ('f0000000-0000-4000-8000-000000000002', 'd0000000-0000-4000-8000-000000000001', 'FRIHETEN angle convertible', 'https://demo-meubles.example/friheten', 479),
   ('f0000000-0000-4000-8000-000000000003', 'd0000000-0000-4000-8000-000000000002', 'Lit MALM blanc', 'https://demo-deco.example/malm', 259);
+
+-- Conditions d'achat sur les offres KIVIK, pour comparer autre chose que le prix.
+UPDATE public.offer SET shipping_cost = 49, eco_fee = 6.5, availability = 'in_stock',
+  delivery_min_days = 7, delivery_max_days = 14, delivery_mode = 'room_of_choice',
+  assembly_included = false, return_days = 365
+WHERE furniture_id = 'f0000000-0000-4000-8000-000000000001'
+  AND partner_id = '8d2e3d7c-1f4a-4a2c-8c3f-0b9cf7f8e2a1';
+UPDATE public.offer SET shipping_cost = 0, availability = 'in_stock',
+  delivery_min_days = 3, delivery_max_days = 5, delivery_mode = 'curbside', return_days = 30
+WHERE furniture_id = 'f0000000-0000-4000-8000-000000000001'
+  AND partner_id = 'd0000000-0000-4000-8000-000000000001';
+UPDATE public.offer SET availability = 'out_of_stock', condition = 'refurbished',
+  seller_name = 'Atelier Demo'
+WHERE furniture_id = 'f0000000-0000-4000-8000-000000000001'
+  AND partner_id = 'd0000000-0000-4000-8000-000000000002';

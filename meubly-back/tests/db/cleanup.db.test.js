@@ -83,6 +83,9 @@ describe("nettoyage des donnees de demo (base locale, transaction annulee)", () 
 
   it("s'arrete si une paire (meuble, partenaire) reste en double", async () => {
     await inRollback(sql, async () => {
+      // La base refuse desormais ce doublon (offer_unique_listing) : on retire la contrainte
+      // le temps de la transaction pour verifier le garde-fou du script.
+      await sql.query("alter table public.offer drop constraint if exists offer_unique_listing");
       await sql.query(
         "insert into public.offer (furniture_id, partner_id, url_website, price) values ('f0000000-0000-4000-8000-000000000001', $1, 'https://www.ikea.com/dup', 1)",
         [IKEA]
