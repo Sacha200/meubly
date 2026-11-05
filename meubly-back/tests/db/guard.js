@@ -1,4 +1,4 @@
-const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "kong", "host.docker.internal"]);
+const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "host.docker.internal"]);
 
 /**
  * Empeche les tests DB (qui creent des utilisateurs) de viser une base distante.

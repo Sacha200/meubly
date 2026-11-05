@@ -2,7 +2,7 @@ import axios from "axios";
 import { httpError } from "./httpError.js";
 
 export const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
-const LOCAL_HOSTS = new Set(["localhost", "kong"]);
+const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "host.docker.internal"]);
 
 /**
  * Developpement local explicite (`NODE_ENV=development`, pose par docker-compose.dev.yml).

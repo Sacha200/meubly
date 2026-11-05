@@ -68,9 +68,9 @@ export const aiController = {
       // Non bloquant : sans bucket, l'upload echoue et on renvoie l'URL Replicate (repli plus bas).
       await ensureBucketOnce().catch((err) => console.error(err.message));
 
-      // 1. Image source (en Docker local, Storage est joignable via kong et non localhost)
+      // 1. Image source (en Docker local, la stack Supabase CLI est joignable via host.docker.internal)
       const sourceUrl = isLocalDev()
-        ? furniture.cover_url.replace("://localhost", "://kong")
+        ? furniture.cover_url.replace(/:\/\/(localhost|127\.0\.0\.1):/, "://host.docker.internal:")
         : furniture.cover_url;
       const originalBuffer = await fetchAllowedImage(sourceUrl, {
         allowedHosts: getAllowedImageHosts(),
@@ -134,9 +134,12 @@ export const aiController = {
         return res.status(200).json({ url: generatedUrl, prompt, source: "replicate_direct" });
       }
 
-      // 8. Get permanent public URL from Supabase (kong -> localhost pour le navigateur en local)
+      // 8. Get permanent public URL from Supabase (host.docker.internal -> localhost pour le navigateur)
       const { data: publicUrlData } = supabase.storage.from(BUCKET_NAME).getPublicUrl(filename);
-      const publicUrl = publicUrlData.publicUrl.replace("http://kong:", "http://localhost:");
+      const publicUrl = publicUrlData.publicUrl.replace(
+        "http://host.docker.internal:",
+        "http://localhost:"
+      );
 
       return res.status(200).json({ url: publicUrl, prompt, source: "supabase" });
     } catch (error) {
