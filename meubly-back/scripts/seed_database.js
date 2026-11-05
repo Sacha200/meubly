@@ -13,7 +13,7 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 // Compat env:
-// - supabase-js attends l'URL du projet (Kong en local): http://localhost:8000
+// - supabase-js attends l'URL du projet (stack CLI en local): http://127.0.0.1:54321
 // - clés: SERVICE_ROLE_KEY (stack supabase) ou SUPABASE_SERVICE_ROLE_KEY (naming app)
 const supabaseUrl =
   process.env.SUPABASE_URL || process.env.SUPABASE_PUBLIC_URL || process.env.API_EXTERNAL_URL;

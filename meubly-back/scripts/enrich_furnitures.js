@@ -14,7 +14,7 @@ dotenv.config();
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
-const SUPABASE_URL = process.env.SUPABASE_URL || "http://localhost:8000";
+const SUPABASE_URL = process.env.SUPABASE_URL || "http://127.0.0.1:54321";
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 

@@ -9,14 +9,10 @@
 # Env files (local secrets)
 .env
 .env.*
+!.env.example
 
-# Local Supabase volumes
-volumes/db/data/
 # Dumps prod (sauvegardes, import local du catalogue) : jamais versionnes
 data/
-volumes/storage/
-volumes/snippets/
-volumes/functions/
 
 # Node dependencies
 node_modules/
