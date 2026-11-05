@@ -48,6 +48,23 @@ describe("table review (base locale)", () => {
     expect((await insert({ rating: 2 })).error?.code).toBe("23505");
   });
 
+  it("met a jour updated_at a la modification, sans que le client l'envoie", async () => {
+    const before = await admin
+      .from("review")
+      .select("review_id, created_at, updated_at")
+      .eq("user_id", user.id)
+      .single();
+    const { data, error } = await admin
+      .from("review")
+      .update({ rating: 5 })
+      .eq("review_id", before.data.review_id)
+      .select("created_at, updated_at")
+      .single();
+    expect(error).toBeNull();
+    expect(Date.parse(data.updated_at)).toBeGreaterThan(Date.parse(before.data.updated_at));
+    expect(Date.parse(data.updated_at)).toBeGreaterThanOrEqual(Date.parse(data.created_at));
+  });
+
   it("supprime les avis avec le compte", async () => {
     await deleteTestUser(user.id);
     const { data } = await admin.from("review").select("review_id").eq("user_id", user.id);

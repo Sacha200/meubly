@@ -108,6 +108,10 @@ describe("API des avis", () => {
     const second = await post({ rating: 5 });
     expect(second.status).toBe(200);
     expect(second.body.action).toBe("updated");
+
+    // updated_at est pose par le trigger de la base, pas par l'horloge du back
+    expect(reviewRepository.create.mock.calls[0][0]).not.toHaveProperty("updated_at");
+    expect(reviewRepository.update.mock.calls[0][1]).toEqual({ rating: 5, comment: null });
   });
 
   it("met a jour si un avis concurrent est cree entre la lecture et l'insertion", async () => {

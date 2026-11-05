@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { adminClient, sqlClient } from "./helpers.js";
+import { adminClient, createTestUser, deleteTestUser, sqlClient } from "./helpers.js";
 
 describe("schema (base locale)", () => {
   let sql;
@@ -119,6 +119,41 @@ describe("schema (base locale)", () => {
         [`public.${table}`, column]
       );
       expect(rowCount).toBeGreaterThan(0);
+    });
+  });
+
+  describe("clics sortants", () => {
+    it("accepte un clic anonyme et anonymise les clics d'un compte supprime", async () => {
+      const admin = adminClient();
+      const { data: offer } = await admin.from("offer").select("offer_id").limit(1).single();
+      const user = await createTestUser();
+      try {
+        const { data, error } = await admin
+          .from("click_out")
+          .insert([{ offer_id: offer.offer_id }, { offer_id: offer.offer_id, user_id: user.id }])
+          .select("click_out_id, user_id");
+        expect(error).toBeNull();
+        expect(data.map((row) => row.user_id)).toEqual([null, user.id]);
+
+        await deleteTestUser(user.id);
+        const { data: after } = await admin
+          .from("click_out")
+          .select("user_id")
+          .in(
+            "click_out_id",
+            data.map((row) => row.click_out_id)
+          );
+        expect(after).toEqual([{ user_id: null }, { user_id: null }]);
+        await admin
+          .from("click_out")
+          .delete()
+          .in(
+            "click_out_id",
+            data.map((row) => row.click_out_id)
+          );
+      } finally {
+        await deleteTestUser(user.id).catch(() => {});
+      }
     });
   });
 

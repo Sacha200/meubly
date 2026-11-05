@@ -97,7 +97,8 @@ export const reviewService = {
   /** Un avis par utilisateur et par meuble : re-soumettre met a jour l'existant. */
   async upsertReview({ furnitureId, userId, rating, comment }) {
     await assertFurnitureExists(furnitureId);
-    const fields = { rating, comment: comment || null, updated_at: new Date().toISOString() };
+    // updated_at : pose par le trigger review_set_updated_at
+    const fields = { rating, comment: comment || null };
     const existing = await reviewRepository.findByFurnitureAndUser(furnitureId, userId);
     if (existing) {
       const review = await reviewRepository.update(existing.review_id, fields);

@@ -22,7 +22,9 @@ Aucun chemin applicatif (UI ou API) ne permet d'attribuer `ADMIN`. Le trigger `h
 
 | Ressource | anon | USER | ADMIN (via API) |
 |---|---|---|---|
-| Catalogue : `furniture`, `offer`, `category`, `partner`, `furniture_image`, `furniture_category`, `partner_product` | lire | lire | lire + ecrire |
+| Catalogue : `furniture`, `offer`, `category`, `partner`, `furniture_image`, `furniture_category`, `partner_product` | lire (offres actives seulement) | lire (offres actives seulement) | lire + ecrire |
+| `price_history` | lire (offres actives) | lire (offres actives) | - (ecrit par trigger) |
+| `click_out`, `ingestion_run` | - | - | - (back en service role uniquement) |
 | `profile` | - | lire le sien | lister, consulter |
 | `favorite` | - | lire / ajouter / retirer les siens | - |
 | `review` | lire | lire ; creer / modifier / supprimer le sien | supprimer n'importe quel avis |
@@ -35,7 +37,10 @@ Un compte bloque (`banned_until` dans le futur) recoit 403 sur toute route authe
 
 | Table | Politique | Operation | Roles | Condition |
 |---|---|---|---|---|
-| 7 tables catalogue | `catalog_read` | SELECT | anon, authenticated | `true` |
+| 6 tables catalogue (hors `offer`) | `catalog_read` | SELECT | anon, authenticated | `true` |
+| `offer` | `offer_read_active` (phase 2) | SELECT | anon, authenticated | `status = 'active'` |
+| `price_history` | `price_history_read_active` (phase 2) | SELECT | anon, authenticated | l'offre liee est `active` |
+| `click_out`, `ingestion_run` | aucune (RLS active, droits retires) | - | - | lecture et ecriture par le back seulement |
 | `profile` | `profile_read_own` | SELECT | authenticated | `user_id = auth.uid()` |
 | `favorite` | `favorite_read_own` / `favorite_insert_own` / `favorite_delete_own` | SELECT / INSERT / DELETE | authenticated | `user_id = auth.uid()` |
 | `review` | `review_read` | SELECT | anon, authenticated | `true` |

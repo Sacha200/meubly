@@ -169,7 +169,7 @@
 - [x] **Step 4: Migration + code.** Migration selon Interfaces. `partnerRepository` COLUMNS + `is_affiliate` ; `providerService` mappe `isAffiliate <-> is_affiliate` comme `isActive`.
 - [x] **Step 5: Lancer.** `db reset`, `npm run test:db`, `npm run test:run`, lint -> verts.
 - [x] **Step 6: Commit + PR.** `feat(db): furniture identifiers and attributes, partner is_affiliate`.
-- [ ] **Step 7: Prod (accord).** Migration poussee AVANT ou AVEC le deploiement du back (le back lit `is_affiliate`) : `db push` d'abord, puis fusion de la PR. Advisors.
+- [x] **Step 7: Prod (accord).** Migration poussee AVANT ou AVEC le deploiement du back (le back lit `is_affiliate`) : `db push` d'abord, puis fusion de la PR. Advisors.
 
 ### Task 8: Horodatages, historique de prix, caches, tables de suivi
 
@@ -182,19 +182,19 @@
 **Interfaces:**
 - Produces : `public.set_updated_at() returns trigger` (triggers `BEFORE UPDATE` sur `offer`, `partner_product`, `review`) ; `public.record_price_history() returns trigger` ; `public.refresh_furniture_offer_cache() returns trigger` ; tables `price_history`, `click_out`, `ingestion_run` et enum `public.ingestion_status('running','succeeded','failed','partial')` exactement comme spec 6.7.
 
-- [ ] **Step 1: Tests.**
+- [x] **Step 1: Tests.**
   - `review.db.test.js` : modifier un avis sans envoyer `updated_at` -> `updated_at >= created_at` et > ancienne valeur.
   - `reviews.test.js` (unitaire) : `upsertReview` n'envoie plus `updated_at` au repository.
   - `priceHistory.db.test.js` : insertion d'offre -> 1 ligne d'historique (prix, frais) ; update du prix -> 2 lignes ; update de `last_seen_at` seul -> toujours 2 (Review Focus 3) ; update de `shipping_cost` -> 3 ; suppression de l'offre -> historique supprime (cascade).
   - meme fichier, caches : meuble avec offres actives 100 et 80 -> `cached_min_price = 80`, `cached_nb_offers = 2` ; passer 80 en `removed` -> 100 / 1 ; supprimer la derniere -> NULL / 0 (Review Focus 4) ; deplacer une offre vers un autre meuble (`UPDATE furniture_id`) -> les deux meubles recalcules.
   - `rls.db.test.js` : anon lit l'historique d'une offre `active`, 0 ligne pour une offre `removed` (Review Focus 5) ; anon et authenticated : 0 ligne et ecriture refusee sur `click_out` et `ingestion_run` ; ecriture anon refusee sur `price_history`.
   - `schema.db.test.js` : `click_out` accepte `user_id` NULL ; suppression du compte -> `user_id` passe a NULL (helpers `createTestUser`/`deleteTestUser`).
-- [ ] **Step 2: Lancer** -> echecs attendus.
-- [ ] **Step 3: Migration `updated_at_triggers`** + retrait de `updated_at` dans `reviewService.upsertReview` (`fields = { rating, comment }`).
-- [ ] **Step 4: Migration `price_history_and_cache`.** Table + index `(offer_id, observed_at DESC)` + RLS (`price_history_read_active` : `EXISTS (SELECT 1 FROM public.offer o WHERE o.offer_id = price_history.offer_id AND o.status = 'active')`) ; trigger `AFTER INSERT OR UPDATE OF price, shipping_cost` avec garde `IS DISTINCT FROM` ; trigger cache `AFTER INSERT OR UPDATE OR DELETE` (recalcule `OLD.furniture_id` et `NEW.furniture_id`) ; backfill : 1 ligne par offre existante (`observed_at = coalesce(updated_at, now())`) garde par `WHERE NOT EXISTS` ; recalcul initial des caches sur `status = 'active'`.
-- [ ] **Step 5: Migration `click_out_ingestion_run`.** Tables, index, RLS activee sans politique, `REVOKE ALL ... FROM anon, authenticated`.
-- [ ] **Step 6: Lancer.** `db reset`, `npm run test:db`, `npm run test:run`, lint -> verts.
-- [ ] **Step 7: Commit + PR.** `feat(db): price history, offer cache triggers, click_out, ingestion_run`.
+- [x] **Step 2: Lancer** -> echecs attendus.
+- [x] **Step 3: Migration `updated_at_triggers`** + retrait de `updated_at` dans `reviewService.upsertReview` (`fields = { rating, comment }`).
+- [x] **Step 4: Migration `price_history_and_cache`.** Table + index `(offer_id, observed_at DESC)` + RLS (`price_history_read_active` : `EXISTS (SELECT 1 FROM public.offer o WHERE o.offer_id = price_history.offer_id AND o.status = 'active')`) ; trigger `AFTER INSERT OR UPDATE OF price, shipping_cost` avec garde `IS DISTINCT FROM` ; trigger cache `AFTER INSERT OR UPDATE OR DELETE` (recalcule `OLD.furniture_id` et `NEW.furniture_id`) ; backfill : 1 ligne par offre existante (`observed_at = coalesce(updated_at, now())`) garde par `WHERE NOT EXISTS` ; recalcul initial des caches sur `status = 'active'`.
+- [x] **Step 5: Migration `click_out_ingestion_run`.** Tables, index, RLS activee sans politique, `REVOKE ALL ... FROM anon, authenticated`.
+- [x] **Step 6: Lancer.** `db reset`, `npm run test:db`, `npm run test:run`, lint -> verts.
+- [x] **Step 7: Commit + PR.** `feat(db): price history, offer cache triggers, click_out, ingestion_run`.
 - [ ] **Step 8: Prod (accord).** `db push --dry-run` (3 migrations, ordre), accord, `db push`, puis fusion (le retrait de `updated_at` cote back est compatible avec ou sans trigger). Controles lecture : `count(price_history) = count(offer)`, 0 ecart de cache. Advisors : 0 FK non indexee.
 
 ### Task 9: Back sur le nouveau statut d'offre
