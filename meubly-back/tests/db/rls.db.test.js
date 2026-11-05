@@ -27,6 +27,7 @@ describe("RLS (base locale)", () => {
     // Si une ecriture "interdite" a reussi (test rouge), ne pas laisser de trace.
     await admin.from("category").delete().eq("label", "rls-pirate");
     await admin.from("furniture").delete().eq("title", "rls-pirate");
+    await admin.from("offer").delete().like("seller_name", "rls-%");
   });
 
   describe("visiteur (anon)", () => {
@@ -35,6 +36,24 @@ describe("RLS (base locale)", () => {
       expect(furniture.error).toBeNull();
       expect(furniture.data.length).toBe(1);
       expect((await anon.from("review").select("review_id").limit(1)).error).toBeNull();
+    });
+
+    it("ne voit que les offres actives", async () => {
+      const statuses = ["active", "stale", "removed"];
+      const { error } = await admin.from("offer").insert(
+        statuses.map((status) => ({
+          furniture_id: furnitureId,
+          partner_id: "8d2e3d7c-1f4a-4a2c-8c3f-0b9cf7f8e2a1",
+          url_website: "https://www.ikea.com/rls",
+          price: 1,
+          status,
+          seller_name: `rls-${status}`,
+        }))
+      );
+      expect(error).toBeNull();
+
+      const { data } = await anon.from("offer").select("seller_name").like("seller_name", "rls-%");
+      expect(data).toEqual([{ seller_name: "rls-active" }]);
     });
 
     it("ne lit aucun profil", async () => {
