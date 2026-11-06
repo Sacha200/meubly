@@ -211,7 +211,7 @@
 - [x] **Step 2: Lancer** -> echec.
 - [x] **Step 3: Code.** `offerRepository.findByFurnitureId` selon Interfaces. Verifier le front : `grep -rn "is_active\|price" meubly-front/src/components/Detail` ; aucun changement attendu (champs ajoutes seulement) ; `npm run build` front vert.
 - [x] **Step 4: Lancer.** `npm run test:run`, `npm run test:db`, lint -> verts. `grep -rn "is_active" meubly-back --include=*.js | grep -v node_modules` -> seulement `partner` (`partnerRepository`, `providerService`).
-- [ ] **Step 5: Commit + PR**, fusion par le proprietaire, deploiement Render. Smoke prod : `GET /api/v1/furnitures/<id>/offers` -> 200 avec `total_price`.
+- [x] **Step 5: Commit + PR**, fusion par le proprietaire, deploiement Render. Smoke prod : `GET /api/v1/furnitures/<id>/offers` -> 200 avec `total_price`.
 
 ### Task 10: Offre, phase "contracter"
 
@@ -221,9 +221,9 @@
 - Create: `supabase/migrations/<ts>_offer_contract.sql`
 - Modify: `meubly-back/tests/db/schema.db.test.js`
 
-- [ ] **Step 1: Test.** `from("offer").select("is_active")` -> `error` non null.
-- [ ] **Step 2: Migration.** `ALTER TABLE public.offer DROP COLUMN IF EXISTS is_active`.
-- [ ] **Step 3: Lancer.** `db reset`, `npm run test:db`, `npm run test:run` -> verts.
+- [x] **Step 1: Test.** `from("offer").select("is_active")` -> `error` non null.
+- [x] **Step 2: Migration.** `ALTER TABLE public.offer DROP COLUMN IF EXISTS is_active`.
+- [x] **Step 3: Lancer.** `db reset`, `npm run test:db`, `npm run test:run` -> verts.
 - [ ] **Step 4: Commit + PR**, puis prod (accord) : `db push --dry-run`, `db push`, smoke `GET /furnitures/<id>/offers` 200, advisors.
 
 ### Task 11: Documentation et cloture

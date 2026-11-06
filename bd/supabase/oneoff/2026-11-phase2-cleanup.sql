@@ -1,3 +1,6 @@
+-- ARCHIVE : execute une seule fois en prod le 2026-11-05 (phase 2, tache 5). Ne plus rejouer :
+-- il lit offer.is_active, supprimee par la migration 20261106000741_offer_contract.sql.
+--
 -- One-off phase 2 (spec 6.2) : retire les donnees de demo de la PROD.
 -- Seules les offres du partenaire IKEA 8d2e3d7c-... sont reelles. Supprime : toutes les autres
 -- offres, les meubles qui n'existaient qu'a travers elles, tous les autres partenaires et leurs

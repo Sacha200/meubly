@@ -122,6 +122,11 @@ describe("schema (base locale)", () => {
     });
   });
 
+  it("n'a plus offer.is_active (remplace par status)", async () => {
+    const { error } = await adminClient().from("offer").select("is_active").limit(1);
+    expect(error).not.toBeNull();
+  });
+
   describe("clics sortants", () => {
     it("accepte un clic anonyme et anonymise les clics d'un compte supprime", async () => {
       const admin = adminClient();
