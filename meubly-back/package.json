@@ -12,12 +12,10 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "seed": "node scripts/seed_database.js",
     "enrich": "node scripts/enrich_furnitures.js",
     "enrich:force": "node scripts/enrich_furnitures.js --force",
     "fix:images": "node scripts/fix_furniture_images.js",
     "fix:images:dry": "node scripts/fix_furniture_images.js --dry-run",
-    "import:external": "node scripts/import_external_furniture.js",
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest --coverage",
