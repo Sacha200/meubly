@@ -5,7 +5,7 @@
 Meubly repose sur une architecture **web full-stack** composée de :
 - un **frontend Vue 3** (`meubly-front`) ;
 - un **backend Express.js** (`meubly-back`) ;
-- une stack **Supabase self-hosted** (API Gateway, Auth, REST, Realtime, Storage, DB, etc.) ;
+- **Supabase** (Auth, REST, Realtime, Storage, PostgreSQL 17) : stack CLI en local (`supabase start`), projet cloud en prod ; schema decrit dans `docs/diagrams/data-model.md` ;
 - des **services externes IA/media** (Gemini, Replicate, Unsplash, OpenRouter) ;
 - des briques **ops/qualité** (SonarQube, Mailpit) ;
 - un service d'**ingestion batch** optionnel.

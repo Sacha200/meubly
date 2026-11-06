@@ -68,9 +68,12 @@ Couches strictes : `routes/v1/*` -> `controllers/*` -> `services/*` -> `reposito
 
 ## Base de donnees
 
-Tables (snake_case, `public`) : `profile`, `category` (hierarchique `parent_id`), `furniture`, `furniture_category`, `furniture_image`, `partner`, `offer`, `partner_product`, `favorite`, `review`. RLS active sur toutes ; `profile.user_id` -> FK `auth.users`, profil cree par le trigger `handle_new_user`.
+Tables (snake_case, `public`) : `profile`, `category` (hierarchique `parent_id`), `furniture`, `furniture_category`, `furniture_image`, `partner`, `offer`, `partner_product`, `favorite`, `review`, `price_history`, `click_out`, `ingestion_run`. RLS active sur toutes ; `profile.user_id` -> FK `auth.users`, profil cree par le trigger `handle_new_user`. Diagramme : `docs/diagrams/data-model.md`.
+- `offer.status` (`active` / `stale` / `removed`) a remplace `is_active` : le public ne voit que `active` (RLS `offer_read_active`). Une annonce est unique par `(furniture_id, partner_id, seller_name, condition)`. Prix en euros TTC, `total_price` = `price + shipping_cost` (genere, NULL si livraison inconnue).
+- `click_out` et `ingestion_run` : back (service role) uniquement, aucune politique RLS volontairement.
 - Les noms `"User"`, `"Provider"`, `"Furniture"` etc. sont OBSOLETES (renommes par la migration archivee `bd/supabase/migrations/archive/005_*`). Toute occurrence restante est un bug.
-- `furniture.cached_min_price` / `cached_nb_offers` sont denormalises : toute ecriture d'offre doit les maintenir.
+- `furniture.cached_min_price` / `cached_nb_offers`, `price_history` et les `updated_at` (`offer`, `partner_product`, `review`) sont maintenus par des triggers : ne jamais les ecrire depuis le back ou l'ingestion.
+- `bd/ingestion/*` est incompatible avec le schema actuel (ecrit `offer.is_active` et les caches) : ne pas le lancer avant sa reecriture (phase 3).
 - Schema de reference : `supabase/migrations/` (baseline `20261104210953_baseline.sql` tiree de la prod, puis une migration par evolution). Nouvelles migrations via `migration new`, idempotentes, avec politiques RLS pour toute nouvelle table. Les anciennes 001-010 sont archivees, plus rejouees.
 - Seed local synthetique : `supabase/seed.sql` (jamais en prod). Catalogue prod en local : `scripts/import-prod-catalog.md`.
 
