@@ -224,7 +224,7 @@
 - [x] **Step 1: Test.** `from("offer").select("is_active")` -> `error` non null.
 - [x] **Step 2: Migration.** `ALTER TABLE public.offer DROP COLUMN IF EXISTS is_active`.
 - [x] **Step 3: Lancer.** `db reset`, `npm run test:db`, `npm run test:run` -> verts.
-- [ ] **Step 4: Commit + PR**, puis prod (accord) : `db push --dry-run`, `db push`, smoke `GET /furnitures/<id>/offers` 200, advisors.
+- [x] **Step 4: Commit + PR**, puis prod (accord) : `db push --dry-run`, `db push`, smoke `GET /furnitures/<id>/offers` 200, advisors.
 
 ### Task 11: Documentation et cloture
 
@@ -234,6 +234,6 @@
 - Create: `docs/diagrams/data-model.md` (Mermaid `erDiagram` : toutes les tables `public`, cles, cardinalites), `docs/diagrams/offer-states.md` (`stateDiagram-v2` : `active` -> `stale` -> `removed`, `stale` -> `active` si revue, transitions pilotees par l'ingestion en phase 3), `docs/diagrams/ingestion-flow.md` (`flowchart` cible phase 3 : adaptateur -> `partner_product` -> rapprochement -> upsert `offer` -> triggers `price_history`/caches -> `ingestion_run`)
 - Modify: `docs/diagrams/architecture.md` (C4 : stack CLI locale), `docs/security-matrix.md` (politiques `offer_read_active`, `price_history_read_active`, `click_out` et `ingestion_run` service role seul), `docs/ROADMAP.md` (phase 2 terminee, `review` retire de la liste, points ouverts spec section 10), `README.md`, `CLAUDE.md` (tables, `cached_*` maintenus par trigger, plus "toute ecriture d'offre doit les maintenir")
 
-- [ ] **Step 1: Ecrire les documents.** Les diagrammes refletent `supabase/migrations` reel (verifier par `db diff` vide et lecture du schema local).
-- [ ] **Step 2: Verifier fin de phase** (spec section 9) : `db diff` local vs prod vide ; advisors securite (seul WARN mots de passe compromis) et performance (0 FK non indexee) ; comptes prod (0 offre de demo, 1 partenaire, 0 doublon, caches coherents, `price_history` >= nb offres) ; lint/tests/CI verts.
-- [ ] **Step 3: Commit + PR.** `docs: close phase 2 (data model)`. Mettre a jour la memoire de session.
+- [x] **Step 1: Ecrire les documents.** Les diagrammes refletent `supabase/migrations` reel (verifier par `db diff` vide et lecture du schema local).
+- [x] **Step 2: Verifier fin de phase** (spec section 9) : `db diff` local vs prod vide ; advisors securite (seul WARN mots de passe compromis) et performance (0 FK non indexee) ; comptes prod (0 offre de demo, 1 partenaire, 0 doublon, caches coherents, `price_history` >= nb offres) ; lint/tests/CI verts.
+- [x] **Step 3: Commit + PR.** `docs: close phase 2 (data model)`. Mettre a jour la memoire de session.

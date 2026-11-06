@@ -76,7 +76,7 @@ Detail complet (roles, politiques RLS, garde de chaque route) : [`docs/security-
 
 - **Comptes :** geres uniquement par Supabase Auth (aucun hash de mot de passe stocke par l'application). Le profil est cree par un trigger avec `role = 'USER'`.
 - **Ecritures :** toute route d'ecriture exige un jeton (`requireAuth`) ; le catalogue, les partenaires et les comptes exigent en plus `ADMIN` (`requireAdmin`). Un compte bloque recoit 403.
-- **RLS :** active sur toutes les tables publiques (schema : `supabase/migrations/`) : lecture publique du catalogue et des avis, `profile` / `favorite` / avis limites a leur proprietaire.
+- **RLS :** active sur toutes les tables publiques (schema : `supabase/migrations/`) : lecture publique du catalogue (offres actives seulement), de leur historique de prix et des avis, `profile` / `favorite` / avis limites a leur proprietaire, `click_out` et `ingestion_run` reserves au back. Detail : `docs/security-matrix.md`.
 - **Limitation de debit :** 300 requetes / 15 min / IP sur l'API, 5 generations IA / heure et 20 ecritures d'avis / heure par utilisateur. En prod, l'IP est celle vue par Cloudflare (`trust proxy 3`, voir `meubly-back/app.js`).
 - **Mot de passe oublie :** lien « Mot de passe oublie ? » sur la page de connexion, email de reinitialisation (lien valable 1 h, a ouvrir dans le meme navigateur : flux PKCE), page `/reinitialiser-mot-de-passe`, puis deconnexion de toutes les sessions. Regles : 10 caracteres minimum, une majuscule, une minuscule, un chiffre.
 - **Emails en prod :** SMTP Brevo, expediteur `no-reply@prixoli.fr`. Les modeles sont versionnes dans `bd/supabase/email-templates/` et recopies a la main dans le tableau de bord Supabase (Authentication > Emails > Templates).
@@ -285,8 +285,12 @@ docker stats
 
 ## Base de donnees et SQL
 
-- Schema de reference : `supabase/migrations/` (voir "Base locale (Supabase CLI)").
-- `bd/supabase/` : modeles d'emails, anciennes migrations archivees et scripts historiques (plus utilises pour initialiser la base).
+- Schema de reference : `supabase/migrations/` (voir "Base locale (Supabase CLI)"). Diagramme : `docs/diagrams/data-model.md` ; etats d'une offre : `docs/diagrams/offer-states.md`.
+- Une offre a un statut (`active`, `stale`, `removed`) et ses conditions d'achat : livraison, prix total (`price + shipping_cost`), eco-participation, disponibilite, delais, mode de livraison, montage, retours, etat (neuf, occasion, reconditionne), vendeur tiers.
+- Maintenus par des triggers (ne pas les ecrire a la main) : `furniture.cached_min_price` / `cached_nb_offers` (offres actives), `price_history` (a chaque changement de prix ou de livraison), `updated_at`.
+- Mise en prod d'une migration : `npx supabase@2.122.1 db push --dry-run`, puis `db push --linked` avec l'accord du proprietaire (le mode automatique de Claude Code le bloque : le lancer soi-meme avec `!`).
+- `bd/supabase/` : modeles d'emails, anciennes migrations archivees, script one-off de la phase 2 (archive) et scripts historiques (plus utilises pour initialiser la base).
+- `bd/ingestion/` : gele, incompatible avec le schema actuel, a reecrire en phase 3 (`docs/diagrams/ingestion-flow.md`).
 
 ---
 
