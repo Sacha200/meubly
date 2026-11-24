@@ -4,9 +4,6 @@ name: ingest-probe
 
 on:
   workflow_dispatch:
-  push:
-    branches: [chore/phase-3-gate]
-    paths: [.github/workflows/ingest-probe.yml]
 
 permissions:
   contents: read

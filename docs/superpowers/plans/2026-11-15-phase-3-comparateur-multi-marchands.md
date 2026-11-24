@@ -56,11 +56,11 @@ Branche `chore/phase-3-gate`. Travail dans `.superpowers/spike-phase3/` (non ver
 - Create: `.github/workflows/ingest-probe.yml`
 - Modify: la spec (section 2.2 et 8) avec les chiffres mesures
 
-- [ ] **Step 1 :** Dans les scripts du spike, remplacer l'agent par `PrixoliBot/1.0 (+https://github.com/Sacha200/meubly)` et relancer `access-check.mjs` sur `www.connox.fr www.fleux.com thecoolrepublic.com www.nordicnest.fr`. Attendu : `robots` 200 et `home` 200 pour les quatre. Un refus = retour proprietaire.
-- [ ] **Step 2 :** Collecter les catalogues complets : `/products.json` pagine pour The Cool Republic (Connox et Fleux sont deja dans `data/catalog-*.json`), tous les plans de site Nordic Nest (URL `/marques-de-design/<marque>/<fiche>/`). Calculer les marques presentes chez au moins 2 marchands (meme normalisation que `norm` de `match.mjs`).
-- [ ] **Step 3 :** Pour ces marques seulement, lire les fiches (`.js` Shopify, page Nordic Nest) a 1 requete / 2 s avec cache disque, puis compter les EAN valides vus chez au moins 2 marchands. Sortie attendue : un tableau marchand x (fiches lues, variantes, % avec EAN) et le nombre d'articles comparables, ventile par paire de marchands.
-- [ ] **Step 4 :** Ecrire `ingest-probe.yml` : `workflow_dispatch` seulement, Node 22, un script en ligne qui lit `robots.txt` et une page de catalogue par marchand avec l'agent declare et affiche les codes HTTP. Le proprietaire le lance depuis l'onglet Actions. Attendu : 200 partout.
-- [ ] **Step 5 : PORTE.** Moins de 300 articles comparables, ou un refus (agent declare ou GitHub Actions) : arret, compte rendu chiffre au proprietaire. Sinon : reporter les chiffres dans la spec (2.2 et critere de la section 8), noter la duree de lecture de Nordic Nest (elle fixe `maxPagesPerRun` de la tache 5), commit, PR.
+- [x] **Step 1 :** Dans les scripts du spike, remplacer l'agent par `PrixoliBot/1.0 (+https://github.com/Sacha200/meubly)` et relancer `access-check.mjs` sur `www.connox.fr www.fleux.com thecoolrepublic.com www.nordicnest.fr`. Attendu : `robots` 200 et `home` 200 pour les quatre. Un refus = retour proprietaire. *Fait : refus de The Cool Republic (defi Cloudflare) ; decision proprietaire : demande d'autorisation, depart a trois marchands.*
+- [x] **Step 2 :** Collecter les catalogues complets : `/products.json` pagine pour The Cool Republic (Connox et Fleux sont deja dans `data/catalog-*.json`), tous les plans de site Nordic Nest (URL `/marques-de-design/<marque>/<fiche>/`). Calculer les marques presentes chez au moins 2 marchands (meme normalisation que `norm` de `match.mjs`). *Fait sans The Cool Republic (bloque) : 79 marques communes.*
+- [x] **Step 3 :** Pour ces marques seulement, lire les fiches (`.js` Shopify, page Nordic Nest) a 1 requete / 2 s avec cache disque, puis compter les EAN valides vus chez au moins 2 marchands. Sortie attendue : un tableau marchand x (fiches lues, variantes, % avec EAN) et le nombre d'articles comparables, ventile par paire de marchands. *Fait par echantillon (300 fiches Nordic Nest tirees au hasard) plutot que par lecture complete (environ 15 h) : environ 3 100 fiches comparables, presque toutes Connox x Nordic Nest (spec 2.2).*
+- [x] **Step 4 :** Ecrire `ingest-probe.yml` : `workflow_dispatch` seulement, Node 22, un script en ligne qui lit `robots.txt` et une page de catalogue par marchand avec l'agent declare et affiche les codes HTTP. Le proprietaire le lance depuis l'onglet Actions. Attendu : 200 partout. *Fait : 200 partout sauf The Cool Republic (403, defi).*
+- [x] **Step 5 : PORTE.** Moins de 300 articles comparables, ou un refus (agent declare ou GitHub Actions) : arret, compte rendu chiffre au proprietaire. Sinon : reporter les chiffres dans la spec (2.2 et critere de la section 8), noter la duree de lecture de Nordic Nest (elle fixe `maxPagesPerRun` de la tache 5), commit, PR.
 
 ### Task 1: Schema additif (produit, variantes, file de rapprochement)
 
@@ -215,7 +215,7 @@ Branche `feat/ingestion-run`.
 - [ ] **Step 3 :** lancer les deux suites, attendu : echec.
 - [ ] **Step 4 :** Ecrire la migration, puis `brands.js`, `categoryMap.js`, `match.js`, `ingestionRepository.js`, `run.js`, `cli.js`.
 - [ ] **Step 5 :** `db reset`, `npm run test:db`, `npm run test:run`. Attendu : vert.
-- [ ] **Step 6 : essai reel local.** Creer en local les partenaires Connox, Fleux, The Cool Republic (`adapter = 'shopify'`), lancer `npm run ingest -- --all`. Attendu : des produits a plusieurs offres visibles dans Studio (:54323), executions `succeeded`. Noter les compteurs dans la PR.
+- [ ] **Step 6 : essai reel local.** Creer en local les partenaires Connox, Fleux (`adapter = 'shopify'`), lancer `npm run ingest -- --all`. Attendu : des produits a plusieurs offres visibles dans Studio (:54323), executions `succeeded`. Noter les compteurs dans la PR.
 - [ ] **Step 7 :** Mettre a jour les deux diagrammes. Commit, PR.
 
 ### Task 5: Adaptateur Nordic Nest
@@ -382,7 +382,7 @@ Branche `chore/ingest-workflow`.
 
 **Regles fixees :**
 - Declencheurs : `workflow_dispatch` (entree `partner`) ; le bloc `schedule` est ecrit mais commente jusqu'a la tache 14.
-- Une tache par marchand (matrice : Connox, Fleux, The Cool Republic, Nordic Nest), `fail-fast: false`, `timeout-minutes: 330`, `concurrency` par marchand sans annulation.
+- Une tache par marchand (matrice : Connox, Fleux, Nordic Nest ; The Cool Republic s'y ajoute s'il autorise l'agent), `fail-fast: false`, `timeout-minutes: 330`, `concurrency` par marchand sans annulation.
 - Horaire prevu : `0 3 * * *` (UTC).
 - Etapes : checkout, Node 22, `npm ci` dans `meubly-back`, `npm run ingest -- --partner "<nom>"` avec `SUPABASE_URL` et `SUPABASE_SERVICE_ROLE_KEY` tires des secrets GitHub `INGEST_SUPABASE_URL` et `INGEST_SUPABASE_SERVICE_ROLE_KEY`, `INGEST_ALLOW_REMOTE=1`. `permissions: contents: read`.
 - `purgeOldClicks` (clics de plus de 13 mois) appele par `cli.js` en fin de `--all` ou dans une tache dediee de la matrice.
