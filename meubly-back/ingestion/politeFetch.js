@@ -1,4 +1,4 @@
-// Requetes "polices" vers les marchands : agent declare, robots.txt, 1 requete / 2 s par hote.
+// Requetes "polies" vers les marchands : agent declare, robots.txt, 1 requete / 2 s par hote.
 // Aucun contournement : un refus leve BlockedError et la collecte de ce marchand s'arrete.
 
 const CHALLENGE_MARKERS = /captcha|datadome|cf-chl/i;

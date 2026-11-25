@@ -1,0 +1,54 @@
+<title>Carnet phase 3</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+<style>
+{{css}}
+.single { max-width: 760px; margin: 0 auto; padding-block: 3rem 4rem; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 2.5rem; }
+.tasks { list-style: none; margin: 0; padding: 0; }
+.tasks li { display: grid; grid-template-columns: 2.5rem minmax(0, 1fr) auto; gap: 1rem; align-items: baseline; padding: .7rem 0; border-bottom: 1px solid var(--line); }
+.tasks .n { color: var(--muted); font-variant-numeric: tabular-nums; }
+.tasks .state { font-size: .82rem; color: var(--muted); white-space: nowrap; }
+.tasks .state.done { color: var(--ok); }
+.tasks li.todo .t { color: var(--muted); }
+.tasks a { font-weight: 500; }
+</style>
+
+<div class="single">
+  <header style="display:grid;gap:.8rem">
+    <span class="eyebrow">Prixoli · phase 3, comparateur multi-marchands</span>
+    <h1>Carnet de la phase 3</h1>
+    <p class="lede">Une page par tâche terminée : les étapes, le code complet des fichiers créés et ce qu'il faut en retenir. Le code est copié depuis le dépôt, il correspond à ce qui est mergé.</p>
+  </header>
+
+  <section>
+    <h2>Tâches</h2>
+    <ol class="tasks">
+      <li><span class="n">0</span><span class="t">Porte de décision (mesures, aucun code produit)</span><span class="state done">PR #25</span></li>
+      <li><span class="n">1</span><span class="t">Schéma : produits, variantes, file de rapprochement</span><span class="state done">PR #26</span></li>
+      <li><span class="n">2</span><span class="t"><a href="tache-2.html">Socle de collecte : EAN, texte, requêtes polies</a></span><span class="state done">PR #27</span></li>
+      <li class="todo"><span class="n">3</span><span class="t">Adaptateur Shopify</span><span class="state">à venir</span></li>
+      <li class="todo"><span class="n">4</span><span class="t">Rapprochement, écriture en base, commande ingest</span><span class="state">à venir</span></li>
+      <li class="todo"><span class="n">5</span><span class="t">Adaptateur Nordic Nest</span><span class="state">à venir</span></li>
+      <li class="todo"><span class="n">6</span><span class="t">API produits et historique de prix</span><span class="state">à venir</span></li>
+      <li class="todo"><span class="n">7</span><span class="t">Clic sortant</span><span class="state">à venir</span></li>
+      <li class="todo"><span class="n">8</span><span class="t">API de supervision (admin)</span><span class="state">à venir</span></li>
+      <li class="todo"><span class="n">9</span><span class="t">Écran admin « Flux »</span><span class="state">à venir</span></li>
+      <li class="todo"><span class="n">10</span><span class="t">Liste des produits</span><span class="state">à venir</span></li>
+      <li class="todo"><span class="n">11</span><span class="t">Fiche produit v2</span><span class="state">à venir</span></li>
+      <li class="todo"><span class="n">12</span><span class="t">Marque Prixoli et page « À propos de nos prix »</span><span class="state">à venir</span></li>
+      <li class="todo"><span class="n">13</span><span class="t">Collecte planifiée</span><span class="state">à venir</span></li>
+      <li class="todo"><span class="n">14</span><span class="t">Bascule</span><span class="state">à venir</span></li>
+      <li class="todo"><span class="n">15</span><span class="t">Clôture de phase</span><span class="state">à venir</span></li>
+    </ol>
+    <p class="eyebrow">Les tâches 0 et 1 sont antérieures au carnet et n'ont pas de page.</p>
+  </section>
+
+  <section>
+    <h2>Ouvrir ce carnet</h2>
+    <ul class="plain">
+      <li>Dans le dépôt : <code>docs/carnet/phase-3/index.html</code>, à ouvrir dans un navigateur.</li>
+      <li>Après une modification du code : <code>node docs/carnet/build.mjs</code> régénère les pages.</li>
+    </ul>
+  </section>
+</div>

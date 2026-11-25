@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Carnet phase 3</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout : page de documentation sobre, sommaire a gauche sur grand ecran, une colonne sur telephone. */
+:root {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --ink: #1f2328;
+  --muted: #656d76;
+  --line: #e5e7eb;
+  --accent: #8a6a1f;
+  --code-bg: #f6f8fa;
+  --ok: #1a7f37;
+  --warn-soft: #fff8e6;
+  --warn: #8a5a00;
+  --tk-kw: #cf222e; --tk-str: #0a3069; --tk-num: #0550ae; --tk-com: #6e7781; --tk-fn: #8250df;
+  --f-body: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono: ui-monospace, "Cascadia Code", Consolas, "SF Mono", monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f1115; --surface: #0f1115; --ink: #e6edf3; --muted: #9198a1; --line: #2a2f37;
+  --accent: #d6b25e; --code-bg: #161b22; --ok: #3fb950; --warn-soft: #2a2414; --warn: #e3b341;
+  --tk-kw: #ff7b72; --tk-str: #a5d6ff; --tk-num: #79c0ff; --tk-com: #8b949e; --tk-fn: #d2a8ff;
+  color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #0f1115; --surface: #0f1115; --ink: #e6edf3; --muted: #9198a1; --line: #2a2f37;
+  --accent: #d6b25e; --code-bg: #161b22; --ok: #3fb950; --warn-soft: #2a2414; --warn: #e3b341;
+  --tk-kw: #ff7b72; --tk-str: #a5d6ff; --tk-num: #79c0ff; --tk-com: #8b949e; --tk-fn: #d2a8ff;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { background: var(--bg); color: var(--ink); font: 15.5px/1.65 var(--f-body); }
+.wrap {
+  max-width: 1080px; margin: 0 auto;
+  padding-block: 3rem 4rem;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 3.5rem;
+}
+@media (max-width: 860px) { .wrap { grid-template-columns: minmax(0, 1fr); gap: 2rem; } nav.toc { position: static; } }
+nav.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 2rem); align-self: start; font-size: .875rem; }
+nav.toc p { font-size: .75rem; font-weight: 500; color: var(--muted); margin: 0 0 .6rem; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: .2rem; }
+nav.toc a { color: var(--muted); text-decoration: none; display: block; padding: .15rem 0; }
+nav.toc a:hover, nav.toc a:focus-visible { color: var(--ink); }
+nav.toc .sub a { padding-left: .9rem; font-size: .82rem; }
+main { min-width: 0; display: grid; gap: 3rem; }
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+h1, h2, h3 { font-family: var(--f-body); text-wrap: balance; line-height: 1.25; margin: 0; letter-spacing: -.01em; }
+h1 { font-size: 1.9rem; font-weight: 600; }
+h2 { font-size: 1.3rem; font-weight: 600; padding-bottom: .5rem; border-bottom: 1px solid var(--line); }
+h3 { font-size: 1rem; font-weight: 600; }
+section { display: grid; gap: .9rem; }
+p { margin: 0; max-width: 68ch; }
+.eyebrow { font-size: .8rem; color: var(--muted); }
+.lede { font-size: 1.05rem; color: var(--muted); }
+.meta { display: flex; flex-wrap: wrap; gap: .4rem 1rem; font-size: .85rem; color: var(--muted); }
+.chip { font-size: .85rem; color: var(--muted); }
+.chip.ok { color: var(--ok); }
+code { font-family: var(--f-mono); font-size: .86em; background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+ul.plain { margin: 0; padding-left: 1.2rem; display: grid; gap: .4rem; max-width: 70ch; }
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+th, td { text-align: left; padding: .55rem .75rem .55rem 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: .8rem; color: var(--muted); font-weight: 500; }
+td code { white-space: nowrap; }
+ol.steps { margin: 0; padding-left: 1.3rem; display: grid; gap: .7rem; max-width: 70ch; }
+ol.steps li::marker { color: var(--muted); }
+ol.steps strong { display: block; font-weight: 500; }
+ol.steps span { color: var(--muted); }
+.file { display: grid; gap: .75rem; padding-top: 1.5rem; }
+.file .path { font: .8rem var(--f-mono); color: var(--muted); }
+pre { margin: 0; overflow-x: auto; background: var(--code-bg); border-radius: 6px; padding: 1rem 1.1rem; font: .83rem/1.6 var(--f-mono); tab-size: 2; }
+pre code { background: none; padding: 0; font-size: inherit; }
+.notes { display: grid; margin: 0; padding: 0; list-style: none; max-width: 72ch; }
+.notes li { display: grid; grid-template-columns: minmax(0, 10rem) minmax(0, 1fr); gap: 1rem; padding: .5rem 0; border-bottom: 1px solid var(--line); }
+.notes li:last-child { border-bottom: 0; }
+.notes b { font: 500 .8rem/1.6 var(--f-mono); color: var(--ink); overflow-wrap: anywhere; }
+.notes span { color: var(--muted); }
+@media (max-width: 560px) { .notes li { grid-template-columns: minmax(0, 1fr); gap: .15rem; } }
+.callout { border-radius: 6px; padding: .9rem 1.1rem; display: grid; gap: .4rem; }
+.callout.warn { background: var(--warn-soft); }
+.callout.warn .eyebrow { color: var(--warn); font-weight: 500; }
+.fix { display: grid; gap: .6rem; }
+.cmd { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1rem; align-items: center; padding: .5rem 0; border-bottom: 1px solid var(--line); }
+.cmd code { overflow-wrap: anywhere; }
+.cmd .chip { white-space: nowrap; }
+.hljs-keyword, .hljs-built_in, .hljs-literal { color: var(--tk-kw); }
+.hljs-string, .hljs-regexp { color: var(--tk-str); }
+.hljs-number { color: var(--tk-num); }
+.hljs-comment { color: var(--tk-com); font-style: italic; }
+.hljs-title, .hljs-title.function_, .hljs-title.class_ { color: var(--tk-fn); }
+.hljs-subst, .hljs-params, .hljs-variable { color: var(--ink); }
+.back { font-size: .85rem; color: var(--muted); text-decoration: none; }
+.back:hover { color: var(--ink); }
+.single { max-width: 760px; margin: 0 auto; padding-block: 3rem 4rem; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 2.5rem; }
+.tasks { list-style: none; margin: 0; padding: 0; }
+.tasks li { display: grid; grid-template-columns: 2.5rem minmax(0, 1fr) auto; gap: 1rem; align-items: baseline; padding: .7rem 0; border-bottom: 1px solid var(--line); }
+.tasks .n { color: var(--muted); font-variant-numeric: tabular-nums; }
+.tasks .state { font-size: .82rem; color: var(--muted); white-space: nowrap; }
+.tasks .state.done { color: var(--ok); }
+.tasks li.todo .t { color: var(--muted); }
+.tasks a { font-weight: 500; }
+</style>
+
+<div class="single">
+  <header style="display:grid;gap:.8rem">
+    <span class="eyebrow">Prixoli · phase 3, comparateur multi-marchands</span>
+    <h1>Carnet de la phase 3</h1>
+    <p class="lede">Une page par tâche terminée : les étapes, le code complet des fichiers créés et ce qu'il faut en retenir. Le code est copié depuis le dépôt, il correspond à ce qui est mergé.</p>
+  </header>
+
+  <section>
+    <h2>Tâches</h2>
+    <ol class="tasks">
+      <li><span class="n">0</span><span class="t">Porte de décision (mesures, aucun code produit)</span><span class="state done">PR #25</span></li>
+      <li><span class="n">1</span><span class="t">Schéma : produits, variantes, file de rapprochement</span><span class="state done">PR #26</span></li>
+      <li><span class="n">2</span><span class="t"><a href="tache-2.html">Socle de collecte : EAN, texte, requêtes polies</a></span><span class="state done">PR #27</span></li>
+      <li class="todo"><span class="n">3</span><span class="t">Adaptateur Shopify</span><span class="state">à venir</span></li>
+      <li class="todo"><span class="n">4</span><span class="t">Rapprochement, écriture en base, commande ingest</span><span class="state">à venir</span></li>
+      <li class="todo"><span class="n">5</span><span class="t">Adaptateur Nordic Nest</span><span class="state">à venir</span></li>
+      <li class="todo"><span class="n">6</span><span class="t">API produits et historique de prix</span><span class="state">à venir</span></li>
+      <li class="todo"><span class="n">7</span><span class="t">Clic sortant</span><span class="state">à venir</span></li>
+      <li class="todo"><span class="n">8</span><span class="t">API de supervision (admin)</span><span class="state">à venir</span></li>
+      <li class="todo"><span class="n">9</span><span class="t">Écran admin « Flux »</span><span class="state">à venir</span></li>
+      <li class="todo"><span class="n">10</span><span class="t">Liste des produits</span><span class="state">à venir</span></li>
+      <li class="todo"><span class="n">11</span><span class="t">Fiche produit v2</span><span class="state">à venir</span></li>
+      <li class="todo"><span class="n">12</span><span class="t">Marque Prixoli et page « À propos de nos prix »</span><span class="state">à venir</span></li>
+      <li class="todo"><span class="n">13</span><span class="t">Collecte planifiée</span><span class="state">à venir</span></li>
+      <li class="todo"><span class="n">14</span><span class="t">Bascule</span><span class="state">à venir</span></li>
+      <li class="todo"><span class="n">15</span><span class="t">Clôture de phase</span><span class="state">à venir</span></li>
+    </ol>
+    <p class="eyebrow">Les tâches 0 et 1 sont antérieures au carnet et n'ont pas de page.</p>
+  </section>
+
+  <section>
+    <h2>Ouvrir ce carnet</h2>
+    <ul class="plain">
+      <li>Dans le dépôt : <code>docs/carnet/phase-3/index.html</code>, à ouvrir dans un navigateur.</li>
+      <li>Après une modification du code : <code>node docs/carnet/build.mjs</code> régénère les pages.</li>
+    </ul>
+  </section>
+</div>

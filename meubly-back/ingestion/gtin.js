@@ -1,9 +1,8 @@
 /**
- * Vrai si la valeur est GTIN (EAN-8, UPC-12, EAN-13, GTIN-14) dont la cle de controle est juste.
+ * Vrai si la valeur est un GTIN (EAN-8, UPC-12, EAN-13, GTIN-14) dont la cle de controle est juste.
  * @param {unknown} value
  * @returns {boolean}
  */
-
 export function isGtin(value) {
   if (typeof value !== "string" || !/^(\d{8}|\d{12,14})$/.test(value)) return false;
   const digits = [...value].map(Number);
@@ -19,7 +18,6 @@ export function isGtin(value) {
  * @param {...unknown} candidates
  * @returns {string | null}
  */
-
 export function pickGtin(...candidates) {
   return candidates.map((candidate) => String(candidate ?? "").trim()).find(isGtin) ?? null;
 }
