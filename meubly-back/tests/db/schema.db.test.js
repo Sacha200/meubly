@@ -107,6 +107,21 @@ describe("schema (base locale)", () => {
       }
     });
 
+    it("refuse un adaptateur de collecte inconnu", async () => {
+      const error = await tryInRollback([
+        "insert into public.partner (name, adapter) values ('schema-test', 'autre')",
+      ]);
+      expect(error?.code).toBe("23514");
+    });
+
+    it("accepte un partenaire shopify avec sa configuration", async () => {
+      const error = await tryInRollback([
+        `insert into public.partner (name, adapter, adapter_config)
+         values ('schema-test', 'shopify', '{"baseUrl": "https://example.com"}')`,
+      ]);
+      expect(error).toBeNull();
+    });
+
     it.each([
       ["category", "parent_id"],
       ["favorite", "furniture_id"],
@@ -119,6 +134,89 @@ describe("schema (base locale)", () => {
         [`public.${table}`, column]
       );
       expect(rowCount).toBeGreaterThan(0);
+    });
+  });
+
+  describe("produits et variantes (phase 3)", () => {
+    const columns = async (table) =>
+      (
+        await sql.query(
+          "select column_name from information_schema.columns where table_schema = 'public' and table_name = $1",
+          [table]
+        )
+      ).rows.map((row) => row.column_name);
+
+    it("cree la table product", async () => {
+      expect(await columns("product")).toEqual(
+        expect.arrayContaining([
+          "product_id",
+          "brand",
+          "title",
+          "description",
+          "designer",
+          "cover_url",
+          "created_at",
+        ])
+      );
+    });
+
+    it("rattache un meuble (variante) a un produit", async () => {
+      expect(await columns("furniture")).toEqual(
+        expect.arrayContaining(["product_id", "variant_label"])
+      );
+    });
+
+    it("decrit l'adaptateur de collecte du partenaire, sans cle d'API", async () => {
+      const partner = await columns("partner");
+      expect(partner).toEqual(expect.arrayContaining(["adapter", "adapter_config"]));
+      expect(partner).not.toContain("api_key_hash");
+    });
+
+    it("cree la file de rapprochement match_candidate", async () => {
+      expect(await columns("match_candidate")).toEqual(
+        expect.arrayContaining([
+          "match_candidate_id",
+          "partner_product_id",
+          "furniture_id",
+          "score",
+          "reason",
+          "status",
+          "decided_by",
+          "decided_at",
+          "created_at",
+        ])
+      );
+    });
+
+    it.each(["partner_product", "match_candidate"])(
+      "%s : aucun droit de lecture pour anon et authenticated",
+      async (table) => {
+        const { rows } = await sql.query(
+          `select has_table_privilege('anon', $1, 'select') as anon,
+                  has_table_privilege('authenticated', $1, 'select') as auth`,
+          [`public.${table}`]
+        );
+        expect(rows).toEqual([{ anon: false, auth: false }]);
+      }
+    );
+
+    it("cree les categories racines du catalogue maison", async () => {
+      const { rows } = await sql.query("select label from public.category where parent_id is null");
+      expect(rows.map((row) => row.label)).toEqual(
+        expect.arrayContaining([
+          "Salon",
+          "Chambre",
+          "Bureau",
+          "Cuisine et salle a manger",
+          "Salle de bain",
+          "Jardin et exterieur",
+          "Luminaires",
+          "Decoration",
+          "Rangement",
+          "Enfant",
+          "Autres",
+        ])
+      );
     });
   });
 

@@ -1,6 +1,6 @@
 # Modele de donnees (schema `public`)
 
-Etat a la fin de la phase 2 (2026-11-06). Source de verite : `supabase/migrations/` ; ce diagramme
+Etat a la fin de la phase 2 (2026-11-06), plus le schema produit / variantes de la phase 3 (tache 1). Source de verite : `supabase/migrations/` ; ce diagramme
 en est le reflet (verifie par `db diff` local vs prod). Les colonnes `ai_*` de `furniture`
 (enrichissement IA) sont omises pour la lisibilite.
 
@@ -19,6 +19,10 @@ erDiagram
     furniture ||--o{ review : "furniture_id (cascade)"
     furniture ||--o{ offer : "furniture_id (cascade)"
     furniture |o--o{ partner_product : "furniture_id (set null)"
+    product |o--o{ furniture : "product_id (set null), variantes"
+    partner_product ||--o{ match_candidate : "partner_product_id (cascade)"
+    furniture ||--o{ match_candidate : "furniture_id (cascade)"
+    AUTH_USERS |o--o{ match_candidate : "decided_by (set null)"
 
     partner ||--o{ offer : "partner_id (cascade)"
     partner ||--o{ partner_product : "partner_id (cascade)"
@@ -40,6 +44,8 @@ erDiagram
         text manufacturer_ref
         numeric weight_kg "> 0"
         jsonb attributes "objet"
+        uuid product_id FK "variante de"
+        text variant_label
         numeric cached_min_price "trigger"
         integer cached_nb_offers "trigger"
         timestamptz created_at
@@ -84,7 +90,8 @@ erDiagram
         text logo_url
         boolean is_active
         boolean is_affiliate
-        text api_key_hash
+        text adapter "shopify | nordicnest"
+        jsonb adapter_config
         timestamptz created_at
     }
 
@@ -98,6 +105,27 @@ erDiagram
         jsonb raw_payload
         timestamptz last_seen_at
         timestamptz updated_at "trigger"
+    }
+
+    product {
+        uuid product_id PK
+        text brand
+        text title "index trigram"
+        text description
+        text designer
+        text cover_url
+        timestamptz created_at
+    }
+
+    match_candidate {
+        bigint match_candidate_id PK
+        uuid partner_product_id FK
+        uuid furniture_id FK
+        numeric score
+        text reason
+        match_status status "pending | accepted | rejected"
+        uuid decided_by FK
+        timestamptz decided_at
     }
 
     click_out {
