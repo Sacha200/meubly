@@ -1,0 +1,50 @@
+{
+  "id": 15899599700312,
+  "title": "HAY - Pouf Planar",
+  "handle": "hay-pouf-planar",
+  "description": "<h2> Pouf en coton et lin mélangés </h2>\nLe Planar Pouf de la maison danoise HAY est un élément de décoration multifonctionnel. Il peut être utilisé comme tabouret ou comme siège supplémentaire. Planar Il est facile à transporter et convient parfaitement pour le salon, la chambre d&#039;enfant ou la chambre à coucher. Le pouf est fabriqué dans un mélange coton/lin confortable et extrêmement doux. Disponible en plusieurs couleurs.",
+  "vendor": "HAY",
+  "type": "Möbel",
+  "images": [
+    "//cdn.shopify.com/s/files/1/0959/1760/5208/files/Hay-Planar-Pouf-H-40-cm-hellgrau.jpg?v=1785157283",
+    "//cdn.shopify.com/s/files/1/0959/1760/5208/files/Hay-Planar-Pouf-Ambiente.jpg?v=1785157283",
+    "//cdn.shopify.com/s/files/1/0959/1760/5208/files/Hay-Planar-Pouf-H-40-cm-sand.jpg?v=1785157283"
+  ],
+  "options": [
+    {
+      "name": "Housse de siège Shopify",
+      "position": 1,
+      "values": ["sable", "gris clair"]
+    }
+  ],
+  "variants": [
+    {
+      "id": 57814168338776,
+      "title": "sable",
+      "option1": "sable",
+      "sku": "292394",
+      "barcode": "5710441309116",
+      "available": true,
+      "price": 23900,
+      "compare_at_price": null,
+      "weight": 4200,
+      "featured_image": {
+        "src": "https://cdn.shopify.com/s/files/1/0959/1760/5208/files/Hay-Planar-Pouf-H-40-cm-sand.jpg?v=1785157283"
+      }
+    },
+    {
+      "id": 57814168469848,
+      "title": "gris clair",
+      "option1": "gris clair",
+      "sku": "292392",
+      "barcode": "5710441309093",
+      "available": true,
+      "price": 23900,
+      "compare_at_price": null,
+      "weight": 4200,
+      "featured_image": {
+        "src": "https://cdn.shopify.com/s/files/1/0959/1760/5208/files/Hay-Planar-Pouf-H-40-cm-hellgrau.jpg?v=1785157283"
+      }
+    }
+  ]
+}

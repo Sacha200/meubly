@@ -1,0 +1,176 @@
+<title>Tâche 3, adaptateur Shopify</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+<style>
+{{css}}
+</style>
+
+<div class="wrap">
+  <nav class="toc" aria-label="Sommaire">
+    <p>Sommaire</p>
+    <ol>
+      <li><a href="#objectif">Objectif</a></li>
+      <li><a href="#etapes">Étapes</a></li>
+      <li><a href="#fichiers">Fichiers créés</a></li>
+      <li><a href="#contrat">Le contrat</a></li>
+      <li><a href="#modules">Le code</a></li>
+      <li class="sub"><a href="#index">index.js</a></li>
+      <li class="sub"><a href="#shopify">shopify.js</a></li>
+      <li><a href="#tests">Le test</a></li>
+      <li><a href="#fixtures">Les fixtures</a></li>
+      <li><a href="#verifs">Vérifications</a></li>
+      <li><a href="#retenir">À retenir</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <header style="display:grid;gap:.9rem">
+      <a class="back" href="index.html">&larr; Carnet de la phase 3</a>
+      <span class="eyebrow">Prixoli · phase 3</span>
+      <h1>Tâche 3 : l'adaptateur Shopify</h1>
+      <p class="lede">Lire le catalogue de Connox et de Fleux, deux boutiques Shopify, et en sortir un article normalisé par variante : marque, titre, EAN, prix, disponibilité, images.</p>
+      <div class="meta">
+        <span class="chip ok">PR #29</span>
+        <span class="chip">feat/ingestion-shopify</span>
+        <span class="chip">25 nov. 2026</span>
+      </div>
+    </header>
+
+    <section id="objectif">
+      <h2>Objectif</h2>
+      <p>Un <b>adaptateur</b> traduit le site d'un marchand en articles au même format pour tous. La suite de la collecte (rapprochement, écriture en base) ne connaît que ce format et ignore d'où viennent les données. Shopify a l'avantage d'exposer deux adresses publiques en JSON :</p>
+      <ul class="plain">
+        <li><code>/products.json?limit=250&amp;page=N</code> : le catalogue, 250 produits par page. Pas d'EAN, prix en euros sous forme de texte.</li>
+        <li><code>/products/&lt;poignée&gt;.js</code> : le détail d'un produit, avec le <code>barcode</code>. Prix en centimes.</li>
+      </ul>
+      <p>Toutes les requêtes passent par <code>fetchText</code>, qui sera en pratique le <code>createPoliteFetch</code> de la tâche 2 : agent déclaré, robots.txt, 2 secondes entre deux pages.</p>
+    </section>
+
+    <section id="etapes">
+      <h2>Étapes</h2>
+      <ol class="steps">
+        <li><div><strong>Fixtures</strong><span>Cinq fichiers JSON tirés des vraies fiches du spike, générés plutôt que tapés.</span></div></li>
+        <li><div><strong>Le test <code>shopify.test.js</code></strong><span>Dix cas, du plus simple (l'adaptateur est enregistré) aux cas limites (clé fausse, EAN-8, page inchangée).</span></div></li>
+        <li><div><strong>Les modules</strong><span><code>adapters/index.js</code> (liste des adaptateurs et contrat), <code>adapters/shopify.js</code>.</span></div></li>
+        <li><div><strong>Vérification</strong><span>150 tests verts, lint sans erreur, format conforme.</span></div></li>
+        <li><div><strong>Commit et PR #29</strong><span>Cases du plan cochées dans le même commit.</span></div></li>
+      </ol>
+    </section>
+
+    <section id="fichiers">
+      <h2>Fichiers créés</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Fichier</th><th>Rôle</th></tr></thead>
+          <tbody>
+            <tr><td><code>meubly-back/ingestion/adapters/index.js</code></td><td>Liste des adaptateurs et contrat commun (types JSDoc)</td></tr>
+            <tr><td><code>meubly-back/ingestion/adapters/shopify.js</code></td><td>Adaptateur Shopify</td></tr>
+            <tr><td><code>meubly-back/tests/unit/ingestion/shopify.test.js</code></td><td>10 tests</td></tr>
+            <tr><td><code>meubly-back/tests/fixtures/ingestion/shopify/*.json</code></td><td>5 fixtures</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="contrat">
+      <h2>Le contrat</h2>
+      <p>Tout adaptateur expose deux fonctions :</p>
+      <ul class="notes">
+        <li><b>listBrands(ctx)</b><span>Rend l'ensemble des marques vendues, normalisées par <code>normText</code>. Sert à trouver les marques communes à plusieurs marchands.</span></li>
+        <li><b>listItems(ctx, brands)</b><span>Rend, une par une, les variantes des produits de ces marques, au format <code>ScrapedItem</code>.</span></li>
+        <li><b>ctx.config</b><span>Le contenu de <code>partner.adapter_config</code> en base, par exemple <code>{ "baseUrl": "https://www.connox.fr", "stripBrandPrefix": true }</code>.</span></li>
+        <li><b>ctx.knownPages</b><span>Les pages déjà lues, avec leur date de modification et leurs EAN. Une page inchangée n'est pas relue.</span></li>
+      </ul>
+    </section>
+
+    <section id="modules">
+      <h2>Le code</h2>
+      <p>Le code ci-dessous est copié automatiquement depuis les fichiers du dépôt.</p>
+
+      <article class="file" id="index">
+        <h3>index.js</h3>
+        <span class="path">meubly-back/ingestion/adapters/index.js</span>
+        <p>Un registre : la tâche 4 lira <code>partner.adapter</code> (« shopify » ou « nordicnest ») et prendra <code>adapters[partner.adapter]</code>. Les commentaires <code>@typedef</code> décrivent le format, et l'éditeur s'en sert pour l'autocomplétion.</p>
+<pre><code class="language-javascript">{{code:meubly-back/ingestion/adapters/index.js}}</code></pre>
+        <ul class="notes">
+          <li><b>pageUpdatedAt</b><span>Ajouté au contrat du plan. La tâche 4 l'enregistre avec l'article, ce qui permet de reconstruire <code>knownPages</code> au passage suivant.</span></li>
+          <li><b>nordicnest</b><span>La seconde clé du registre arrive à la tâche 5.</span></li>
+        </ul>
+      </article>
+
+      <article class="file" id="shopify">
+        <h3>shopify.js</h3>
+        <span class="path">meubly-back/ingestion/adapters/shopify.js</span>
+<pre><code class="language-javascript">{{code:meubly-back/ingestion/adapters/shopify.js}}</code></pre>
+        <ul class="notes">
+          <li><b>catalogPages</b><span>Générateur asynchrone (<code>async function*</code>) : il rend les pages du catalogue l'une après l'autre et s'arrête à la première vide. <code>MAX_PAGES</code> évite une boucle sans fin si un marchand ne renvoyait jamais de page vide.</span></li>
+          <li><b>fromDetail / fromSummary</b><span>Les deux sources ne décrivent pas un produit de la même façon : prix en centimes ou en euros texte, <code>weight</code> ou <code>grams</code>, <code>type</code> ou <code>product_type</code>. Chacune est ramenée au même format pour qu'une seule fonction fabrique les articles.</span></li>
+          <li><b>Math.round(… * 100)</b><span><code>Number("239.00") * 100</code> peut donner 23899.999… à cause des nombres à virgule flottante. L'arrondi remet un entier juste.</span></li>
+          <li><b>findGtin</b><span>Cherche d'abord un code de 12 chiffres ou plus. Une référence de 8 chiffres passe la clé de contrôle une fois sur 10 par hasard et serait prise pour un EAN-8.</span></li>
+          <li><b>manufacturerRef</b><span>Le <code>barcode</code>, quand il n'est pas l'EAN. Chez Fleux, le <code>barcode</code> contient la référence fabricant et l'EAN est rangé dans <code>sku</code>.</span></li>
+          <li><b>stripBrandPrefix</b><span>Connox écrit « HAY - Pouf Planar ». Le préfixe est retiré quand la configuration du marchand le demande, sans tenir compte des majuscules.</span></li>
+          <li><b>plainText</b><span>Retire les balises HTML, décode les entités (<code>&amp;#039;</code> devient une apostrophe), réduit les espaces, coupe à 900 caractères.</span></li>
+          <li><b>images</b><span>L'image de la variante d'abord, puis celles de la page, sans doublon (<code>new Set</code>), 6 au plus. Les adresses <code>//cdn…</code> reçoivent <code>https:</code>.</span></li>
+          <li><b>AVAILABILITY</b><span>Une table au lieu de deux conditions imbriquées : <code>true</code> donne en stock, <code>false</code> épuisé, une valeur absente donne « unknown ».</span></li>
+          <li><b>knownPages</b><span>Si <code>updated_at</code> n'a pas changé, on ne demande pas le <code>.js</code> : l'article est construit depuis <code>products.json</code> et l'EAN est repris de la collecte précédente. Limite assumée : la référence fabricant reste vide dans ce cas.</span></li>
+          <li><b>compare_at_price</b><span>Le prix barré du marchand n'est jamais repris (choix de la spec). L'article ne contient aucune clé qui s'en approche.</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section id="tests">
+      <h2>Le test</h2>
+      <p><code>makeCtx</code> fabrique un contexte dont le réseau sert les fixtures selon l'URL demandée. Une URL inattendue fait échouer le test, ce qui prouve qu'aucune requête superflue ne part. <code>hayWith</code> modifie une variante de la fiche HAY pour tester un cas limite sans créer une fixture de plus.</p>
+<pre><code class="language-javascript">{{code:meubly-back/tests/unit/ingestion/shopify.test.js}}</code></pre>
+      <ul class="notes">
+        <li><b>listBrands</b><span>Deux requêtes seulement : la page 1, puis la page 2 vide qui arrête la lecture.</span></li>
+        <li><b>marques demandées</b><span>Avec la marque « hay », seules les fiches HAY (Connox) et Hay (Fleux) sont lues en <code>.js</code>. « HAY » et « Hay » donnent la même marque une fois normalisées.</span></li>
+        <li><b>5553.05</b><span>Le bureau Thonet coûte 555 305 centimes. Le test vérifie la conversion exacte en euros.</span></li>
+        <li><b>clé fausse</b><span>Le dernier chiffre de l'EAN est changé : l'article est gardé, mais sans EAN.</span></li>
+        <li><b>96385074</b><span>Un EAN-8 valide placé dans <code>barcode</code>, un EAN-13 dans <code>sku</code> : c'est l'EAN-13 qui doit l'emporter.</span></li>
+        <li><b>page inchangée</b><span>Aucune requête <code>.js</code> pour la page HAY, et les EAN viennent de <code>knownPages</code>, y compris un <code>null</code>.</span></li>
+      </ul>
+    </section>
+
+    <section id="fixtures">
+      <h2>Les fixtures</h2>
+      <p>Les fiches <code>.js</code> sont de vraies réponses enregistrées pendant le spike, réduites aux champs utiles. Le catalogue <code>products.json</code> a été reconstruit à partir des mêmes fiches : en voulant relire une vraie page, Connox a répondu 429 (trop de requêtes), et on n'a pas insisté.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Fichier</th><th>Contenu</th></tr></thead>
+          <tbody>
+            <tr><td><code>products-page1.json</code></td><td>Catalogue : HAY Pouf Planar, Thonet S 285/1, lampe Apex, et un produit Liewood non demandé</td></tr>
+            <tr><td><code>products-page2.json</code></td><td>Page vide, fin du catalogue</td></tr>
+            <tr><td><code>product-connox.js.json</code></td><td>Pouf Planar (Connox), 2 variantes, EAN dans <code>barcode</code></td></tr>
+            <tr><td><code>product-connox-default.js.json</code></td><td>Bureau Thonet (Connox), variante unique, prix barré</td></tr>
+            <tr><td><code>product-fleux.js.json</code></td><td>Lampe Apex (Fleux), 3 variantes, EAN dans <code>sku</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="verifs">
+      <h2>Vérifications</h2>
+      <div>
+        <div class="cmd"><code>npm run test:run</code><span class="chip ok">150 verts · 16 fichiers</span></div>
+        <div class="cmd"><code>npm run lint</code><span class="chip ok">0 erreur</span></div>
+        <div class="cmd"><code>npm run format:check</code><span class="chip ok">conforme</span></div>
+      </div>
+    </section>
+
+    <section id="retenir">
+      <h2>À retenir</h2>
+      <ul class="plain">
+        <li><b>Un format commun.</b> Toutes les différences entre marchands restent dans l'adaptateur. La tâche 4 n'aura qu'un seul format à traiter.</li>
+        <li><b>Lire le moins possible.</b> Le catalogue suffit pour savoir quoi relire, et une page inchangée n'est pas redemandée. C'est ce qui permet une collecte quotidienne polie.</li>
+        <li><b>Le 429 de Connox.</b> À surveiller pour la collecte planifiée (tâche 13) : <code>politeFetch</code> attend une minute et réessaie trois fois, puis abandonne.</li>
+        <li><b>Hors périmètre :</b> <code>attributes</code> reste vide (les noms d'options Shopify sont peu fiables, la couleur est déjà dans le libellé de variante), entités HTML hexadécimales non décodées.</li>
+        <li><b>Suite :</b> tâche 4, rapprochement et écriture en base, avec la commande <code>npm run ingest</code>.</li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>try { hljs.highlightAll(); } catch (e) { /* sans coloration, le code reste lisible */ }</script>

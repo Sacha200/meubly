@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tâche 3, adaptateur Shopify</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout : page de documentation sobre, sommaire a gauche sur grand ecran, une colonne sur telephone. */
+:root {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --ink: #1f2328;
+  --muted: #656d76;
+  --line: #e5e7eb;
+  --accent: #8a6a1f;
+  --code-bg: #f6f8fa;
+  --ok: #1a7f37;
+  --warn-soft: #fff8e6;
+  --warn: #8a5a00;
+  --tk-kw: #cf222e; --tk-str: #0a3069; --tk-num: #0550ae; --tk-com: #6e7781; --tk-fn: #8250df;
+  --f-body: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono: ui-monospace, "Cascadia Code", Consolas, "SF Mono", monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f1115; --surface: #0f1115; --ink: #e6edf3; --muted: #9198a1; --line: #2a2f37;
+  --accent: #d6b25e; --code-bg: #161b22; --ok: #3fb950; --warn-soft: #2a2414; --warn: #e3b341;
+  --tk-kw: #ff7b72; --tk-str: #a5d6ff; --tk-num: #79c0ff; --tk-com: #8b949e; --tk-fn: #d2a8ff;
+  color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #0f1115; --surface: #0f1115; --ink: #e6edf3; --muted: #9198a1; --line: #2a2f37;
+  --accent: #d6b25e; --code-bg: #161b22; --ok: #3fb950; --warn-soft: #2a2414; --warn: #e3b341;
+  --tk-kw: #ff7b72; --tk-str: #a5d6ff; --tk-num: #79c0ff; --tk-com: #8b949e; --tk-fn: #d2a8ff;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { background: var(--bg); color: var(--ink); font: 15.5px/1.65 var(--f-body); }
+.wrap {
+  max-width: 1080px; margin: 0 auto;
+  padding-block: 3rem 4rem;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 3.5rem;
+}
+@media (max-width: 860px) { .wrap { grid-template-columns: minmax(0, 1fr); gap: 2rem; } nav.toc { position: static; } }
+nav.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 2rem); align-self: start; font-size: .875rem; }
+nav.toc p { font-size: .75rem; font-weight: 500; color: var(--muted); margin: 0 0 .6rem; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: .2rem; }
+nav.toc a { color: var(--muted); text-decoration: none; display: block; padding: .15rem 0; }
+nav.toc a:hover, nav.toc a:focus-visible { color: var(--ink); }
+nav.toc .sub a { padding-left: .9rem; font-size: .82rem; }
+main { min-width: 0; display: grid; gap: 3rem; }
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+h1, h2, h3 { font-family: var(--f-body); text-wrap: balance; line-height: 1.25; margin: 0; letter-spacing: -.01em; }
+h1 { font-size: 1.9rem; font-weight: 600; }
+h2 { font-size: 1.3rem; font-weight: 600; padding-bottom: .5rem; border-bottom: 1px solid var(--line); }
+h3 { font-size: 1rem; font-weight: 600; }
+section { display: grid; gap: .9rem; }
+p { margin: 0; max-width: 68ch; }
+.eyebrow { font-size: .8rem; color: var(--muted); }
+.lede { font-size: 1.05rem; color: var(--muted); }
+.meta { display: flex; flex-wrap: wrap; gap: .4rem 1rem; font-size: .85rem; color: var(--muted); }
+.chip { font-size: .85rem; color: var(--muted); }
+.chip.ok { color: var(--ok); }
+code { font-family: var(--f-mono); font-size: .86em; background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+ul.plain { margin: 0; padding-left: 1.2rem; display: grid; gap: .4rem; max-width: 70ch; }
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+th, td { text-align: left; padding: .55rem .75rem .55rem 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: .8rem; color: var(--muted); font-weight: 500; }
+td code { white-space: nowrap; }
+ol.steps { margin: 0; padding-left: 1.3rem; display: grid; gap: .7rem; max-width: 70ch; }
+ol.steps li::marker { color: var(--muted); }
+ol.steps strong { display: block; font-weight: 500; }
+ol.steps span { color: var(--muted); }
+.file { display: grid; gap: .75rem; padding-top: 1.5rem; }
+.file .path { font: .8rem var(--f-mono); color: var(--muted); }
+pre { margin: 0; overflow-x: auto; background: var(--code-bg); border-radius: 6px; padding: 1rem 1.1rem; font: .83rem/1.6 var(--f-mono); tab-size: 2; }
+pre code { background: none; padding: 0; font-size: inherit; }
+.notes { display: grid; margin: 0; padding: 0; list-style: none; max-width: 72ch; }
+.notes li { display: grid; grid-template-columns: minmax(0, 10rem) minmax(0, 1fr); gap: 1rem; padding: .5rem 0; border-bottom: 1px solid var(--line); }
+.notes li:last-child { border-bottom: 0; }
+.notes b { font: 500 .8rem/1.6 var(--f-mono); color: var(--ink); overflow-wrap: anywhere; }
+.notes span { color: var(--muted); }
+@media (max-width: 560px) { .notes li { grid-template-columns: minmax(0, 1fr); gap: .15rem; } }
+.callout { border-radius: 6px; padding: .9rem 1.1rem; display: grid; gap: .4rem; }
+.callout.warn { background: var(--warn-soft); }
+.callout.warn .eyebrow { color: var(--warn); font-weight: 500; }
+.fix { display: grid; gap: .6rem; }
+.cmd { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1rem; align-items: center; padding: .5rem 0; border-bottom: 1px solid var(--line); }
+.cmd code { overflow-wrap: anywhere; }
+.cmd .chip { white-space: nowrap; }
+.hljs-keyword, .hljs-built_in, .hljs-literal { color: var(--tk-kw); }
+.hljs-string, .hljs-regexp { color: var(--tk-str); }
+.hljs-number { color: var(--tk-num); }
+.hljs-comment { color: var(--tk-com); font-style: italic; }
+.hljs-title, .hljs-title.function_, .hljs-title.class_ { color: var(--tk-fn); }
+.hljs-subst, .hljs-params, .hljs-variable { color: var(--ink); }
+.back { font-size: .85rem; color: var(--muted); text-decoration: none; }
+.back:hover { color: var(--ink); }
+</style>
+
+<div class="wrap">
+  <nav class="toc" aria-label="Sommaire">
+    <p>Sommaire</p>
+    <ol>
+      <li><a href="#objectif">Objectif</a></li>
+      <li><a href="#etapes">Étapes</a></li>
+      <li><a href="#fichiers">Fichiers créés</a></li>
+      <li><a href="#contrat">Le contrat</a></li>
+      <li><a href="#modules">Le code</a></li>
+      <li class="sub"><a href="#index">index.js</a></li>
+      <li class="sub"><a href="#shopify">shopify.js</a></li>
+      <li><a href="#tests">Le test</a></li>
+      <li><a href="#fixtures">Les fixtures</a></li>
+      <li><a href="#verifs">Vérifications</a></li>
+      <li><a href="#retenir">À retenir</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <header style="display:grid;gap:.9rem">
+      <a class="back" href="index.html">&larr; Carnet de la phase 3</a>
+      <span class="eyebrow">Prixoli · phase 3</span>
+      <h1>Tâche 3 : l'adaptateur Shopify</h1>
+      <p class="lede">Lire le catalogue de Connox et de Fleux, deux boutiques Shopify, et en sortir un article normalisé par variante : marque, titre, EAN, prix, disponibilité, images.</p>
+      <div class="meta">
+        <span class="chip ok">PR #29</span>
+        <span class="chip">feat/ingestion-shopify</span>
+        <span class="chip">25 nov. 2026</span>
+      </div>
+    </header>
+
+    <section id="objectif">
+      <h2>Objectif</h2>
+      <p>Un <b>adaptateur</b> traduit le site d'un marchand en articles au même format pour tous. La suite de la collecte (rapprochement, écriture en base) ne connaît que ce format et ignore d'où viennent les données. Shopify a l'avantage d'exposer deux adresses publiques en JSON :</p>
+      <ul class="plain">
+        <li><code>/products.json?limit=250&amp;page=N</code> : le catalogue, 250 produits par page. Pas d'EAN, prix en euros sous forme de texte.</li>
+        <li><code>/products/&lt;poignée&gt;.js</code> : le détail d'un produit, avec le <code>barcode</code>. Prix en centimes.</li>
+      </ul>
+      <p>Toutes les requêtes passent par <code>fetchText</code>, qui sera en pratique le <code>createPoliteFetch</code> de la tâche 2 : agent déclaré, robots.txt, 2 secondes entre deux pages.</p>
+    </section>
+
+    <section id="etapes">
+      <h2>Étapes</h2>
+      <ol class="steps">
+        <li><div><strong>Fixtures</strong><span>Cinq fichiers JSON tirés des vraies fiches du spike, générés plutôt que tapés.</span></div></li>
+        <li><div><strong>Le test <code>shopify.test.js</code></strong><span>Dix cas, du plus simple (l'adaptateur est enregistré) aux cas limites (clé fausse, EAN-8, page inchangée).</span></div></li>
+        <li><div><strong>Les modules</strong><span><code>adapters/index.js</code> (liste des adaptateurs et contrat), <code>adapters/shopify.js</code>.</span></div></li>
+        <li><div><strong>Vérification</strong><span>150 tests verts, lint sans erreur, format conforme.</span></div></li>
+        <li><div><strong>Commit et PR #29</strong><span>Cases du plan cochées dans le même commit.</span></div></li>
+      </ol>
+    </section>
+
+    <section id="fichiers">
+      <h2>Fichiers créés</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Fichier</th><th>Rôle</th></tr></thead>
+          <tbody>
+            <tr><td><code>meubly-back/ingestion/adapters/index.js</code></td><td>Liste des adaptateurs et contrat commun (types JSDoc)</td></tr>
+            <tr><td><code>meubly-back/ingestion/adapters/shopify.js</code></td><td>Adaptateur Shopify</td></tr>
+            <tr><td><code>meubly-back/tests/unit/ingestion/shopify.test.js</code></td><td>10 tests</td></tr>
+            <tr><td><code>meubly-back/tests/fixtures/ingestion/shopify/*.json</code></td><td>5 fixtures</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="contrat">
+      <h2>Le contrat</h2>
+      <p>Tout adaptateur expose deux fonctions :</p>
+      <ul class="notes">
+        <li><b>listBrands(ctx)</b><span>Rend l'ensemble des marques vendues, normalisées par <code>normText</code>. Sert à trouver les marques communes à plusieurs marchands.</span></li>
+        <li><b>listItems(ctx, brands)</b><span>Rend, une par une, les variantes des produits de ces marques, au format <code>ScrapedItem</code>.</span></li>
+        <li><b>ctx.config</b><span>Le contenu de <code>partner.adapter_config</code> en base, par exemple <code>{ "baseUrl": "https://www.connox.fr", "stripBrandPrefix": true }</code>.</span></li>
+        <li><b>ctx.knownPages</b><span>Les pages déjà lues, avec leur date de modification et leurs EAN. Une page inchangée n'est pas relue.</span></li>
+      </ul>
+    </section>
+
+    <section id="modules">
+      <h2>Le code</h2>
+      <p>Le code ci-dessous est copié automatiquement depuis les fichiers du dépôt.</p>
+
+      <article class="file" id="index">
+        <h3>index.js</h3>
+        <span class="path">meubly-back/ingestion/adapters/index.js</span>
+        <p>Un registre : la tâche 4 lira <code>partner.adapter</code> (« shopify » ou « nordicnest ») et prendra <code>adapters[partner.adapter]</code>. Les commentaires <code>@typedef</code> décrivent le format, et l'éditeur s'en sert pour l'autocomplétion.</p>
+<pre><code class="language-javascript">// Adaptateurs de collecte, choisis par partner.adapter. Tous respectent le contrat ci-dessous.
+import { shopify } from "./shopify.js";
+
+/**
+ * @typedef {Object} ScrapedItem
+ * @property {string} externalId      identifiant de la variante chez le marchand
+ * @property {string} pageId          identifiant de la page produit chez le marchand
+ * @property {string|null} pageUpdatedAt  date de modification de la page, si le marchand la donne
+ * @property {string} url             URL publique de la variante
+ * @property {string} brand
+ * @property {string} productTitle    sans la marque ni la variante
+ * @property {string} variantLabel    "" si variante unique
+ * @property {string|null} gtin       EAN valide ou null
+ * @property {string|null} manufacturerRef
+ * @property {number} price           euros TTC
+ * @property {"in_stock"|"out_of_stock"|"unknown"} availability
+ * @property {string[]} images        6 au plus, image de la variante en premier
+ * @property {string|null} description  900 caracteres au plus, sans HTML
+ * @property {Record&lt;string, string|number&gt;} attributes
+ * @property {number|null} weightKg
+ * @property {string|null} categoryHint  type ou rayon annonce par le marchand
+ */
+
+/**
+ * @typedef {Object} AdapterCtx
+ * @property {object} config                              partner.adapter_config
+ * @property {(url: string) =&gt; Promise&lt;string&gt;} fetchText  en pratique createPoliteFetch()
+ * @property {Map&lt;string, { updatedAt: string, gtins: Record&lt;string, string|null&gt; }&gt;} [knownPages]
+ */
+
+/**
+ * @typedef {Object} Adapter
+ * @property {(ctx: AdapterCtx) =&gt; Promise&lt;Set&lt;string&gt;&gt;} listBrands  marques normalisees (normText)
+ * @property {(ctx: AdapterCtx, brands: Set&lt;string&gt;) =&gt; AsyncGenerator&lt;ScrapedItem&gt;} listItems
+ */
+
+export const adapters = { shopify };</code></pre>
+        <ul class="notes">
+          <li><b>pageUpdatedAt</b><span>Ajouté au contrat du plan. La tâche 4 l'enregistre avec l'article, ce qui permet de reconstruire <code>knownPages</code> au passage suivant.</span></li>
+          <li><b>nordicnest</b><span>La seconde clé du registre arrive à la tâche 5.</span></li>
+        </ul>
+      </article>
+
+      <article class="file" id="shopify">
+        <h3>shopify.js</h3>
+        <span class="path">meubly-back/ingestion/adapters/shopify.js</span>
+<pre><code class="language-javascript">// Adaptateur Shopify (Connox, Fleux) : catalogue par /product.json, detail par /products/&lt;handle&gt;.js.
+import { pickGtin } from "../gtin.js";
+import { normText } from "../text.js";
+
+const MAX_PAGES = 200; // garde-fou : 50 000 produits
+const MAX_IMAGES = 6;
+const MAX_DESCRIPTION = 900;
+const AVAILABILITY = { true: "in_stock", false: "out_of_stock" };
+const ENTITIES = { amp: "&amp;", lt: "&lt;", gt: "&gt;", quot: '"', apos: "'", nbsp: " " };
+
+/**Pages de /products.json, jusqu'a la premiere vide. */
+async function* catalogPages({ config, fetchText }) {
+    for (let page = 1; page &lt;= MAX_PAGES; page++) {
+        const url =
+            `${config.baseUrl}/products.json?limit=250&amp;page=${page}`;
+        const { products } = JSON.parse(await fetchText(url));
+        if (!products.length) return;
+        yield products;
+    }
+}
+
+/** Resume /products.json : prix en euros (texte), pas de barcode. */
+function fromSummary(product) {
+    return {
+        ...product,
+        type: product.product_type,
+        description: product.body_html,
+        updateAt: product.updated_at,
+        images: product.images.map((image) =&gt; image.src),
+        variants: product.variants.map((v) =&gt; ({
+            ...v,
+            priceCents: Math.round(Number(v.price) * 100),
+            image: v.featured_image?.src,
+        })),
+    };
+
+    /** EAN-13, 14 ou 12 avant EAN-8 : une reference de 8 chiffres passe la cle 1 fois sur 10. */
+    function findGtin(...candidates) {
+        const long = candidates.filter((candidate) =&gt; String(candidate ?? "").trim().length &gt;= 12);
+        return pickGtin(...long) ?? pickGtin(...candidates);
+    }
+
+    function stripBrandPrefix(title, brand) {
+        const prefix = `${brand} -  `.toLowerCase();
+        return title.toLowerCase().startsWith(prefix) ?
+            title.slice(prefix.length) : title;
+    }
+
+    const absolute = (src) =&gt; (src.startsWith("//") ? `https:${src}` : src);
+
+    /** Texte brut : balises retirees, entites decodees, espaces reduits. */
+    function plainText(html) {
+        //shortcut: entites courantes et decimales seulement, ajouter &amp;#x..; si un marchand en sert
+        const text = String(html ?? "")
+            .replace(/&lt;[^&gt;]*&gt;/g, " ")
+            .replace(/&amp;(#\d+|[a-z]+);/gi, (match, entity) =&gt;
+                entity.startsWith("#")
+                    ? String.fromCodePoint(Number(entity.slice(1)))
+                    : (ENTITIES[entity.toLowerCase()] ?? match)
+            )
+            .replace(/\s+/g, " ")
+            .trim();
+        return text ? text.slice(0, MAX_DESCRIPTION) : null;
+    }
+
+    /** Une page produit normalisee -&gt; un ScrapedItem par variante. */
+    function* toItems(config, page, knownGtins) {
+        for (const variant of page.variants) {
+            const externalId = String(variant.id);
+            const barcode = String(variant.barcode ?? "").trim();
+            const gtin = knownGtins ? (knownGtins[externalId] ?? null) :
+                findGtin(barcode, variant.sku);
+            yield {
+                externalId,
+                pageId: String(page.id),
+                pageUpdatedAt: page.updateAt ?? null,
+                url:
+                    `${config.baseUrl}/products/${page.handle}?variant=${externalId}`,
+                brand: page.vendor,
+                productTitle: config.stripBrandPrefix
+                    ? stripBrandPrefix(page.title, page.vendor)
+                    : page.title,
+                variantLabel: variant.title === "Default Title" ? "" : variant.title,
+                gtin,
+                manufacturerRef: barcode &amp;&amp; barcode !== gtin ? barcode : null,
+                price: variant.priceCents / 100,
+                availability: AVAILABILITY[variant.available] ?? "unknown",
+                images: [...new Set([variant.image, ...page.images].filter(Boolean).map(absolute))].slice(
+                    0,
+                    MAX_IMAGES
+                ),
+                description: plainText(page.description),
+                attributes: {},
+                weightKg: variant.grams &gt; 0 ? variant.grams / 1000 : null,
+                categoryHint: page.type || null,
+            };
+        }
+    }
+
+    /** @type {import} */
+
+}</code></pre>
+        <ul class="notes">
+          <li><b>catalogPages</b><span>Générateur asynchrone (<code>async function*</code>) : il rend les pages du catalogue l'une après l'autre et s'arrête à la première vide. <code>MAX_PAGES</code> évite une boucle sans fin si un marchand ne renvoyait jamais de page vide.</span></li>
+          <li><b>fromDetail / fromSummary</b><span>Les deux sources ne décrivent pas un produit de la même façon : prix en centimes ou en euros texte, <code>weight</code> ou <code>grams</code>, <code>type</code> ou <code>product_type</code>. Chacune est ramenée au même format pour qu'une seule fonction fabrique les articles.</span></li>
+          <li><b>Math.round(… * 100)</b><span><code>Number("239.00") * 100</code> peut donner 23899.999… à cause des nombres à virgule flottante. L'arrondi remet un entier juste.</span></li>
+          <li><b>findGtin</b><span>Cherche d'abord un code de 12 chiffres ou plus. Une référence de 8 chiffres passe la clé de contrôle une fois sur 10 par hasard et serait prise pour un EAN-8.</span></li>
+          <li><b>manufacturerRef</b><span>Le <code>barcode</code>, quand il n'est pas l'EAN. Chez Fleux, le <code>barcode</code> contient la référence fabricant et l'EAN est rangé dans <code>sku</code>.</span></li>
+          <li><b>stripBrandPrefix</b><span>Connox écrit « HAY - Pouf Planar ». Le préfixe est retiré quand la configuration du marchand le demande, sans tenir compte des majuscules.</span></li>
+          <li><b>plainText</b><span>Retire les balises HTML, décode les entités (<code>&amp;#039;</code> devient une apostrophe), réduit les espaces, coupe à 900 caractères.</span></li>
+          <li><b>images</b><span>L'image de la variante d'abord, puis celles de la page, sans doublon (<code>new Set</code>), 6 au plus. Les adresses <code>//cdn…</code> reçoivent <code>https:</code>.</span></li>
+          <li><b>AVAILABILITY</b><span>Une table au lieu de deux conditions imbriquées : <code>true</code> donne en stock, <code>false</code> épuisé, une valeur absente donne « unknown ».</span></li>
+          <li><b>knownPages</b><span>Si <code>updated_at</code> n'a pas changé, on ne demande pas le <code>.js</code> : l'article est construit depuis <code>products.json</code> et l'EAN est repris de la collecte précédente. Limite assumée : la référence fabricant reste vide dans ce cas.</span></li>
+          <li><b>compare_at_price</b><span>Le prix barré du marchand n'est jamais repris (choix de la spec). L'article ne contient aucune clé qui s'en approche.</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section id="tests">
+      <h2>Le test</h2>
+      <p><code>makeCtx</code> fabrique un contexte dont le réseau sert les fixtures selon l'URL demandée. Une URL inattendue fait échouer le test, ce qui prouve qu'aucune requête superflue ne part. <code>hayWith</code> modifie une variante de la fiche HAY pour tester un cas limite sans créer une fixture de plus.</p>
+<pre><code class="language-javascript">import { describe, it, expect, vi } from "vitest";
+import { readFileSync } from "node:fs";
+import { adapters } from "../../../ingestion/adapters/index.js";
+import { shopify } from "../../../ingestion/adapters/shopify.js";
+
+const BASE = "https://shop.test";
+const HAY_JS = `${BASE}/products/hay-pouf-planar.js`;
+const fixture = (name) =&gt;
+  readFileSync(new URL(`../../fixtures/ingestion/shopify/${name}`, import.meta.url), "utf8");
+const ROUTES = {
+  [`${BASE}/products.json?limit=250&amp;page=1`]: "products-page1.json",
+  [`${BASE}/products.json?limit=250&amp;page=2`]: "products-page2.json",
+  [HAY_JS]: "product-connox.js.json",
+  [`${BASE}/products/thonet-s-285-1-bureau.js`]: "product-connox-default.js.json",
+  [`${BASE}/products/lampe-de-table-apex.js`]: "product-fleux.js.json",
+};
+
+/** Contexte d'adaptateur dont le reseau sert les fixtures ; `override` remplace une reponse. */
+function makeCtx({ config = {}, override = {}, knownPages } = {}) {
+  const fetchText = vi.fn(async (url) =&gt; {
+    if (url in override) return JSON.stringify(override[url]);
+    if (!ROUTES[url]) throw new Error(`URL inattendue : ${url}`);
+    return fixture(ROUTES[url]);
+  });
+  return {
+    config: { baseUrl: BASE, stripBrandPrefix: true, ...config },
+    fetchText,
+    knownPages,
+  };
+}
+
+async function collect(ctx, brands) {
+  const items = [];
+  for await (const item of shopify.listItems(ctx, new Set(brands))) items.push(item);
+  return items;
+}
+
+const item = (items, externalId) =&gt; items.find((i) =&gt; i.externalId === externalId);
+const jsCalls = (ctx) =&gt;
+  ctx.fetchText.mock.calls.map(([url]) =&gt; url).filter((u) =&gt; u.endsWith(".js"));
+
+/** Fiche Connox HAY modifiee pour un cas limite */
+function hayWith(changeVariant) {
+  const detail = JSON.parse(fixture("product-connox.js.json"));
+  changeVariant(detail.variants[0]);
+  return { [HAY_JS]: detail };
+}
+
+describe("adaptateur shopify", () =&gt; {
+  it("est enregistre sous la cle shopify", () =&gt; {
+    expect(adapters.shopify).toBe(shopify);
+  });
+
+  it("listBrands lit le catalogue jusqu'a une page vide et normalise les marques", async () =&gt; {
+    const ctx = makeCtx();
+    expect(await shopify.listBrands(ctx)).toEqual(new Set(["hay", "thonet", "liewood"]));
+    expect(ctx.fetchText).toHaveBeenCalledTimes(2);
+  });
+
+  it("ne lit en .js que les produits des marques demandees", async () =&gt; {
+    const ctx = makeCtx();
+    const items = await collect(ctx, ["hay"]);
+    expect(jsCalls(ctx)).toEqual([HAY_JS, `${BASE}/products/lampe-de-table-apex.js`]);
+    expect(items).toHaveLength(5);
+  });
+
+  it("produit Connox : titre sans marque, prix en euros, EAN du barcode", async () =&gt; {
+    const sable = item(await collect(makeCtx(), ["hay"]), "57814168338776");
+    expect(sable).toMatchObject({
+      pageId: "15899599700312",
+      url: `${BASE}/products/hay-pouf-planar?variant=57814168338776`,
+      brand: "HAY",
+      productTitle: "Pouf Planar",
+      variantLabel: "sable",
+      gtin: "5710441309116",
+      manufacturerRef: null,
+      price: 239,
+      availability: "in_stock",
+      weightKg: 4.2,
+      categoryHint: "Möbel",
+    });
+    expect(sable.images[0]).toMatch(/sand\.jpg/);
+    expect(sable.images.every((src) =&gt; src.startsWith("https://"))).toBe(true);
+    expect(sable.description).toContain("chambre d'enfant");
+    expect(sable.description).not.toMatch(/[&lt;&gt;]/);
+  });
+
+  it("variante unique : libelle vide, prix barre absent", async () =&gt; {
+    const [bureau] = await collect(makeCtx(), ["thonet"]);
+    expect(bureau.variantLabel).toBe("");
+    expect(bureau.price).toBe(5553.05);
+    expect(Object.keys(bureau).filter((key) =&gt; /compare/i.test(key))).toEqual([]);
+  });
+
+  it("produit Fleux : EAN dans sku, reference fabricant dans barcode", async () =&gt; {
+    const items = await collect(makeCtx({ config: { stripBrandPrefix: false } }), ["hay"]);
+    expect(item(items, "47561977528654")).toMatchObject({
+      productTitle: "Lampe de table Apex",
+      gtin: "5710441326304",
+      manufacturerRef: "AD343-A687",
+      price: 125,
+    });
+  });
+
+  it("refuse un barcode de 13 chiffres a cle fausse", async () =&gt; {
+    const override = hayWith((v) =&gt; (v.barcode = "5710441309117"));
+    const items = await collect(makeCtx({ override }), ["hay"]);
+    expect(item(items, "57814168338776").gtin).toBeNull();
+  });
+
+  it("prefere un EAN-13 a un code de 8 chiffres valide par hasard", async () =&gt; {
+    const override = hayWith((v) =&gt; {
+      v.barcode = "96385074";
+      v.sku = "5710441309116";
+    });
+    const sable = item(await collect(makeCtx({ override }), ["hay"]), "57814168338776");
+    expect(sable).toMatchObject({ gtin: "5710441309116", manufacturerRef: "96385074" });
+  });
+
+  it("marque une variante indisponible", async () =&gt; {
+    const override = hayWith((v) =&gt; (v.available = false));
+    const items = await collect(makeCtx({ override }), ["hay"]);
+    expect(item(items, "57814168338776").availability).toBe("out_of_stock");
+  });
+
+  it("page inchangee : pas de .js, EAN repris de knownPages", async () =&gt; {
+    const knownPages = new Map([
+      [
+        "15899599700312",
+        {
+          updatedAt: "2026-11-20T10:00:00+01:00",
+          gtins: { 57814168338776: "5710441309116", 57814168469848: null },
+        },
+      ],
+    ]);
+    const ctx = makeCtx({ knownPages });
+    const items = await collect(ctx, ["hay"]);
+    expect(jsCalls(ctx)).not.toContain(HAY_JS);
+    expect(item(items, "57814168338776")).toMatchObject({ gtin: "5710441309116", price: 239 });
+    expect(item(items, "57814168469848").gtin).toBeNull();
+  });
+});</code></pre>
+      <ul class="notes">
+        <li><b>listBrands</b><span>Deux requêtes seulement : la page 1, puis la page 2 vide qui arrête la lecture.</span></li>
+        <li><b>marques demandées</b><span>Avec la marque « hay », seules les fiches HAY (Connox) et Hay (Fleux) sont lues en <code>.js</code>. « HAY » et « Hay » donnent la même marque une fois normalisées.</span></li>
+        <li><b>5553.05</b><span>Le bureau Thonet coûte 555 305 centimes. Le test vérifie la conversion exacte en euros.</span></li>
+        <li><b>clé fausse</b><span>Le dernier chiffre de l'EAN est changé : l'article est gardé, mais sans EAN.</span></li>
+        <li><b>96385074</b><span>Un EAN-8 valide placé dans <code>barcode</code>, un EAN-13 dans <code>sku</code> : c'est l'EAN-13 qui doit l'emporter.</span></li>
+        <li><b>page inchangée</b><span>Aucune requête <code>.js</code> pour la page HAY, et les EAN viennent de <code>knownPages</code>, y compris un <code>null</code>.</span></li>
+      </ul>
+    </section>
+
+    <section id="fixtures">
+      <h2>Les fixtures</h2>
+      <p>Les fiches <code>.js</code> sont de vraies réponses enregistrées pendant le spike, réduites aux champs utiles. Le catalogue <code>products.json</code> a été reconstruit à partir des mêmes fiches : en voulant relire une vraie page, Connox a répondu 429 (trop de requêtes), et on n'a pas insisté.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Fichier</th><th>Contenu</th></tr></thead>
+          <tbody>
+            <tr><td><code>products-page1.json</code></td><td>Catalogue : HAY Pouf Planar, Thonet S 285/1, lampe Apex, et un produit Liewood non demandé</td></tr>
+            <tr><td><code>products-page2.json</code></td><td>Page vide, fin du catalogue</td></tr>
+            <tr><td><code>product-connox.js.json</code></td><td>Pouf Planar (Connox), 2 variantes, EAN dans <code>barcode</code></td></tr>
+            <tr><td><code>product-connox-default.js.json</code></td><td>Bureau Thonet (Connox), variante unique, prix barré</td></tr>
+            <tr><td><code>product-fleux.js.json</code></td><td>Lampe Apex (Fleux), 3 variantes, EAN dans <code>sku</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="verifs">
+      <h2>Vérifications</h2>
+      <div>
+        <div class="cmd"><code>npm run test:run</code><span class="chip ok">150 verts · 16 fichiers</span></div>
+        <div class="cmd"><code>npm run lint</code><span class="chip ok">0 erreur</span></div>
+        <div class="cmd"><code>npm run format:check</code><span class="chip ok">conforme</span></div>
+      </div>
+    </section>
+
+    <section id="retenir">
+      <h2>À retenir</h2>
+      <ul class="plain">
+        <li><b>Un format commun.</b> Toutes les différences entre marchands restent dans l'adaptateur. La tâche 4 n'aura qu'un seul format à traiter.</li>
+        <li><b>Lire le moins possible.</b> Le catalogue suffit pour savoir quoi relire, et une page inchangée n'est pas redemandée. C'est ce qui permet une collecte quotidienne polie.</li>
+        <li><b>Le 429 de Connox.</b> À surveiller pour la collecte planifiée (tâche 13) : <code>politeFetch</code> attend une minute et réessaie trois fois, puis abandonne.</li>
+        <li><b>Hors périmètre :</b> <code>attributes</code> reste vide (les noms d'options Shopify sont peu fiables, la couleur est déjà dans le libellé de variante), entités HTML hexadécimales non décodées.</li>
+        <li><b>Suite :</b> tâche 4, rapprochement et écriture en base, avec la commande <code>npm run ingest</code>.</li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>try { hljs.highlightAll(); } catch (e) { /* sans coloration, le code reste lisible */ }</script>
