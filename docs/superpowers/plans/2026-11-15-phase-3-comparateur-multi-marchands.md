@@ -106,13 +106,13 @@ Branche `feat/ingestion-core`.
   - autre statut non 2xx : leve `HttpError` portant `status`.
 - `class BlockedError extends Error`, `class HttpError extends Error { status }`.
 
-- [ ] **Step 1 : tests en echec.**
+- [x] **Step 1 : tests en echec.**
   - `gtin` : `isGtin("5710441280323") === true` ; `isGtin("5710441280324") === false` ; `isGtin("510960116082") === false` ; `isGtin("AB450-A996")`, `isGtin(null)` faux ; `pickGtin("B9926429-500", "5400959200004") === "5400959200004"` ; `pickGtin("", undefined) === null`.
   - `text` : `normText("&Tradition  Été") === "tradition ete"`.
   - `politeFetch` (avec `fetchImpl` et `sleep` simules) : l'en-tete `User-Agent` vaut `PrixoliBot/1.0 (+https://x.test)` ; `robots.txt` avec `Disallow: /prive` rejette `/prive/a` par `BlockedError` sans appeler la page ; deux URL du meme hote declenchent `sleep(2000)` ; un 429 puis un 200 renvoie le corps apres `sleep(60000)` ; un 403 leve `BlockedError` ; un 500 leve `HttpError` avec `status === 500` ; `robots.txt` en 404 autorise tout.
-- [ ] **Step 2 :** `npm run test:run -- ingestion`. Attendu : echec (modules absents).
-- [ ] **Step 3 :** Implementer les trois modules. Rien a l'import (pas d'appel reseau, pas de minuterie).
-- [ ] **Step 4 :** `npm run test:run`. Attendu : vert. Commit, PR.
+- [x] **Step 2 :** `npm run test:run -- ingestion`. Attendu : echec (modules absents).
+- [x] **Step 3 :** Implementer les trois modules. Rien a l'import (pas d'appel reseau, pas de minuterie).
+- [x] **Step 4 :** `npm run test:run`. Attendu : vert. Commit, PR.
 
 ### Task 3: Adaptateur Shopify
 
