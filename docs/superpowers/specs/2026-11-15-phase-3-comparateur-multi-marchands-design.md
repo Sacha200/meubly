@@ -26,14 +26,19 @@ La phase 3 fait entrer de vraies offres de plusieurs marchands, donne au schema 
 |---|---|---|---|
 | Connox | oui (Shopify) | EAN | phase 3 |
 | Fleux | oui (Shopify) | EAN (dans `sku`) | phase 3 |
-| The Cool Republic | oui (Shopify) | EAN | phase 3 |
+| The Cool Republic | refus de l'agent declare (defi Cloudflare 403, le 2026-11-17) | EAN | en attente : autorisation demandee le 2026-11-24 |
 | Nordic Nest | oui (plan du site + JSON-LD) | EAN par variante | phase 3 |
 | Silvera | oui | reference interne seulement | plus tard |
 | Cdiscount | oui | EAN | plus tard (prix moyens) |
 | Made in Design, La Redoute, Finnish Design Shop, Lightonline, ManoMano, Maisons du Monde, But, Leroy Merlin | refus (403) | - | affiliation uniquement |
 | Conforama, Nedgis | interdit par `robots.txt` | - | affiliation uniquement |
 
-- **Non mesure** : le nombre d'articles de meme EAN reellement vendus par au moins deux de ces quatre marchands. Indice favorable : 25 marques communes sur 1 500 produits lus chez The Cool Republic. Voir 6.9 (porte de decision).
+- **Porte 6.9, mesuree le 2026-11-17** (agent `PrixoliBot`, 1 requete / 2 s) :
+  - Acces : Connox, Fleux et Nordic Nest repondent 200 (`robots.txt` et catalogue), en local comme depuis GitHub Actions (sonde `ingest-probe.yml`). The Cool Republic oppose un defi Cloudflare (403) a l'agent declare : il est retire du depart, sans contournement, en attendant sa reponse.
+  - Marques communes a au moins deux des trois marchands : 79. Fiches a lire pour ces marques : Connox 6 454, Fleux 968, Nordic Nest 19 541 (sur 46 589 fiches au plan du site).
+  - Echantillon aleatoire de 300 fiches Nordic Nest de ces marques : 283 portent un EAN (1,9 variante par fiche en moyenne), 48 ont le meme EAN chez un autre marchand (47 Connox, 1 Fleux).
+  - Estimation : **environ 3 100 fiches comparables** (intervalle a 95 % : 2 300 a 3 900), borne basse car le rapprochement de l'echantillon passait par le titre. La comparaison repose surtout sur la paire Connox x Nordic Nest ; Fleux recoupe peu.
+  - Duree de lecture : Nordic Nest, 19 541 fiches a 2 s, environ 11 h. Cela depasse la limite de 6 h d'un job GitHub Actions : la tache 5 doit plafonner `maxPagesPerRun` et repartir les fiches sur plusieurs passages.
 - Le prototype local (liste + fiche v2 sur donnees reelles) a ete valide par le proprietaire. La maquette de reference est `.superpowers/brainstorm/1023-1794158174/content/fiche-produit-v2.html`.
 
 ### 2.3 Code
@@ -76,7 +81,7 @@ La phase 3 fait entrer de vraies offres de plusieurs marchands, donne au schema 
 
 ### 6.1 Sources et regles de collecte
 
-- Marchands de depart : **Connox, Fleux, The Cool Republic, Nordic Nest**. D'autres suivront ; ajouter un marchand doit se limiter a un adaptateur et une ligne `partner`.
+- Marchands de depart : **Connox, Fleux, Nordic Nest**. The Cool Republic refuse l'agent declare (2.2) : il rejoindra la liste par simple configuration `shopify` s'il l'autorise. D'autres suivront ; ajouter un marchand doit se limiter a un adaptateur et une ligne `partner`.
 - Regles appliquees par tous les adaptateurs : lecture et respect de `robots.txt` a chaque execution, au plus une requete toutes les 2 secondes par site, pause d'une minute sur un 429, arret de l'adaptateur sur un 403 ou une page de controle (jamais de contournement).
 - **[choix Claude]** Agent identifie : `PrixoliBot/1.0 (+<URL de la page "A propos de nos prix">)`, et non un faux navigateur comme dans l'essai. Si un marchand le bloque ou demande l'arret, son partenaire passe a `is_active = false` et ses offres ne sont plus visibles. Consequence a verifier en 6.9 : un marchand accessible avec un agent de navigateur peut refuser un agent declare.
 - **[choix Claude]** Perimetre de collecte : seulement les **marques vendues par au moins deux des quatre marchands**. Cela vise les articles comparables et borne le volume. La liste des marques communes est recalculee a chaque execution a partir des catalogues.
@@ -108,7 +113,7 @@ Principe **[choix Claude]** : `furniture` reste l'article vendable, c'est-a-dire
 ### 6.4 Collecte (pipeline)
 
 - **[choix Claude]** Emplacement : `meubly-back/ingestion/`, en Node, lance par `npm run ingest -- --partner <nom>`. Il reutilise le client Supabase, les repositories, Vitest et ESLint du back. `bd/ingestion/` et le service `ingestion` du `docker-compose.yml` sont supprimes.
-- Un adaptateur expose une seule fonction qui parcourt le catalogue du marchand et rend des articles normalises : identifiant externe, URL, marque, titre du produit, libelle de variante, EAN, reference fabricant, prix, disponibilite, images, attributs, indice de categorie, identifiant de la page produit du marchand. Deux adaptateurs : `shopify` (Connox, Fleux, The Cool Republic, parametres par `adapter_config`) et `nordicnest` (plan du site, puis JSON-LD de chaque fiche).
+- Un adaptateur expose une seule fonction qui parcourt le catalogue du marchand et rend des articles normalises : identifiant externe, URL, marque, titre du produit, libelle de variante, EAN, reference fabricant, prix, disponibilite, images, attributs, indice de categorie, identifiant de la page produit du marchand. Deux adaptateurs : `shopify` (Connox, Fleux, plus tard The Cool Republic s'il autorise l'agent, parametres par `adapter_config`) et `nordicnest` (plan du site, puis JSON-LD de chaque fiche).
 - Deroule d'une execution, conforme a `docs/diagrams/ingestion-flow.md` : ligne `ingestion_run` -> adaptateur -> upsert `partner_product` -> rapprochement -> upsert `offer` (`status = active`, `last_seen_at`) -> peremption -> cloture avec compteurs. L'ingestion n'ecrit jamais les caches ni `price_history` (triggers).
 - Rapprochement **[choix Claude]** :
   1. EAN valide (cle GTIN verifiee, cherche dans tous les champs candidats) deja connu : l'offre rejoint ce `furniture`.
@@ -199,7 +204,7 @@ Premiere tache du plan, sur la base locale, avant tout autre lot : collecter les
 
 ## 8. Fini quand
 
-- Au moins le nombre d'articles comparables mesure en 6.9 (et au minimum 300) sont visibles en prod avec deux offres actives ou plus de marchands independants.
+- Au moins 2 300 articles comparables (borne basse mesuree en 2.2, et au minimum 300) sont visibles en prod avec deux offres actives ou plus de marchands independants.
 - Aucune offre visible n'a ete verifiee il y a plus de 3 jours.
 - Les quatre workflows tournent seuls depuis 7 jours, visibles dans l'ecran "Flux".
 - Plus aucun article IKEA ni mention "Meubly" a l'ecran ; `bd/ingestion` supprime.
