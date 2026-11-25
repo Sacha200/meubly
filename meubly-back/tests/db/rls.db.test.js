@@ -27,6 +27,7 @@ describe("RLS (base locale)", () => {
     // Si une ecriture "interdite" a reussi (test rouge), ne pas laisser de trace.
     await admin.from("category").delete().eq("label", "rls-pirate");
     await admin.from("furniture").delete().eq("title", "rls-pirate");
+    await admin.from("product").delete().eq("title", "rls-pirate");
     await admin.from("offer").delete().like("seller_name", "rls-%");
   });
 
@@ -65,6 +66,20 @@ describe("RLS (base locale)", () => {
       expect(denied(await anon.from("category").insert({ label: "rls-pirate" }).select())).toBe(
         true
       );
+      expect(denied(await anon.from("product").insert({ title: "rls-pirate" }).select())).toBe(
+        true
+      );
+    });
+
+    it("lit les produits", async () => {
+      const { data, error } = await anon.from("product").select("product_id").limit(1);
+      expect(error).toBeNull();
+      expect(data).toHaveLength(1);
+    });
+
+    it.each(["partner_product", "match_candidate"])("ne lit pas %s", async (table) => {
+      const { error } = await anon.from(table).select("*").limit(1);
+      expect(error).not.toBeNull();
     });
   });
 

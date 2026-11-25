@@ -3,10 +3,13 @@
 -- tester l'affichage multi-offres. N'utilise que des colonnes qui survivent a la phase 2
 -- (jamais offer.is_active). Aucun utilisateur : les tests en creent.
 
+-- Les categories racines viennent de la migration product_variants : on fixe leurs ids pour le seed.
+UPDATE public.category SET category_id = 'c0000000-0000-4000-8000-000000000001'
+WHERE label = 'Salon' AND parent_id IS NULL;
+UPDATE public.category SET category_id = 'c0000000-0000-4000-8000-000000000003'
+WHERE label = 'Chambre' AND parent_id IS NULL;
 INSERT INTO public.category (category_id, label, parent_id) VALUES
-  ('c0000000-0000-4000-8000-000000000001', 'Salon', NULL),
-  ('c0000000-0000-4000-8000-000000000002', 'Canapes', 'c0000000-0000-4000-8000-000000000001'),
-  ('c0000000-0000-4000-8000-000000000003', 'Chambre', NULL);
+  ('c0000000-0000-4000-8000-000000000002', 'Canapes', 'c0000000-0000-4000-8000-000000000001');
 
 INSERT INTO public.partner (partner_id, name, website_base_url) VALUES
   ('8d2e3d7c-1f4a-4a2c-8c3f-0b9cf7f8e2a1', 'Ikea', 'https://www.ikea.com'),
@@ -62,3 +65,32 @@ UPDATE public.offer SET availability = 'out_of_stock', condition = 'refurbished'
   seller_name = 'Atelier Demo'
 WHERE furniture_id = 'f0000000-0000-4000-8000-000000000001'
   AND partner_id = 'd0000000-0000-4000-8000-000000000002';
+
+-- Phase 3 : deux produits a deux variantes (EAN valides), vendus par deux marchands Shopify de demo.
+INSERT INTO public.partner (partner_id, name, website_base_url, adapter, adapter_config) VALUES
+  ('d0000000-0000-4000-8000-000000000003', 'Demo Design Nord', 'https://design-nord.example', 'shopify',
+   '{"baseUrl": "https://design-nord.example"}'),
+  ('d0000000-0000-4000-8000-000000000004', 'Demo Design Sud', 'https://design-sud.example', 'shopify',
+   '{"baseUrl": "https://design-sud.example"}');
+
+INSERT INTO public.product (product_id, brand, title, designer) VALUES
+  ('e0000000-0000-4000-8000-000000000001', 'Demo Studio', 'Chaise Demo', 'A. Designer'),
+  ('e0000000-0000-4000-8000-000000000002', 'Demo Studio', 'Lampe Demo', NULL);
+
+INSERT INTO public.furniture (furniture_id, title, brand, gtin, product_id, variant_label) VALUES
+  ('f0000000-0000-4000-8000-000000000011', 'Chaise Demo chene', 'Demo Studio', '3700000000013',
+   'e0000000-0000-4000-8000-000000000001', 'Chene'),
+  ('f0000000-0000-4000-8000-000000000012', 'Chaise Demo noyer', 'Demo Studio', '3700000000020',
+   'e0000000-0000-4000-8000-000000000001', 'Noyer'),
+  ('f0000000-0000-4000-8000-000000000021', 'Lampe Demo blanche', 'Demo Studio', '3700000000037',
+   'e0000000-0000-4000-8000-000000000002', 'Blanc'),
+  ('f0000000-0000-4000-8000-000000000022', 'Lampe Demo noire', 'Demo Studio', '3700000000044',
+   'e0000000-0000-4000-8000-000000000002', 'Noir');
+
+INSERT INTO public.offer (furniture_id, partner_id, external_title, url_website, price) VALUES
+  ('f0000000-0000-4000-8000-000000000011', 'd0000000-0000-4000-8000-000000000003', 'Chaise Demo, chene', 'https://design-nord.example/products/chaise-demo-chene', 320),
+  ('f0000000-0000-4000-8000-000000000011', 'd0000000-0000-4000-8000-000000000004', 'Chaise Demo chene', 'https://design-sud.example/products/chaise-demo-chene', 299),
+  ('f0000000-0000-4000-8000-000000000012', 'd0000000-0000-4000-8000-000000000003', 'Chaise Demo, noyer', 'https://design-nord.example/products/chaise-demo-noyer', 349),
+  ('f0000000-0000-4000-8000-000000000021', 'd0000000-0000-4000-8000-000000000003', 'Lampe Demo, blanc', 'https://design-nord.example/products/lampe-demo-blanc', 189),
+  ('f0000000-0000-4000-8000-000000000021', 'd0000000-0000-4000-8000-000000000004', 'Lampe Demo blanche', 'https://design-sud.example/products/lampe-demo-blanche', 179),
+  ('f0000000-0000-4000-8000-000000000022', 'd0000000-0000-4000-8000-000000000004', 'Lampe Demo noire', 'https://design-sud.example/products/lampe-demo-noire', 179);

@@ -78,12 +78,12 @@ Branche `feat/product-variants-schema`.
 - `partner_product` : politique `catalog_read` supprimee et droits `anon`/`authenticated` retires.
 - Categories racines ajoutees si absentes (par `label`) : Salon, Chambre, Bureau, Cuisine et salle a manger, Salle de bain, Jardin et exterieur, Luminaires, Decoration, Rangement, Enfant, Autres.
 
-- [ ] **Step 1 :** Verifier que rien ne lit ce qu'on retire : `grep -rn "api_key_hash\|partner_product" meubly-back meubly-front/src --include=*.js --include=*.vue` hors `node_modules` et tests. Attendu : `api_key_hash` seulement dans `tests/unit/adminRoutes.test.js` (a adapter), `partner_product` seulement dans des repositories (service role).
-- [ ] **Step 2 : tests en echec.** Dans `schema.db.test.js` : `product` existe avec ses colonnes ; `furniture.product_id` et `variant_label` existent ; `partner.adapter = 'autre'` est refuse ; `partner.api_key_hash` n'existe plus ; les 11 categories racines existent. Dans `rls.db.test.js` : `anonClient()` lit `product` ; `anonClient()` obtient 0 ligne ou une erreur de droit sur `partner_product` et `match_candidate` ; `anonClient()` ne peut pas inserer dans `product`.
-- [ ] **Step 3 :** `npm run test:db`. Attendu : echec sur les nouveaux tests.
-- [ ] **Step 4 :** Ecrire la migration selon le bloc Interfaces. Completer `seed.sql` : 2 produits a 2 variantes chacun avec `gtin` valides, 2 partenaires avec `adapter = 'shopify'`, des offres chez les deux pour au moins une variante.
-- [ ] **Step 5 :** `npx supabase@2.122.1 db reset` puis `npm run test:db` et `npm run test:run`. Attendu : tout vert.
-- [ ] **Step 6 :** Mettre a jour matrice et diagramme. Commit, PR. Le `db push` prod attend la reprise du projet et l'accord du proprietaire ; il peut etre fait a n'importe quel moment avant la tache 14 (migration additive).
+- [x] **Step 1 :** Verifier que rien ne lit ce qu'on retire : `grep -rn "api_key_hash\|partner_product" meubly-back meubly-front/src --include=*.js --include=*.vue` hors `node_modules` et tests. Attendu : `api_key_hash` seulement dans `tests/unit/adminRoutes.test.js` (a adapter), `partner_product` seulement dans des repositories (service role).
+- [x] **Step 2 : tests en echec.** Dans `schema.db.test.js` : `product` existe avec ses colonnes ; `furniture.product_id` et `variant_label` existent ; `partner.adapter = 'autre'` est refuse ; `partner.api_key_hash` n'existe plus ; les 11 categories racines existent. Dans `rls.db.test.js` : `anonClient()` lit `product` ; `anonClient()` obtient 0 ligne ou une erreur de droit sur `partner_product` et `match_candidate` ; `anonClient()` ne peut pas inserer dans `product`.
+- [x] **Step 3 :** `npm run test:db`. Attendu : echec sur les nouveaux tests.
+- [x] **Step 4 :** Ecrire la migration selon le bloc Interfaces. Completer `seed.sql` : 2 produits a 2 variantes chacun avec `gtin` valides, 2 partenaires avec `adapter = 'shopify'`, des offres chez les deux pour au moins une variante.
+- [x] **Step 5 :** `npx supabase@2.122.1 db reset` puis `npm run test:db` et `npm run test:run`. Attendu : tout vert.
+- [x] **Step 6 :** Mettre a jour matrice et diagramme. Commit, PR. Le `db push` prod attend la reprise du projet et l'accord du proprietaire ; il peut etre fait a n'importe quel moment avant la tache 14 (migration additive).
 
 ### Task 2: Socle de collecte (EAN, texte, requetes polies)
 
