@@ -24,11 +24,16 @@ describe("politeFetch", () => {
     });
   });
 
-  it("autorise une URL interdite par robots.txt sans appeler la page", async () => {
+  it("autorise tout quand robots.txt est absent (404)", async () => {
+    const { get } = setup({ [PAGE]: [{ body: "ok" }] });
+    expect(await get(PAGE)).toBe("ok");
+  });
+
+  it("refuse une URL interdite par robots.txt sans appeler la page", async () => {
     const forbidden = "https://shop.test/prive/a";
     const { get, fetchImpl } = setup({ [ROBOTS]: [{ body: "User-agent:*\nDisallow: /prive" }] });
     await expect(get(forbidden)).rejects.toBeInstanceOf(BlockedError);
-    expect(fetchImpl).not.toHaveBeenNthCalledWith(forbidden, expect.anything());
+    expect(fetchImpl).not.toHaveBeenCalledWith(forbidden, expect.anything());
   });
 
   it("attend 2 s entre deux requetes du meme hote (robots.txt compris)", async () => {

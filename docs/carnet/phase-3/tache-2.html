@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tâche 2, socle de collecte</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout : page de documentation sobre, sommaire a gauche sur grand ecran, une colonne sur telephone. */
+:root {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --ink: #1f2328;
+  --muted: #656d76;
+  --line: #e5e7eb;
+  --accent: #8a6a1f;
+  --code-bg: #f6f8fa;
+  --ok: #1a7f37;
+  --warn-soft: #fff8e6;
+  --warn: #8a5a00;
+  --tk-kw: #cf222e; --tk-str: #0a3069; --tk-num: #0550ae; --tk-com: #6e7781; --tk-fn: #8250df;
+  --f-body: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono: ui-monospace, "Cascadia Code", Consolas, "SF Mono", monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f1115; --surface: #0f1115; --ink: #e6edf3; --muted: #9198a1; --line: #2a2f37;
+  --accent: #d6b25e; --code-bg: #161b22; --ok: #3fb950; --warn-soft: #2a2414; --warn: #e3b341;
+  --tk-kw: #ff7b72; --tk-str: #a5d6ff; --tk-num: #79c0ff; --tk-com: #8b949e; --tk-fn: #d2a8ff;
+  color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #0f1115; --surface: #0f1115; --ink: #e6edf3; --muted: #9198a1; --line: #2a2f37;
+  --accent: #d6b25e; --code-bg: #161b22; --ok: #3fb950; --warn-soft: #2a2414; --warn: #e3b341;
+  --tk-kw: #ff7b72; --tk-str: #a5d6ff; --tk-num: #79c0ff; --tk-com: #8b949e; --tk-fn: #d2a8ff;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { background: var(--bg); color: var(--ink); font: 15.5px/1.65 var(--f-body); }
+.wrap {
+  max-width: 1080px; margin: 0 auto;
+  padding-block: 3rem 4rem;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 3.5rem;
+}
+@media (max-width: 860px) { .wrap { grid-template-columns: minmax(0, 1fr); gap: 2rem; } nav.toc { position: static; } }
+nav.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 2rem); align-self: start; font-size: .875rem; }
+nav.toc p { font-size: .75rem; font-weight: 500; color: var(--muted); margin: 0 0 .6rem; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: .2rem; }
+nav.toc a { color: var(--muted); text-decoration: none; display: block; padding: .15rem 0; }
+nav.toc a:hover, nav.toc a:focus-visible { color: var(--ink); }
+nav.toc .sub a { padding-left: .9rem; font-size: .82rem; }
+main { min-width: 0; display: grid; gap: 3rem; }
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+h1, h2, h3 { font-family: var(--f-body); text-wrap: balance; line-height: 1.25; margin: 0; letter-spacing: -.01em; }
+h1 { font-size: 1.9rem; font-weight: 600; }
+h2 { font-size: 1.3rem; font-weight: 600; padding-bottom: .5rem; border-bottom: 1px solid var(--line); }
+h3 { font-size: 1rem; font-weight: 600; }
+section { display: grid; gap: .9rem; }
+p { margin: 0; max-width: 68ch; }
+.eyebrow { font-size: .8rem; color: var(--muted); }
+.lede { font-size: 1.05rem; color: var(--muted); }
+.meta { display: flex; flex-wrap: wrap; gap: .4rem 1rem; font-size: .85rem; color: var(--muted); }
+.chip { font-size: .85rem; color: var(--muted); }
+.chip.ok { color: var(--ok); }
+code { font-family: var(--f-mono); font-size: .86em; background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+ul.plain { margin: 0; padding-left: 1.2rem; display: grid; gap: .4rem; max-width: 70ch; }
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+th, td { text-align: left; padding: .55rem .75rem .55rem 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: .8rem; color: var(--muted); font-weight: 500; }
+td code { white-space: nowrap; }
+ol.steps { margin: 0; padding-left: 1.3rem; display: grid; gap: .7rem; max-width: 70ch; }
+ol.steps li::marker { color: var(--muted); }
+ol.steps strong { display: block; font-weight: 500; }
+ol.steps span { color: var(--muted); }
+.file { display: grid; gap: .75rem; padding-top: 1.5rem; }
+.file .path { font: .8rem var(--f-mono); color: var(--muted); }
+pre { margin: 0; overflow-x: auto; background: var(--code-bg); border-radius: 6px; padding: 1rem 1.1rem; font: .83rem/1.6 var(--f-mono); tab-size: 2; }
+pre code { background: none; padding: 0; font-size: inherit; }
+.notes { display: grid; margin: 0; padding: 0; list-style: none; max-width: 72ch; }
+.notes li { display: grid; grid-template-columns: minmax(0, 10rem) minmax(0, 1fr); gap: 1rem; padding: .5rem 0; border-bottom: 1px solid var(--line); }
+.notes li:last-child { border-bottom: 0; }
+.notes b { font: 500 .8rem/1.6 var(--f-mono); color: var(--ink); overflow-wrap: anywhere; }
+.notes span { color: var(--muted); }
+@media (max-width: 560px) { .notes li { grid-template-columns: minmax(0, 1fr); gap: .15rem; } }
+.callout { border-radius: 6px; padding: .9rem 1.1rem; display: grid; gap: .4rem; }
+.callout.warn { background: var(--warn-soft); }
+.callout.warn .eyebrow { color: var(--warn); font-weight: 500; }
+.fix { display: grid; gap: .6rem; }
+.cmd { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1rem; align-items: center; padding: .5rem 0; border-bottom: 1px solid var(--line); }
+.cmd code { overflow-wrap: anywhere; }
+.cmd .chip { white-space: nowrap; }
+.hljs-keyword, .hljs-built_in, .hljs-literal { color: var(--tk-kw); }
+.hljs-string, .hljs-regexp { color: var(--tk-str); }
+.hljs-number { color: var(--tk-num); }
+.hljs-comment { color: var(--tk-com); font-style: italic; }
+.hljs-title, .hljs-title.function_, .hljs-title.class_ { color: var(--tk-fn); }
+.hljs-subst, .hljs-params, .hljs-variable { color: var(--ink); }
+.back { font-size: .85rem; color: var(--muted); text-decoration: none; }
+.back:hover { color: var(--ink); }
+</style>
+
+<div class="wrap">
+  <nav class="toc" aria-label="Sommaire">
+    <p>Sommaire</p>
+    <ol>
+      <li><a href="#objectif">Objectif</a></li>
+      <li><a href="#etapes">Étapes</a></li>
+      <li><a href="#fichiers">Fichiers créés</a></li>
+      <li><a href="#modules">Le code</a></li>
+      <li class="sub"><a href="#gtin">gtin.js</a></li>
+      <li class="sub"><a href="#text">text.js</a></li>
+      <li class="sub"><a href="#politefetch">politeFetch.js</a></li>
+      <li><a href="#tests">Les tests</a></li>
+      <li><a href="#corrections">Corrections</a></li>
+      <li><a href="#verifs">Vérifications</a></li>
+      <li><a href="#retenir">À retenir</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <header style="display:grid;gap:.9rem">
+      <a class="back" href="index.html">&larr; Carnet de la phase 3</a>
+      <span class="eyebrow">Prixoli · phase 3</span>
+      <h1>Tâche 2 : le socle de collecte</h1>
+      <p class="lede">Trois petits outils sur lesquels reposent tous les adaptateurs marchands : reconnaître un code EAN, normaliser un texte pour comparer des marques, et télécharger une page en respectant le marchand.</p>
+      <div class="meta">
+        <span class="chip ok">PR #27 mergée</span>
+        <span class="chip">feat/ingestion-core</span>
+        <span class="chip">commit b6b14df</span>
+        <span class="chip">25 nov. 2026</span>
+      </div>
+    </header>
+
+    <section id="objectif">
+      <h2>Objectif</h2>
+      <p>Les tâches suivantes (adaptateurs Shopify et Nordic Nest) vont lire des milliers de fiches produit chez Connox, Fleux et Nordic Nest. Avant d'écrire la moindre ligne propre à un marchand, on pose trois briques communes :</p>
+      <ul class="plain">
+        <li><b>Identifier un produit sans ambiguïté.</b> Le même article porte le même EAN (le code-barres) chez tous les marchands. C'est la clé du rapprochement, encore faut-il ne garder que de vrais EAN.</li>
+        <li><b>Comparer des marques écrites différemment.</b> « &amp;Tradition », « &amp;tradition » et « Tradition » doivent donner la même chose.</li>
+        <li><b>Rester un visiteur correct.</b> Le robot se présente sous son vrai nom, lit robots.txt, ne va pas plus vite qu'une page toutes les 2 secondes par site, et s'arrête net s'il est refusé. Aucun contournement.</li>
+      </ul>
+    </section>
+
+    <section id="etapes">
+      <h2>Étapes</h2>
+      <p>Méthode TDD : on écrit les tests, on les regarde échouer, puis on écrit le code qui les fait passer.</p>
+      <ol class="steps">
+        <li><div><strong>Écrire les trois fichiers de test</strong><span>gtin, text, politeFetch, dans <code>meubly-back/tests/unit/ingestion/</code>.</span></div></li>
+        <li><div><strong>Lancer <code>npm run test:run -- ingestion</code> et voir l'échec</strong><span>Attendu : « module introuvable », puisque le code n'existe pas encore. Ici l'échec vu venait d'une faute de chemin (<code>src/</code> en trop), les modules étant déjà tapés.</span></div></li>
+        <li><div><strong>Écrire les trois modules</strong><span>Dans <code>meubly-back/ingestion/</code>. Rien ne s'exécute à l'import.</span></div></li>
+        <li><div><strong>Lancer <code>npm run test:run</code></strong><span>139 tests verts, dont 16 nouveaux. Le test robots.txt manquant, ajouté ensuite, porte le total à 140.</span></div></li>
+        <li><div><strong>Mise en forme et contrôle</strong><span><code>npx prettier --write</code> (retrait 4 espaces et fins de ligne CRLF corrigés), lint sans erreur, format conforme.</span></div></li>
+        <li><div><strong>Commit, PR #27, merge</strong><span>Cases du plan cochées dans le même commit.</span></div></li>
+        <li><div><strong>Corrections, PR #28</strong><span>Relecture complète des tests après le merge : un test sans effet, un nom inversé, un test manquant et des coquilles corrigés.</span></div></li>
+      </ol>
+    </section>
+
+    <section id="fichiers">
+      <h2>Fichiers créés</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Fichier</th><th>Rôle</th><th>Exporte</th></tr></thead>
+          <tbody>
+            <tr><td><code>meubly-back/ingestion/gtin.js</code></td><td>Reconnaître un code EAN valide</td><td><code>isGtin</code>, <code>pickGtin</code></td></tr>
+            <tr><td><code>meubly-back/ingestion/text.js</code></td><td>Normaliser un texte (marques)</td><td><code>normText</code></td></tr>
+            <tr><td><code>meubly-back/ingestion/politeFetch.js</code></td><td>Télécharger une page poliment</td><td><code>createPoliteFetch</code>, <code>BlockedError</code>, <code>HttpError</code></td></tr>
+            <tr><td><code>tests/unit/ingestion/gtin.test.js</code></td><td>7 tests</td><td></td></tr>
+            <tr><td><code>tests/unit/ingestion/text.test.js</code></td><td>1 test</td><td></td></tr>
+            <tr><td><code>tests/unit/ingestion/politeFetch.test.js</code></td><td>9 tests</td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="modules">
+      <h2>Le code</h2>
+      <p>Le code ci-dessous est copié automatiquement depuis les fichiers du dépôt.</p>
+
+      <article class="file" id="gtin">
+        <h3>gtin.js</h3>
+        <span class="path">meubly-back/ingestion/gtin.js</span>
+        <p>Un EAN n'est pas n'importe quelle suite de chiffres : son dernier chiffre est une <b>clé de contrôle</b> calculée à partir des autres. Vérifier cette clé élimine les références fabricant, les fautes de saisie et les numéros internes que certains marchands rangent dans les mêmes champs.</p>
+<pre><code class="language-javascript">/**
+ * Vrai si la valeur est un GTIN (EAN-8, UPC-12, EAN-13, GTIN-14) dont la cle de controle est juste.
+ * @param {unknown} value
+ * @returns {boolean}
+ */
+export function isGtin(value) {
+  if (typeof value !== "string" || !/^(\d{8}|\d{12,14})$/.test(value)) return false;
+  const digits = [...value].map(Number);
+  const check = digits.pop();
+  const sum = digits
+    .reverse()
+    .reduce((total, digit, i) =&gt; total + digit * (i % 2 === 0 ? 3 : 1), 0);
+  return (10 - (sum % 10)) % 10 === check;
+}
+
+/**
+ * Premier candidat qui est un GTIN valide (les marchands rangent l'EAN dans barcode ou dans sku).
+ * @param {...unknown} candidates
+ * @returns {string | null}
+ */
+export function pickGtin(...candidates) {
+  return candidates.map((candidate) =&gt; String(candidate ?? "").trim()).find(isGtin) ?? null;
+}</code></pre>
+        <ul class="notes">
+          <li><b>/^(\d{8}|\d{12,14})$/</b><span>Accepte 8, 12, 13 ou 14 chiffres, rien d'autre (pas de lettre, pas de tiret). Ce sont les longueurs EAN-8, UPC-12, EAN-13 et GTIN-14.</span></li>
+          <li><b>digits.pop()</b><span>Retire le dernier chiffre : c'est la clé qu'on va recalculer et comparer.</span></li>
+          <li><b>reverse() + poids 3/1</b><span>En partant de la droite, on multiplie les chiffres alternativement par 3 et par 1, puis on additionne. Partir de la droite permet d'utiliser la même règle pour toutes les longueurs.</span></li>
+          <li><b>(10 - sum % 10) % 10</b><span>La clé est ce qu'il faut ajouter pour arriver à la dizaine suivante. Le second <code>% 10</code> donne 0 quand la somme tombe déjà juste.</span></li>
+          <li><b>pickGtin(...candidates)</b><span>Les marchands Shopify rangent l'EAN tantôt dans <code>barcode</code>, tantôt dans <code>sku</code> (Fleux). On essaie chaque champ, nettoyé par <code>String(x ?? "").trim()</code>, et on garde le premier valide, sinon <code>null</code>.</span></li>
+        </ul>
+      </article>
+
+      <article class="file" id="text">
+        <h3>text.js</h3>
+        <span class="path">meubly-back/ingestion/text.js</span>
+        <p>Sert à comparer deux marques ou deux titres sans être gêné par la casse, les accents ou la ponctuation.</p>
+<pre><code class="language-javascript">/**
+ * Texte comparable : minuscules, sans accents, sans "&amp;", tout autre signe remplace par un espace.
+ * @param {string} s
+ * @returns {string}
+ */
+export function normText(s) {
+  return s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/&amp;/g, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}</code></pre>
+        <ul class="notes">
+          <li><b>normalize("NFD")</b><span>Décompose chaque lettre accentuée en lettre + accent séparé : « é » devient « e » suivi d'un accent aigu.</span></li>
+          <li><b>[̀-ͯ]</b><span>Cette plage Unicode contient les accents isolés. On les supprime, il ne reste que la lettre.</span></li>
+          <li><b>replace(/&amp;/g, "")</b><span>Le « &amp; » est retiré sans laisser d'espace : « &amp;Tradition » devient « tradition ».</span></li>
+          <li><b>[^a-z0-9]+ → " "</b><span>Toute suite de caractères qui n'est ni lettre ni chiffre devient <b>un seul</b> espace, grâce au <code>+</code>. « Fritz  Hansen » et « Fritz - Hansen » donnent tous deux « fritz hansen ».</span></li>
+          <li><b>trim()</b><span>Enlève l'espace éventuel laissé au début ou à la fin.</span></li>
+        </ul>
+      </article>
+
+      <article class="file" id="politefetch">
+        <h3>politeFetch.js</h3>
+        <span class="path">meubly-back/ingestion/politeFetch.js</span>
+        <p>Le module le plus important. <code>createPoliteFetch</code> fabrique une fonction <code>get(url)</code> qui applique toutes les règles de politesse. Toute la collecte passera par elle : aucun adaptateur n'appelle <code>fetch</code> directement.</p>
+<pre><code class="language-javascript">// Requetes "polies" vers les marchands : agent declare, robots.txt, 1 requete / 2 s par hote.
+// Aucun contournement : un refus leve BlockedError et la collecte de ce marchand s'arrete.
+
+const CHALLENGE_MARKERS = /captcha|datadome|cf-chl/i;
+const RETRY_DELAY_MS = 60_000;
+const MAX_RETRIES = 3;
+
+export class BlockedError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "BlockedError";
+  }
+}
+
+export class HttpError extends Error {
+  constructor(status, url) {
+    super(`HTTP ${status} ${url}`);
+    this.name = "HttpError";
+    this.status = status;
+  }
+}
+
+const defaultSleep = (ms) =&gt; new Promise((resolve) =&gt; setTimeout(resolve, ms));
+
+/** Regles Allow/Disallow pour PrixoliBot : son propre groupe s'il existe, sinon le groupe "*". */
+function parseRobots(text) {
+  const groups = [];
+  let current = null;
+  let lastWasAgent = false;
+  for (const raw of text.split(/\r?\n/)) {
+    const match = raw
+      .replace(/#.*/, "")
+      .trim()
+      .match(/^([a-z-]+)\s*:\s*(.*)$/i);
+    if (!match) continue;
+    const key = match[1].toLowerCase();
+    const value = match[2].trim();
+    if (key === "user-agent") {
+      if (!lastWasAgent) groups.push((current = { agents: [], rules: [] }));
+      current.agents.push(value.toLowerCase());
+      lastWasAgent = true;
+    } else {
+      lastWasAgent = false;
+      if (current &amp;&amp; value &amp;&amp; (key === "allow" || key === "disallow")) {
+        current.rules.push({ allow: key === "allow", path: value });
+      }
+    }
+  }
+  const own = groups.filter((group) =&gt; group.agents.includes("prixolibot"));
+  const chosen = own.length ? own : groups.filter((group) =&gt; group.agents.includes("*"));
+  return chosen.flatMap((group) =&gt; group.rules);
+}
+
+/** Motif robots.txt ("*" = n'importe quoi, "$" final = fin d'URL) en expression reguliere. */
+function toRegex(pattern) {
+  const escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, "\\$&amp;").replace(/\*/g, ".*");
+  return new RegExp(`^${escaped.replace(/\\\$$/, "$")}`);
+}
+
+/** La regle la plus longue qui correspond l'emporte ; a egalite, Allow gagne. */
+function isAllowed(rules, path) {
+  let best = null;
+  for (const rule of rules) {
+    if (!toRegex(rule.path).test(path)) continue;
+    const longer = !best || rule.path.length &gt; best.path.length;
+    const tieAllow = best &amp;&amp; rule.path.length === best.path.length &amp;&amp; rule.allow;
+    if (longer || tieAllow) best = rule;
+  }
+  return !best || best.allow;
+}
+
+/**
+ * Cree une fonction qui lit une URL marchande et renvoie son corps texte.
+ * Rien ne part sur le reseau avant le premier appel.
+ * @param {{ botUrl?: string, delayMs?: number, fetchImpl?: typeof fetch, sleep?: (ms: number) =&gt; Promise&lt;void&gt; }} [options]
+ * @returns {(url: string) =&gt; Promise&lt;string&gt;}
+ */
+export function createPoliteFetch({
+  botUrl = "https://github.com/Sacha200/meubly",
+  delayMs = 2000,
+  fetchImpl = fetch,
+  sleep = defaultSleep,
+} = {}) {
+  const headers = { "User-Agent": `PrixoliBot/1.0 (+${botUrl})` };
+  const visitedHosts = new Set();
+  const robotsByOrigin = new Map();
+
+  async function request(url) {
+    const { host } = new URL(url);
+    if (visitedHosts.has(host)) await sleep(delayMs);
+    visitedHosts.add(host);
+    return fetchImpl(url, { headers });
+  }
+
+  async function requestWithRetry(url) {
+    for (let attempt = 0; ; attempt++) {
+      const response = await request(url);
+      if (response.status !== 429 || attempt === MAX_RETRIES) return response;
+      await sleep(RETRY_DELAY_MS);
+    }
+  }
+
+  async function robotsRules(origin) {
+    if (!robotsByOrigin.has(origin)) {
+      const response = await requestWithRetry(`${origin}/robots.txt`);
+      robotsByOrigin.set(origin, response.ok ? parseRobots(await response.text()) : []);
+    }
+    return robotsByOrigin.get(origin);
+  }
+
+  return async function politeFetch(url) {
+    const { origin, pathname, search } = new URL(url);
+    if (!isAllowed(await robotsRules(origin), pathname + search)) {
+      throw new BlockedError(`Interdit par robots.txt : ${url}`);
+    }
+    const response = await requestWithRetry(url);
+    const body = await response.text();
+    if (response.status === 403 || (body.length &lt; 20_000 &amp;&amp; CHALLENGE_MARKERS.test(body))) {
+      throw new BlockedError(`Acces refuse (${response.status}) : ${url}`);
+    }
+    if (!response.ok) throw new HttpError(response.status, url);
+    return body;
+  };
+}</code></pre>
+        <ul class="notes">
+          <li><b>BlockedError / HttpError</b><span>Deux types d'erreur distincts. <code>BlockedError</code> veut dire « le marchand ne veut pas de nous » : la collecte de ce marchand s'arrête. <code>HttpError</code> est une panne ordinaire, qui porte le code <code>status</code>.</span></li>
+          <li><b>parseRobots</b><span>Lit robots.txt ligne par ligne. Plusieurs lignes <code>User-agent</code> qui se suivent forment un seul groupe. Si un groupe vise <code>prixolibot</code>, lui seul s'applique, sinon c'est le groupe <code>*</code>.</span></li>
+          <li><b>toRegex</b><span>Traduit un motif robots.txt en expression régulière : <code>*</code> = n'importe quoi, <code>$</code> final = fin d'URL. Les autres caractères spéciaux sont échappés.</span></li>
+          <li><b>isAllowed</b><span>Parmi les règles qui correspondent, la plus longue (donc la plus précise) l'emporte. À longueur égale, Allow gagne. Sans règle correspondante, tout est autorisé.</span></li>
+          <li><b>Paramètres par défaut</b><span><code>fetchImpl</code> et <code>sleep</code> sont injectables : les tests passent de faux réseaux et de fausses attentes, sinon chaque test durerait des minutes.</span></li>
+          <li><b>request</b><span>Avant chaque requête vers un hôte déjà visité, on attend <code>delayMs</code> (2 s). Le premier appel à un hôte part tout de suite.</span></li>
+          <li><b>requestWithRetry</b><span>Sur un 429 (« trop de requêtes »), on attend 60 s et on réessaie, 3 fois au plus. Le dernier 429 est renvoyé tel quel et finira en <code>HttpError</code>.</span></li>
+          <li><b>robotsRules</b><span>robots.txt est lu une seule fois par site, puis gardé dans une <code>Map</code>. S'il est absent (404), la liste de règles est vide : tout est autorisé.</span></li>
+          <li><b>politeFetch(url)</b><span>Ordre des contrôles : robots.txt d'abord (sans jamais appeler la page interdite), puis la requête, puis le refus (403, ou page courte contenant <code>captcha</code>, <code>datadome</code> ou <code>cf-chl</code>), puis tout autre statut non 2xx.</span></li>
+          <li><b>body.length &lt; 20_000</b><span>Une vraie fiche produit peut citer « captcha » dans un script. Une page de défi, elle, est courte. La limite évite les fausses alertes.</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section id="tests">
+      <h2>Les tests</h2>
+      <p>Les tests de <code>politeFetch</code> remplacent le réseau par une fonction <code>setup(routes)</code> : chaque URL rend ses réponses dans l'ordre, une URL inconnue rend 404. <code>sleep</code> est un espion qui enregistre les attentes demandées, sans attendre réellement.</p>
+
+      <article class="file">
+        <h3>gtin.test.js</h3>
+        <span class="path">meubly-back/tests/unit/ingestion/gtin.test.js</span>
+<pre><code class="language-javascript">import { describe, it, expect } from "vitest";
+import { isGtin, pickGtin } from "../../../ingestion/gtin.js";
+
+describe("gtin", () =&gt; {
+  it("reconnait un EAN-13 dont la cle est juste", () =&gt; {
+    expect(isGtin("5710441280323")).toBe(true);
+  });
+
+  it.each([
+    ["cle fausse", "5710441280324"],
+    ["12 chiffres, cle fausse", "510960116082"],
+    ["reference fabricant", "AB450-A996"],
+    ["vide", null],
+  ])("refuse : %s", (_label, value) =&gt; {
+    expect(isGtin(value)).toBe(false);
+  });
+
+  it("prend le premier candidat valide (EAN range dans sku chez Fleux)", () =&gt; {
+    expect(pickGtin("B9926429-500", "5400959200004")).toBe("5400959200004");
+  });
+
+  it("renvoie null sans candidat valide", () =&gt; {
+    expect(pickGtin("", undefined)).toBeNull();
+  });
+});</code></pre>
+        <ul class="notes">
+          <li><b>5710441280323</b><span>Un vrai EAN-13 : accepté.</span></li>
+          <li><b>5710441280324</b><span>Le même avec la clé changée : refusé. Prouve que la clé est bien vérifiée.</span></li>
+          <li><b>510960116082</b><span>12 chiffres mais clé fausse : refusé, même avec une longueur valide.</span></li>
+          <li><b>it.each</b><span>Un seul test écrit, joué une fois par ligne du tableau. <code>%s</code> insère le libellé dans le nom du test.</span></li>
+        </ul>
+      </article>
+
+      <article class="file">
+        <h3>text.test.js</h3>
+        <span class="path">meubly-back/tests/unit/ingestion/text.test.js</span>
+<pre><code class="language-javascript">import { it, expect } from "vitest";
+import { normText } from "../../../ingestion/text.js";
+
+it("normalise une marque : minuscules, sans accents, sans &amp;, espaces reduits", () =&gt; {
+  expect(normText("&amp;Tradition  Été")).toBe("tradition ete");
+});</code></pre>
+        <ul class="notes">
+          <li><b>"&amp;Tradition  Été"</b><span>Un seul exemple couvre tout : le « &amp; », la majuscule, l'accent, et les <b>deux</b> espaces qui doivent devenir un seul. Avec un seul espace, le test ne vérifierait plus le regroupement.</span></li>
+        </ul>
+      </article>
+
+      <article class="file">
+        <h3>politeFetch.test.js</h3>
+        <span class="path">meubly-back/tests/unit/ingestion/politeFetch.test.js</span>
+<pre><code class="language-javascript">import { describe, it, expect, vi } from "vitest";
+import { createPoliteFetch, BlockedError, HttpError } from "../../../ingestion/politeFetch.js";
+
+const ROBOTS = "https://shop.test/robots.txt";
+const PAGE = "https://shop.test/products/a";
+
+/** Faux fetch : chaque URL rend ses reponses dans l'ordre ; une URL inconnue rend 404. */
+function setup(routes) {
+  const fetchImpl = vi.fn(async (url) =&gt; {
+    const { status = 200, body = "" } = routes[url]?.shift() ?? { status: 404 };
+    return new Response(body, { status });
+  });
+  const sleep = vi.fn(async () =&gt; {});
+  const get = createPoliteFetch({ botUrl: "https://x.test", fetchImpl, sleep });
+  return { get, fetchImpl, sleep };
+}
+
+describe("politeFetch", () =&gt; {
+  it("se presente avec l'agent declare", async () =&gt; {
+    const { get, fetchImpl } = setup({ [PAGE]: [{ body: "ok" }] });
+    expect(await get(PAGE)).toBe("ok");
+    expect(fetchImpl).toHaveBeenCalledWith(PAGE, {
+      headers: { "User-Agent": "PrixoliBot/1.0 (+https://x.test)" },
+    });
+  });
+
+  it("autorise tout quand robots.txt est absent (404)", async () =&gt; {
+    const { get } = setup({ [PAGE]: [{ body: "ok" }] });
+    expect(await get(PAGE)).toBe("ok");
+  });
+
+  it("refuse une URL interdite par robots.txt sans appeler la page", async () =&gt; {
+    const forbidden = "https://shop.test/prive/a";
+    const { get, fetchImpl } = setup({ [ROBOTS]: [{ body: "User-agent:*\nDisallow: /prive" }] });
+    await expect(get(forbidden)).rejects.toBeInstanceOf(BlockedError);
+    expect(fetchImpl).not.toHaveBeenCalledWith(forbidden, expect.anything());
+  });
+
+  it("attend 2 s entre deux requetes du meme hote (robots.txt compris)", async () =&gt; {
+    const other = "https://shop.test/products/b";
+    const { get, sleep } = setup({ [PAGE]: [{ body: "1" }], [other]: [{ body: "2" }] });
+    await get(PAGE);
+    await get(other);
+    expect(sleep.mock.calls).toEqual([[2000], [2000]]);
+  });
+
+  it("reessaie apres 60 s sur un 429", async () =&gt; {
+    const { get, sleep } = setup({ [PAGE]: [{ status: 429 }, { body: "ok" }] });
+    expect(await get(PAGE)).toBe("ok");
+    expect(sleep).toHaveBeenCalledWith(60000);
+  });
+
+  it("abandonne apres 3 nouvelles tentatives sur 429", async () =&gt; {
+    const tooMany = { status: 429 };
+    const { get, sleep } = setup({
+      [PAGE]: [tooMany, tooMany, tooMany, tooMany],
+    });
+    const error = await get(PAGE).catch((e) =&gt; e);
+    expect(error).toBeInstanceOf(HttpError);
+    expect(error.status).toBe(429);
+    expect(sleep.mock.calls.filter(([ms]) =&gt; ms === 60000)).toHaveLength(3);
+  });
+
+  it("leve BlockedError sur un 403", async () =&gt; {
+    const { get } = setup({ [PAGE]: [{ status: 403 }] });
+    await expect(get(PAGE)).rejects.toBeInstanceOf(BlockedError);
+  });
+
+  it("leve BlockedError sur une page de defi anti-robot", async () =&gt; {
+    const { get } = setup({ [PAGE]: [{ body: "&lt;html&gt;cf-chl challenge&lt;/html&gt;" }] });
+    await expect(get(PAGE)).rejects.toBeInstanceOf(BlockedError);
+  });
+
+  it("leve HttpError avec le statut sur un 500", async () =&gt; {
+    const { get } = setup({ [PAGE]: [{ status: 500 }] });
+    const error = await get(PAGE).catch((e) =&gt; e);
+    expect(error).toBeInstanceOf(HttpError);
+    expect(error.status).toBe(500);
+  });
+});</code></pre>
+        <ul class="notes">
+          <li><b>agent déclaré</b><span>Vérifie l'en-tête exact <code>PrixoliBot/1.0 (+https://x.test)</code>.</span></li>
+          <li><b>robots.txt absent</b><span>Aucune route n'est définie pour robots.txt, le faux réseau rend 404 : la page doit quand même être lue.</span></li>
+          <li><b>robots.txt interdit</b><span><code>not.toHaveBeenCalledWith(forbidden, ...)</code> prouve que la page interdite n'a jamais été demandée au marchand.</span></li>
+          <li><b>2 s entre requêtes</b><span>Trois requêtes vers le même site (robots.txt, page a, page b) donnent exactement deux attentes de 2 000 ms.</span></li>
+          <li><b>429</b><span>Un 429 puis un 200 : le corps est rendu après une attente de 60 000 ms. Quatre 429 d'affilée : abandon après 3 nouvelles tentatives.</span></li>
+          <li><b>403, défi, 500</b><span>Les deux premiers lèvent <code>BlockedError</code>, le troisième <code>HttpError</code> avec <code>status === 500</code>.</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section id="corrections">
+      <h2>Corrections</h2>
+      <div class="callout warn">
+        <span class="eyebrow">Corrigé dans la PR #28</span>
+        <p>Après le merge de la PR #27, une relecture complète des tests a trouvé des écarts avec le code donné. Le code affiché sur cette page est la version corrigée.</p>
+      </div>
+      <ul class="plain">
+        <li><b>Test sans effet.</b> <code>not.toHaveBeenNthCalledWith(forbidden, ...)</code> attend un numéro d'appel en premier argument : avec une URL, il ne trouve aucun appel et le <code>.not</code> réussit toujours, même si la page interdite est téléchargée. Remplacé par <code>not.toHaveBeenCalledWith</code>.</li>
+        <li><b>Nom inversé.</b> « autorise une URL interdite... » est devenu « refuse une URL interdite... ».</li>
+        <li><b>Test manquant.</b> « autorise tout quand robots.txt est absent (404) » ajouté, comme le demande le plan.</li>
+        <li><b>Coquilles.</b> « polices », « est GTIN », « minuscule », et la ligne vide entre les blocs <code>/** */</code> et leur fonction, qui empêchait l'éditeur d'afficher la documentation au survol.</li>
+      </ul>
+      <p>La leçon : relire tous les fichiers tapés, tests compris, avant le commit. Un test vert ne prouve pas qu'il vérifie quelque chose.</p>
+    </section>
+
+    <section id="verifs">
+      <h2>Vérifications</h2>
+      <div>
+        <div class="cmd"><code>npm run test:run</code><span class="chip ok">140 verts · 15 fichiers</span></div>
+        <div class="cmd"><code>npm run lint</code><span class="chip ok">0 erreur</span></div>
+        <div class="cmd"><code>npm run format:check</code><span class="chip ok">conforme</span></div>
+      </div>
+      <p>Les 3 avertissements de lint viennent de fichiers antérieurs à la phase 3 (<code>scripts/fix_furniture_images.js</code>, <code>supabase.js</code>, <code>tests/unit/furnitureService.test.js</code>).</p>
+    </section>
+
+    <section id="retenir">
+      <h2>À retenir</h2>
+      <ul class="plain">
+        <li><b>Injection de dépendances.</b> Passer <code>fetchImpl</code> et <code>sleep</code> en paramètres rend le code testable sans réseau ni attente réelle. On réutilisera ce schéma dans les adaptateurs.</li>
+        <li><b>Un refus est définitif.</b> <code>BlockedError</code> n'est jamais rattrapé pour réessayer autrement. C'est la règle du projet : on ne contourne pas un marchand qui bloque.</li>
+        <li><b>Hors périmètre :</b> la directive <code>Crawl-delay</code> de robots.txt est ignorée, remplacée par le délai fixe de 2 s. Les cas exotiques de robots.txt (encodage d'URL, groupes mal formés) ne sont pas gérés.</li>
+        <li><b>Suite :</b> tâche 3, l'adaptateur Shopify (Connox et Fleux), qui utilisera <code>createPoliteFetch</code> et <code>pickGtin</code>.</li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>try { hljs.highlightAll(); } catch (e) { /* sans coloration, le code reste lisible */ }</script>

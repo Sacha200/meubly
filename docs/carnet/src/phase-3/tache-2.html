@@ -1,0 +1,212 @@
+<title>Tâche 2, socle de collecte</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+<style>
+{{css}}
+</style>
+
+<div class="wrap">
+  <nav class="toc" aria-label="Sommaire">
+    <p>Sommaire</p>
+    <ol>
+      <li><a href="#objectif">Objectif</a></li>
+      <li><a href="#etapes">Étapes</a></li>
+      <li><a href="#fichiers">Fichiers créés</a></li>
+      <li><a href="#modules">Le code</a></li>
+      <li class="sub"><a href="#gtin">gtin.js</a></li>
+      <li class="sub"><a href="#text">text.js</a></li>
+      <li class="sub"><a href="#politefetch">politeFetch.js</a></li>
+      <li><a href="#tests">Les tests</a></li>
+      <li><a href="#corrections">Corrections</a></li>
+      <li><a href="#verifs">Vérifications</a></li>
+      <li><a href="#retenir">À retenir</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <header style="display:grid;gap:.9rem">
+      <a class="back" href="index.html">&larr; Carnet de la phase 3</a>
+      <span class="eyebrow">Prixoli · phase 3</span>
+      <h1>Tâche 2 : le socle de collecte</h1>
+      <p class="lede">Trois petits outils sur lesquels reposent tous les adaptateurs marchands : reconnaître un code EAN, normaliser un texte pour comparer des marques, et télécharger une page en respectant le marchand.</p>
+      <div class="meta">
+        <span class="chip ok">PR #27 mergée</span>
+        <span class="chip">feat/ingestion-core</span>
+        <span class="chip">commit b6b14df</span>
+        <span class="chip">25 nov. 2026</span>
+      </div>
+    </header>
+
+    <section id="objectif">
+      <h2>Objectif</h2>
+      <p>Les tâches suivantes (adaptateurs Shopify et Nordic Nest) vont lire des milliers de fiches produit chez Connox, Fleux et Nordic Nest. Avant d'écrire la moindre ligne propre à un marchand, on pose trois briques communes :</p>
+      <ul class="plain">
+        <li><b>Identifier un produit sans ambiguïté.</b> Le même article porte le même EAN (le code-barres) chez tous les marchands. C'est la clé du rapprochement, encore faut-il ne garder que de vrais EAN.</li>
+        <li><b>Comparer des marques écrites différemment.</b> « &amp;Tradition », « &amp;tradition » et « Tradition » doivent donner la même chose.</li>
+        <li><b>Rester un visiteur correct.</b> Le robot se présente sous son vrai nom, lit robots.txt, ne va pas plus vite qu'une page toutes les 2 secondes par site, et s'arrête net s'il est refusé. Aucun contournement.</li>
+      </ul>
+    </section>
+
+    <section id="etapes">
+      <h2>Étapes</h2>
+      <p>Méthode TDD : on écrit les tests, on les regarde échouer, puis on écrit le code qui les fait passer.</p>
+      <ol class="steps">
+        <li><div><strong>Écrire les trois fichiers de test</strong><span>gtin, text, politeFetch, dans <code>meubly-back/tests/unit/ingestion/</code>.</span></div></li>
+        <li><div><strong>Lancer <code>npm run test:run -- ingestion</code> et voir l'échec</strong><span>Attendu : « module introuvable », puisque le code n'existe pas encore. Ici l'échec vu venait d'une faute de chemin (<code>src/</code> en trop), les modules étant déjà tapés.</span></div></li>
+        <li><div><strong>Écrire les trois modules</strong><span>Dans <code>meubly-back/ingestion/</code>. Rien ne s'exécute à l'import.</span></div></li>
+        <li><div><strong>Lancer <code>npm run test:run</code></strong><span>139 tests verts, dont 16 nouveaux. Le test robots.txt manquant, ajouté ensuite, porte le total à 140.</span></div></li>
+        <li><div><strong>Mise en forme et contrôle</strong><span><code>npx prettier --write</code> (retrait 4 espaces et fins de ligne CRLF corrigés), lint sans erreur, format conforme.</span></div></li>
+        <li><div><strong>Commit, PR #27, merge</strong><span>Cases du plan cochées dans le même commit.</span></div></li>
+        <li><div><strong>Corrections, PR #28</strong><span>Relecture complète des tests après le merge : un test sans effet, un nom inversé, un test manquant et des coquilles corrigés.</span></div></li>
+      </ol>
+    </section>
+
+    <section id="fichiers">
+      <h2>Fichiers créés</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Fichier</th><th>Rôle</th><th>Exporte</th></tr></thead>
+          <tbody>
+            <tr><td><code>meubly-back/ingestion/gtin.js</code></td><td>Reconnaître un code EAN valide</td><td><code>isGtin</code>, <code>pickGtin</code></td></tr>
+            <tr><td><code>meubly-back/ingestion/text.js</code></td><td>Normaliser un texte (marques)</td><td><code>normText</code></td></tr>
+            <tr><td><code>meubly-back/ingestion/politeFetch.js</code></td><td>Télécharger une page poliment</td><td><code>createPoliteFetch</code>, <code>BlockedError</code>, <code>HttpError</code></td></tr>
+            <tr><td><code>tests/unit/ingestion/gtin.test.js</code></td><td>7 tests</td><td></td></tr>
+            <tr><td><code>tests/unit/ingestion/text.test.js</code></td><td>1 test</td><td></td></tr>
+            <tr><td><code>tests/unit/ingestion/politeFetch.test.js</code></td><td>9 tests</td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="modules">
+      <h2>Le code</h2>
+      <p>Le code ci-dessous est copié automatiquement depuis les fichiers du dépôt.</p>
+
+      <article class="file" id="gtin">
+        <h3>gtin.js</h3>
+        <span class="path">meubly-back/ingestion/gtin.js</span>
+        <p>Un EAN n'est pas n'importe quelle suite de chiffres : son dernier chiffre est une <b>clé de contrôle</b> calculée à partir des autres. Vérifier cette clé élimine les références fabricant, les fautes de saisie et les numéros internes que certains marchands rangent dans les mêmes champs.</p>
+<pre><code class="language-javascript">{{code:meubly-back/ingestion/gtin.js}}</code></pre>
+        <ul class="notes">
+          <li><b>/^(\d{8}|\d{12,14})$/</b><span>Accepte 8, 12, 13 ou 14 chiffres, rien d'autre (pas de lettre, pas de tiret). Ce sont les longueurs EAN-8, UPC-12, EAN-13 et GTIN-14.</span></li>
+          <li><b>digits.pop()</b><span>Retire le dernier chiffre : c'est la clé qu'on va recalculer et comparer.</span></li>
+          <li><b>reverse() + poids 3/1</b><span>En partant de la droite, on multiplie les chiffres alternativement par 3 et par 1, puis on additionne. Partir de la droite permet d'utiliser la même règle pour toutes les longueurs.</span></li>
+          <li><b>(10 - sum % 10) % 10</b><span>La clé est ce qu'il faut ajouter pour arriver à la dizaine suivante. Le second <code>% 10</code> donne 0 quand la somme tombe déjà juste.</span></li>
+          <li><b>pickGtin(...candidates)</b><span>Les marchands Shopify rangent l'EAN tantôt dans <code>barcode</code>, tantôt dans <code>sku</code> (Fleux). On essaie chaque champ, nettoyé par <code>String(x ?? "").trim()</code>, et on garde le premier valide, sinon <code>null</code>.</span></li>
+        </ul>
+      </article>
+
+      <article class="file" id="text">
+        <h3>text.js</h3>
+        <span class="path">meubly-back/ingestion/text.js</span>
+        <p>Sert à comparer deux marques ou deux titres sans être gêné par la casse, les accents ou la ponctuation.</p>
+<pre><code class="language-javascript">{{code:meubly-back/ingestion/text.js}}</code></pre>
+        <ul class="notes">
+          <li><b>normalize("NFD")</b><span>Décompose chaque lettre accentuée en lettre + accent séparé : « é » devient « e » suivi d'un accent aigu.</span></li>
+          <li><b>[̀-ͯ]</b><span>Cette plage Unicode contient les accents isolés. On les supprime, il ne reste que la lettre.</span></li>
+          <li><b>replace(/&amp;/g, "")</b><span>Le « &amp; » est retiré sans laisser d'espace : « &amp;Tradition » devient « tradition ».</span></li>
+          <li><b>[^a-z0-9]+ → " "</b><span>Toute suite de caractères qui n'est ni lettre ni chiffre devient <b>un seul</b> espace, grâce au <code>+</code>. « Fritz  Hansen » et « Fritz - Hansen » donnent tous deux « fritz hansen ».</span></li>
+          <li><b>trim()</b><span>Enlève l'espace éventuel laissé au début ou à la fin.</span></li>
+        </ul>
+      </article>
+
+      <article class="file" id="politefetch">
+        <h3>politeFetch.js</h3>
+        <span class="path">meubly-back/ingestion/politeFetch.js</span>
+        <p>Le module le plus important. <code>createPoliteFetch</code> fabrique une fonction <code>get(url)</code> qui applique toutes les règles de politesse. Toute la collecte passera par elle : aucun adaptateur n'appelle <code>fetch</code> directement.</p>
+<pre><code class="language-javascript">{{code:meubly-back/ingestion/politeFetch.js}}</code></pre>
+        <ul class="notes">
+          <li><b>BlockedError / HttpError</b><span>Deux types d'erreur distincts. <code>BlockedError</code> veut dire « le marchand ne veut pas de nous » : la collecte de ce marchand s'arrête. <code>HttpError</code> est une panne ordinaire, qui porte le code <code>status</code>.</span></li>
+          <li><b>parseRobots</b><span>Lit robots.txt ligne par ligne. Plusieurs lignes <code>User-agent</code> qui se suivent forment un seul groupe. Si un groupe vise <code>prixolibot</code>, lui seul s'applique, sinon c'est le groupe <code>*</code>.</span></li>
+          <li><b>toRegex</b><span>Traduit un motif robots.txt en expression régulière : <code>*</code> = n'importe quoi, <code>$</code> final = fin d'URL. Les autres caractères spéciaux sont échappés.</span></li>
+          <li><b>isAllowed</b><span>Parmi les règles qui correspondent, la plus longue (donc la plus précise) l'emporte. À longueur égale, Allow gagne. Sans règle correspondante, tout est autorisé.</span></li>
+          <li><b>Paramètres par défaut</b><span><code>fetchImpl</code> et <code>sleep</code> sont injectables : les tests passent de faux réseaux et de fausses attentes, sinon chaque test durerait des minutes.</span></li>
+          <li><b>request</b><span>Avant chaque requête vers un hôte déjà visité, on attend <code>delayMs</code> (2 s). Le premier appel à un hôte part tout de suite.</span></li>
+          <li><b>requestWithRetry</b><span>Sur un 429 (« trop de requêtes »), on attend 60 s et on réessaie, 3 fois au plus. Le dernier 429 est renvoyé tel quel et finira en <code>HttpError</code>.</span></li>
+          <li><b>robotsRules</b><span>robots.txt est lu une seule fois par site, puis gardé dans une <code>Map</code>. S'il est absent (404), la liste de règles est vide : tout est autorisé.</span></li>
+          <li><b>politeFetch(url)</b><span>Ordre des contrôles : robots.txt d'abord (sans jamais appeler la page interdite), puis la requête, puis le refus (403, ou page courte contenant <code>captcha</code>, <code>datadome</code> ou <code>cf-chl</code>), puis tout autre statut non 2xx.</span></li>
+          <li><b>body.length &lt; 20_000</b><span>Une vraie fiche produit peut citer « captcha » dans un script. Une page de défi, elle, est courte. La limite évite les fausses alertes.</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section id="tests">
+      <h2>Les tests</h2>
+      <p>Les tests de <code>politeFetch</code> remplacent le réseau par une fonction <code>setup(routes)</code> : chaque URL rend ses réponses dans l'ordre, une URL inconnue rend 404. <code>sleep</code> est un espion qui enregistre les attentes demandées, sans attendre réellement.</p>
+
+      <article class="file">
+        <h3>gtin.test.js</h3>
+        <span class="path">meubly-back/tests/unit/ingestion/gtin.test.js</span>
+<pre><code class="language-javascript">{{code:meubly-back/tests/unit/ingestion/gtin.test.js}}</code></pre>
+        <ul class="notes">
+          <li><b>5710441280323</b><span>Un vrai EAN-13 : accepté.</span></li>
+          <li><b>5710441280324</b><span>Le même avec la clé changée : refusé. Prouve que la clé est bien vérifiée.</span></li>
+          <li><b>510960116082</b><span>12 chiffres mais clé fausse : refusé, même avec une longueur valide.</span></li>
+          <li><b>it.each</b><span>Un seul test écrit, joué une fois par ligne du tableau. <code>%s</code> insère le libellé dans le nom du test.</span></li>
+        </ul>
+      </article>
+
+      <article class="file">
+        <h3>text.test.js</h3>
+        <span class="path">meubly-back/tests/unit/ingestion/text.test.js</span>
+<pre><code class="language-javascript">{{code:meubly-back/tests/unit/ingestion/text.test.js}}</code></pre>
+        <ul class="notes">
+          <li><b>"&amp;Tradition  Été"</b><span>Un seul exemple couvre tout : le « &amp; », la majuscule, l'accent, et les <b>deux</b> espaces qui doivent devenir un seul. Avec un seul espace, le test ne vérifierait plus le regroupement.</span></li>
+        </ul>
+      </article>
+
+      <article class="file">
+        <h3>politeFetch.test.js</h3>
+        <span class="path">meubly-back/tests/unit/ingestion/politeFetch.test.js</span>
+<pre><code class="language-javascript">{{code:meubly-back/tests/unit/ingestion/politeFetch.test.js}}</code></pre>
+        <ul class="notes">
+          <li><b>agent déclaré</b><span>Vérifie l'en-tête exact <code>PrixoliBot/1.0 (+https://x.test)</code>.</span></li>
+          <li><b>robots.txt absent</b><span>Aucune route n'est définie pour robots.txt, le faux réseau rend 404 : la page doit quand même être lue.</span></li>
+          <li><b>robots.txt interdit</b><span><code>not.toHaveBeenCalledWith(forbidden, ...)</code> prouve que la page interdite n'a jamais été demandée au marchand.</span></li>
+          <li><b>2 s entre requêtes</b><span>Trois requêtes vers le même site (robots.txt, page a, page b) donnent exactement deux attentes de 2 000 ms.</span></li>
+          <li><b>429</b><span>Un 429 puis un 200 : le corps est rendu après une attente de 60 000 ms. Quatre 429 d'affilée : abandon après 3 nouvelles tentatives.</span></li>
+          <li><b>403, défi, 500</b><span>Les deux premiers lèvent <code>BlockedError</code>, le troisième <code>HttpError</code> avec <code>status === 500</code>.</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section id="corrections">
+      <h2>Corrections</h2>
+      <div class="callout warn">
+        <span class="eyebrow">Corrigé dans la PR #28</span>
+        <p>Après le merge de la PR #27, une relecture complète des tests a trouvé des écarts avec le code donné. Le code affiché sur cette page est la version corrigée.</p>
+      </div>
+      <ul class="plain">
+        <li><b>Test sans effet.</b> <code>not.toHaveBeenNthCalledWith(forbidden, ...)</code> attend un numéro d'appel en premier argument : avec une URL, il ne trouve aucun appel et le <code>.not</code> réussit toujours, même si la page interdite est téléchargée. Remplacé par <code>not.toHaveBeenCalledWith</code>.</li>
+        <li><b>Nom inversé.</b> « autorise une URL interdite... » est devenu « refuse une URL interdite... ».</li>
+        <li><b>Test manquant.</b> « autorise tout quand robots.txt est absent (404) » ajouté, comme le demande le plan.</li>
+        <li><b>Coquilles.</b> « polices », « est GTIN », « minuscule », et la ligne vide entre les blocs <code>/** */</code> et leur fonction, qui empêchait l'éditeur d'afficher la documentation au survol.</li>
+      </ul>
+      <p>La leçon : relire tous les fichiers tapés, tests compris, avant le commit. Un test vert ne prouve pas qu'il vérifie quelque chose.</p>
+    </section>
+
+    <section id="verifs">
+      <h2>Vérifications</h2>
+      <div>
+        <div class="cmd"><code>npm run test:run</code><span class="chip ok">140 verts · 15 fichiers</span></div>
+        <div class="cmd"><code>npm run lint</code><span class="chip ok">0 erreur</span></div>
+        <div class="cmd"><code>npm run format:check</code><span class="chip ok">conforme</span></div>
+      </div>
+      <p>Les 3 avertissements de lint viennent de fichiers antérieurs à la phase 3 (<code>scripts/fix_furniture_images.js</code>, <code>supabase.js</code>, <code>tests/unit/furnitureService.test.js</code>).</p>
+    </section>
+
+    <section id="retenir">
+      <h2>À retenir</h2>
+      <ul class="plain">
+        <li><b>Injection de dépendances.</b> Passer <code>fetchImpl</code> et <code>sleep</code> en paramètres rend le code testable sans réseau ni attente réelle. On réutilisera ce schéma dans les adaptateurs.</li>
+        <li><b>Un refus est définitif.</b> <code>BlockedError</code> n'est jamais rattrapé pour réessayer autrement. C'est la règle du projet : on ne contourne pas un marchand qui bloque.</li>
+        <li><b>Hors périmètre :</b> la directive <code>Crawl-delay</code> de robots.txt est ignorée, remplacée par le délai fixe de 2 s. Les cas exotiques de robots.txt (encodage d'URL, groupes mal formés) ne sont pas gérés.</li>
+        <li><b>Suite :</b> tâche 3, l'adaptateur Shopify (Connox et Fleux), qui utilisera <code>createPoliteFetch</code> et <code>pickGtin</code>.</li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>try { hljs.highlightAll(); } catch (e) { /* sans coloration, le code reste lisible */ }</script>

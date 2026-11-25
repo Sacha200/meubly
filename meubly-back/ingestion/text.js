@@ -1,9 +1,8 @@
 /**
- * Texte comparable : minuscule, sans accents, sans "&", tout autre signe remplace par un espace.
+ * Texte comparable : minuscules, sans accents, sans "&", tout autre signe remplace par un espace.
  * @param {string} s
  * @returns {string}
  */
-
 export function normText(s) {
   return s
     .toLowerCase()
