@@ -198,7 +198,7 @@ Branche `feat/ingestion-run`.
 - Statut : `BlockedError` -> `failed` (arret immediat) ; erreurs sur des items isoles -> `partial` ; plus de 20 % d'items en erreur -> `failed`.
 - `errors` : 50 entrees au plus, `{ externalId, message }`.
 
-- [ ] **Step 1 : tests unitaires en echec.**
+- [x] **Step 1 : tests unitaires en echec.**
   - `brands` : `commonBrands([new Set(["hay","muuto"]), new Set(["hay"]), new Set(["muuto","gubi"])])` contient `hay` et `muuto`, pas `gubi` ; `canonicalBrand("Audo Copenhagen") === "audo"`.
   - `categoryMap` : "Suspension PH 5" -> `"Luminaires"` ; "Chaise About A Chair" -> `"Salon"` ; "Table de jardin Palissade" -> `"Jardin et exterieur"` (le jardin prime) ; "Objet inconnu" -> `"Autres"`.
   - `match` : EAN connu -> `attach` ; EAN valide inconnu -> `create` ; sans EAN et un similaire -> `candidate` ; sans EAN et aucun similaire -> `skip` ; `similar` n'est jamais appele quand un EAN existe.

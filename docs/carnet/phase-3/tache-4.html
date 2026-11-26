@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tâche 4, rapprochement et écriture</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout : page de documentation sobre, sommaire a gauche sur grand ecran, une colonne sur telephone. */
+:root {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --ink: #1f2328;
+  --muted: #656d76;
+  --line: #e5e7eb;
+  --accent: #8a6a1f;
+  --code-bg: #f6f8fa;
+  --ok: #1a7f37;
+  --warn-soft: #fff8e6;
+  --warn: #8a5a00;
+  --tk-kw: #cf222e; --tk-str: #0a3069; --tk-num: #0550ae; --tk-com: #6e7781; --tk-fn: #8250df;
+  --f-body: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono: ui-monospace, "Cascadia Code", Consolas, "SF Mono", monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f1115; --surface: #0f1115; --ink: #e6edf3; --muted: #9198a1; --line: #2a2f37;
+  --accent: #d6b25e; --code-bg: #161b22; --ok: #3fb950; --warn-soft: #2a2414; --warn: #e3b341;
+  --tk-kw: #ff7b72; --tk-str: #a5d6ff; --tk-num: #79c0ff; --tk-com: #8b949e; --tk-fn: #d2a8ff;
+  color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #0f1115; --surface: #0f1115; --ink: #e6edf3; --muted: #9198a1; --line: #2a2f37;
+  --accent: #d6b25e; --code-bg: #161b22; --ok: #3fb950; --warn-soft: #2a2414; --warn: #e3b341;
+  --tk-kw: #ff7b72; --tk-str: #a5d6ff; --tk-num: #79c0ff; --tk-com: #8b949e; --tk-fn: #d2a8ff;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { background: var(--bg); color: var(--ink); font: 15.5px/1.65 var(--f-body); }
+.wrap {
+  max-width: 1080px; margin: 0 auto;
+  padding-block: 3rem 4rem;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 3.5rem;
+}
+@media (max-width: 860px) { .wrap { grid-template-columns: minmax(0, 1fr); gap: 2rem; } nav.toc { position: static; } }
+nav.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 2rem); align-self: start; font-size: .875rem; }
+nav.toc p { font-size: .75rem; font-weight: 500; color: var(--muted); margin: 0 0 .6rem; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: .2rem; }
+nav.toc a { color: var(--muted); text-decoration: none; display: block; padding: .15rem 0; }
+nav.toc a:hover, nav.toc a:focus-visible { color: var(--ink); }
+nav.toc .sub a { padding-left: .9rem; font-size: .82rem; }
+main { min-width: 0; display: grid; gap: 3rem; }
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+h1, h2, h3 { font-family: var(--f-body); text-wrap: balance; line-height: 1.25; margin: 0; letter-spacing: -.01em; }
+h1 { font-size: 1.9rem; font-weight: 600; }
+h2 { font-size: 1.3rem; font-weight: 600; padding-bottom: .5rem; border-bottom: 1px solid var(--line); }
+h3 { font-size: 1rem; font-weight: 600; }
+section { display: grid; gap: .9rem; }
+p { margin: 0; max-width: 68ch; }
+.eyebrow { font-size: .8rem; color: var(--muted); }
+.lede { font-size: 1.05rem; color: var(--muted); }
+.meta { display: flex; flex-wrap: wrap; gap: .4rem 1rem; font-size: .85rem; color: var(--muted); }
+.chip { font-size: .85rem; color: var(--muted); }
+.chip.ok { color: var(--ok); }
+code { font-family: var(--f-mono); font-size: .86em; background: var(--code-bg); padding: .1em .35em; border-radius: 4px; }
+ul.plain { margin: 0; padding-left: 1.2rem; display: grid; gap: .4rem; max-width: 70ch; }
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+th, td { text-align: left; padding: .55rem .75rem .55rem 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: .8rem; color: var(--muted); font-weight: 500; }
+td code { white-space: nowrap; }
+ol.steps { margin: 0; padding-left: 1.3rem; display: grid; gap: .7rem; max-width: 70ch; }
+ol.steps li::marker { color: var(--muted); }
+ol.steps strong { display: block; font-weight: 500; }
+ol.steps span { color: var(--muted); }
+.file { display: grid; gap: .75rem; padding-top: 1.5rem; }
+.file .path { font: .8rem var(--f-mono); color: var(--muted); }
+pre { margin: 0; overflow-x: auto; background: var(--code-bg); border-radius: 6px; padding: 1rem 1.1rem; font: .83rem/1.6 var(--f-mono); tab-size: 2; }
+pre code { background: none; padding: 0; font-size: inherit; }
+.notes { display: grid; margin: 0; padding: 0; list-style: none; max-width: 72ch; }
+.notes li { display: grid; grid-template-columns: minmax(0, 10rem) minmax(0, 1fr); gap: 1rem; padding: .5rem 0; border-bottom: 1px solid var(--line); }
+.notes li:last-child { border-bottom: 0; }
+.notes b { font: 500 .8rem/1.6 var(--f-mono); color: var(--ink); overflow-wrap: anywhere; }
+.notes span { color: var(--muted); }
+@media (max-width: 560px) { .notes li { grid-template-columns: minmax(0, 1fr); gap: .15rem; } }
+.callout { border-radius: 6px; padding: .9rem 1.1rem; display: grid; gap: .4rem; }
+.callout.warn { background: var(--warn-soft); }
+.callout.warn .eyebrow { color: var(--warn); font-weight: 500; }
+.fix { display: grid; gap: .6rem; }
+.cmd { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1rem; align-items: center; padding: .5rem 0; border-bottom: 1px solid var(--line); }
+.cmd code { overflow-wrap: anywhere; }
+.cmd .chip { white-space: nowrap; }
+.hljs-keyword, .hljs-built_in, .hljs-literal { color: var(--tk-kw); }
+.hljs-string, .hljs-regexp { color: var(--tk-str); }
+.hljs-number { color: var(--tk-num); }
+.hljs-comment { color: var(--tk-com); font-style: italic; }
+.hljs-title, .hljs-title.function_, .hljs-title.class_ { color: var(--tk-fn); }
+.hljs-subst, .hljs-params, .hljs-variable { color: var(--ink); }
+.back { font-size: .85rem; color: var(--muted); text-decoration: none; }
+.back:hover { color: var(--ink); }
+</style>
+
+<div class="wrap">
+  <nav class="toc" aria-label="Sommaire">
+    <p>Sommaire</p>
+    <ol>
+      <li><a href="#objectif">Objectif</a></li>
+      <li><a href="#decoupage">Découpage</a></li>
+      <li><a href="#fichiers">Fichiers créés (4a)</a></li>
+      <li><a href="#modules">Le code (4a)</a></li>
+      <li class="sub"><a href="#brands">brands.js</a></li>
+      <li class="sub"><a href="#categorymap">categoryMap.js</a></li>
+      <li class="sub"><a href="#match">match.js</a></li>
+      <li><a href="#tests">Les tests (4a)</a></li>
+      <li><a href="#verifs">Vérifications</a></li>
+      <li><a href="#retenir">À retenir</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <header style="display:grid;gap:.9rem">
+      <a class="back" href="index.html">&larr; Carnet de la phase 3</a>
+      <span class="eyebrow">Prixoli · phase 3</span>
+      <h1>Tâche 4 : rapprochement et écriture en base</h1>
+      <p class="lede">Décider, pour chaque article lu chez un marchand, s'il rejoint un meuble déjà connu, en crée un nouveau ou attend l'avis d'un admin, puis l'écrire en base avec son offre.</p>
+      <div class="meta">
+        <span class="chip">4a en cours</span>
+        <span class="chip">feat/ingestion-matching</span>
+        <span class="chip">26 nov. 2026</span>
+      </div>
+    </header>
+
+    <section id="objectif">
+      <h2>Objectif</h2>
+      <p>L'adaptateur de la tâche 3 rend des articles au format commun. Il reste à les relier au catalogue : c'est ce qui permet d'afficher plusieurs marchands sur une même fiche. La règle de la spec (6.4) est simple : <b>l'EAN décide</b>. Sans EAN, on ne crée jamais de meuble automatiquement, on propose au mieux un rapprochement à valider.</p>
+    </section>
+
+    <section id="decoupage">
+      <h2>Découpage</h2>
+      <ol class="steps">
+        <li><div><strong>4a : modules purs</strong><span>Marques communes, catégorie racine, décision de rapprochement. Aucune base de données, 14 tests unitaires.</span></div></li>
+        <li><div><strong>4b : écriture en base</strong><span>Migration <code>find_similar_furniture</code>, <code>ingestionRepository</code>, <code>run.js</code>, tests sur la base locale.</span></div></li>
+        <li><div><strong>4c : commande et essai réel</strong><span><code>npm run ingest</code>, collecte locale sur Connox et Fleux, diagrammes.</span></div></li>
+      </ol>
+    </section>
+
+    <section id="fichiers">
+      <h2>Fichiers créés (4a)</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Fichier</th><th>Rôle</th></tr></thead>
+          <tbody>
+            <tr><td><code>meubly-back/ingestion/brands.js</code></td><td>Nom canonique d'une marque, marques communes à plusieurs marchands</td></tr>
+            <tr><td><code>meubly-back/ingestion/categoryMap.js</code></td><td>Catégorie racine d'un article</td></tr>
+            <tr><td><code>meubly-back/ingestion/match.js</code></td><td>Décision de rapprochement</td></tr>
+            <tr><td><code>meubly-back/tests/unit/ingestion/{brands,categoryMap,match}.test.js</code></td><td>3 + 6 + 5 tests</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="modules">
+      <h2>Le code (4a)</h2>
+      <p>Le code ci-dessous est copié automatiquement depuis les fichiers du dépôt.</p>
+
+      <article class="file" id="brands">
+        <h3>brands.js</h3>
+        <span class="path">meubly-back/ingestion/brands.js</span>
+        <p>On ne collecte que les marques vendues par au moins deux marchands : un produit vendu par un seul marchand n'a rien à comparer.</p>
+<pre><code class="language-javascript">// Marques comparables d'un marchand a l'autre : meme nom une fois normalise et ramene a son alias.
+import { normText } from "./text.js";
+
+/** Ecarts de nom releves entre Connox, Fleux et Nordic Nest (tache 0). */
+export const BRAND_ALIASES = {
+  "audo copenhagen": "audo",
+  "and tradition": "tradition",
+  fermliving: "ferm living",
+  "hay denmark": "hay",
+};
+
+/**
+ * Nom de marque canonique : normalise, sans "The " initial, alias applique.
+ * @param {string} name
+ * @returns {string}
+ */
+export function canonicalBrand(name) {
+  const brand = normText(name).replace(/^the /, "");
+  return BRAND_ALIASES[brand] ?? brand;
+}
+
+/**
+ * Marques presentes chez au moins deux marchands.
+ * @param {Set&lt;string&gt;[]} sets  marques de chaque marchand
+ * @returns {Set&lt;string&gt;}  noms canoniques
+ */
+export function commonBrands(sets) {
+  const counts = new Map();
+  for (const set of sets) {
+    for (const brand of new Set([...set].map(canonicalBrand))) {
+      counts.set(brand, (counts.get(brand) ?? 0) + 1);
+    }
+  }
+  return new Set([...counts].filter(([, count]) =&gt; count &gt;= 2).map(([brand]) =&gt; brand));
+}</code></pre>
+        <ul class="notes">
+          <li><b>BRAND_ALIASES</b><span>Les écarts de nom relevés à la tâche 0 : « Audo Copenhagen » chez l'un, « Audo » chez l'autre. <code>normText</code> a déjà transformé « &amp; » en « and ».</span></li>
+          <li><b>new Set intérieur</b><span>Si un marchand liste « audo » et « audo copenhagen », les deux donnent « audo » : la marque ne compte qu'une fois pour ce marchand.</span></li>
+          <li><b>noms canoniques</b><span><code>commonBrands</code> rend des noms canoniques. L'adaptateur filtre sur ses propres noms : <code>run.js</code> (4b) devra lui passer les noms d'origine dont la forme canonique est commune.</span></li>
+        </ul>
+      </article>
+
+      <article class="file" id="categorymap">
+        <h3>categoryMap.js</h3>
+        <span class="path">meubly-back/ingestion/categoryMap.js</span>
+        <p>Un meuble créé doit être rangé dans l'une des 11 catégories racines créées à la tâche 1. On regarde le type annoncé par le marchand, puis le titre.</p>
+<pre><code class="language-javascript">// Range un article dans l'une des 11 categories racines du catalogue maison (migration de la tache 1).
+import { normText } from "./text.js";
+
+/**
+ * La premiere regle qui correspond l'emporte : l'ordre compte (le jardin prime sur la table).
+ * Connox annonce ses types en allemand (Leuchten, Geschirr, Kinder) : ils sont dans la table.
+ */
+const RULES = [
+  ["Jardin et exterieur", /jardin|exterieur|outdoor|terrasse|parasol|transat/],
+  ["Luminaires", /lampe|suspension|lampadaire|applique|baladeuse|luminaire|plafonnier|leuchten/],
+  ["Enfant", /enfant|bebe|baby|kids|kinder/],
+  ["Salle de bain", /salle de bain|douche|porte savon|serviette de bain/],
+  [
+    "Cuisine et salle a manger",
+    /cuisine|kuche|kochen|geschirr|arts de la table|salle a manger|sets? de table|vaisselle|assiette|tasse|mug|carafe|pichet|sucrier|\bbol\b|plateau|dessous de verre|couverts|casserole|theiere|cafetiere/,
+  ],
+  ["Bureau", /bureau/],
+  ["Chambre", /\blit\b(?! de jour)|matelas|chevet|linge de lit|housse de couette|oreiller/],
+  [
+    "Rangement",
+    /etagere|bibliotheque|commode|buffet|rangement|armoire|console|portemanteau|patere/,
+  ],
+  ["Decoration", /vase|miroir|tapis|coussin|bougeoir|bougie|plaid|cadre|affiche|horloge/],
+  [
+    "Salon",
+    /chaise|tabouret|fauteuil|lounge|pouf|canape|sofa|daybed|banquette|lit de jour|\bbanc\b|\btable\b/,
+  ],
+];
+
+const labelOf = (text) =&gt; RULES.find(([, pattern]) =&gt; pattern.test(normText(text ?? "")))?.[0];
+
+/**
+ * Categorie racine d'un article : d'apres le type annonce par le marchand, sinon le titre.
+ * @param {{ categoryHint: string|null, productTitle: string }} item
+ * @returns {string}
+ */
+export function categoryLabelFor(item) {
+  return labelOf(item.categoryHint) ?? labelOf(item.productTitle) ?? "Autres";
+}</code></pre>
+        <ul class="notes">
+          <li><b>l'ordre compte</b><span><code>find</code> s'arrête à la première règle qui correspond : « Table de jardin » finit en Jardin, pas en Salon.</span></li>
+          <li><b>\b</b><span>Limite de mot. Sans elle, « cartable » contenait « table » et partait en Salon, « blanc » contenait « banc ».</span></li>
+          <li><b>(?! de jour)</b><span>« Mais pas suivi de " de jour " » : un lit de jour est un canapé, il va dans Salon.</span></li>
+          <li><b>types allemands</b><span>Connox annonce ses types en allemand (Leuchten, Geschirr, Küche &amp; Kochen, Kinder). <code>normText</code> retire les accents : « Küche » devient « kuche ».</span></li>
+          <li><b>approximatif</b><span>Sur les catalogues du spike, « Autres » regroupe 17 % des produits Connox et 53 % des produits Fleux (chaussettes, affiches, jeux). Ces catégories servent à la navigation, on pourra les affiner.</span></li>
+        </ul>
+      </article>
+
+      <article class="file" id="match">
+        <h3>match.js</h3>
+        <span class="path">meubly-back/ingestion/match.js</span>
+        <p>La décision ne touche pas la base elle-même : elle reçoit deux fonctions de recherche (<code>lookup</code>). En 4b, ce seront celles d'<code>ingestionRepository</code> ; dans les tests, des fonctions factices.</p>
+<pre><code class="language-javascript">// Rapprochement d'un article marchand avec le catalogue (spec 6.4) : l'EAN decide, sinon un admin.
+import { isGtin } from "./gtin.js";
+
+/**
+ * @param {import("./adapters/index.js").ScrapedItem} item
+ * @param {{
+ *   furnitureByGtin: (gtin: string) =&gt; Promise&lt;{ furniture_id: string, product_id: string|null }|null&gt;,
+ *   similar: (brand: string, title: string) =&gt; Promise&lt;{ furniture_id: string, score: number }[]&gt;,
+ * }} lookup
+ * @returns {Promise&lt;{ action: "attach", furnitureId: string } | { action: "create" }
+ *   | { action: "candidate", candidates: { furniture_id: string, score: number }[] } | { action: "skip" }&gt;}
+ */
+export async function decide(item, { furnitureByGtin, similar }) {
+  if (isGtin(item.gtin)) {
+    const known = await furnitureByGtin(item.gtin);
+    return known ? { action: "attach", furnitureId: known.furniture_id } : { action: "create" };
+  }
+  const candidates = await similar(item.brand, item.productTitle);
+  return candidates.length ? { action: "candidate", candidates } : { action: "skip" };
+}</code></pre>
+        <ul class="notes">
+          <li><b>attach</b><span>EAN connu : l'article devient une offre de plus sur le meuble existant.</span></li>
+          <li><b>create</b><span>EAN valide inconnu : nouveau meuble.</span></li>
+          <li><b>candidate</b><span>Sans EAN mais un meuble proche de même marque : un admin tranchera.</span></li>
+          <li><b>skip</b><span>Sans EAN ni meuble proche : l'article est gardé dans <code>partner_product</code>, sans meuble.</span></li>
+          <li><b>isGtin revérifié</b><span>L'adaptateur a déjà contrôlé l'EAN, mais <code>decide</code> est la frontière avec la base : un futur adaptateur moins rigoureux ne pourra pas créer de meuble avec un faux EAN.</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section id="tests">
+      <h2>Les tests (4a)</h2>
+<pre><code class="language-javascript">import { it, expect } from "vitest";
+import { canonicalBrand, commonBrands } from "../../../ingestion/brands.js";
+
+it("ramene une marque a son nom canonique", () =&gt; {
+  expect(canonicalBrand("Audo Copenhagen")).toBe("audo");
+  expect(canonicalBrand("&amp;Tradition")).toBe("tradition");
+});
+
+it("garde les marques vendues par au moins deux marchands", () =&gt; {
+  const common = commonBrands([
+    new Set(["hay", "muuto"]),
+    new Set(["hay"]),
+    new Set(["muuto", "gubi"]),
+  ]);
+  expect(common).toEqual(new Set(["hay", "muuto"]));
+});
+
+it("compte une marque une seule fois par marchand, alias compris", () =&gt; {
+  expect(commonBrands([new Set(["audo", "audo copenhagen"]), new Set(["hay"])])).toEqual(new Set());
+});</code></pre>
+<pre><code class="language-javascript">import { it, expect } from "vitest";
+import { categoryLabelFor } from "../../../ingestion/categoryMap.js";
+
+const label = (productTitle, categoryHint = null) =&gt;
+  categoryLabelFor({ productTitle, categoryHint });
+
+it.each([
+  ["Suspension PH 5", "Luminaires"],
+  ["Chaise About A Chair", "Salon"],
+  ["Table de jardin Palissade", "Jardin et exterieur"],
+  ["Lit de jour Mira", "Salon"],
+  ["Objet inconnu", "Autres"],
+])("%s -&gt; %s", (title, expected) =&gt; {
+  expect(label(title)).toBe(expected);
+});
+
+it("regarde le type annonce par le marchand avant le titre", () =&gt; {
+  expect(label("Apex", "Lampe de table")).toBe("Luminaires");
+});</code></pre>
+<pre><code class="language-javascript">import { describe, it, expect, vi } from "vitest";
+import { decide } from "../../../ingestion/match.js";
+
+const EAN = "5710441309116";
+const item = (gtin) =&gt; ({ gtin, brand: "HAY", productTitle: "Pouf Planar" });
+
+function lookup({ known = null, similar = [] } = {}) {
+  return {
+    furnitureByGtin: vi.fn(async () =&gt; known),
+    similar: vi.fn(async () =&gt; similar),
+  };
+}
+
+describe("decide", () =&gt; {
+  it("rattache a un meuble deja connu par son EAN", async () =&gt; {
+    const l = lookup({ known: { furniture_id: "f1", product_id: "p1" } });
+    expect(await decide(item(EAN), l)).toEqual({ action: "attach", furnitureId: "f1" });
+    expect(l.similar).not.toHaveBeenCalled();
+  });
+
+  it("cree un meuble pour un EAN valide inconnu", async () =&gt; {
+    const l = lookup();
+    expect(await decide(item(EAN), l)).toEqual({ action: "create" });
+    expect(l.similar).not.toHaveBeenCalled();
+  });
+
+  it("propose un rapprochement sans EAN quand un meuble proche existe", async () =&gt; {
+    const candidates = [{ furniture_id: "f2", score: 0.8 }];
+    const l = lookup({ similar: candidates });
+    expect(await decide(item(null), l)).toEqual({ action: "candidate", candidates });
+    expect(l.similar).toHaveBeenCalledWith("HAY", "Pouf Planar");
+  });
+
+  it("ignore un article sans EAN ni meuble proche", async () =&gt; {
+    expect(await decide(item(null), lookup())).toEqual({ action: "skip" });
+  });
+
+  it("traite un EAN a cle fausse comme une absence d'EAN", async () =&gt; {
+    const l = lookup();
+    expect(await decide(item("5710441309117"), l)).toEqual({ action: "skip" });
+    expect(l.furnitureByGtin).not.toHaveBeenCalled();
+  });
+});</code></pre>
+      <ul class="notes">
+        <li><b>it.each</b><span>Un même test répété sur un tableau de cas ; <code>%s</code> place chaque valeur dans le nom du test.</span></li>
+        <li><b>vi.fn</b><span>Fonction espion : elle enregistre ses appels. <code>toHaveBeenCalledWith</code> vérifie les arguments ; <code>toHaveBeenCalled</code>, lui, n'en regarde aucun.</span></li>
+        <li><b>clé fausse</b><span>5710441309117 au lieu de …116 : traité comme une absence d'EAN, et la base n'est même pas interrogée.</span></li>
+      </ul>
+    </section>
+
+    <section id="verifs">
+      <h2>Vérifications</h2>
+      <div>
+        <div class="cmd"><code>npm run test:run</code><span class="chip ok">164 verts · 19 fichiers</span></div>
+        <div class="cmd"><code>npm run lint</code><span class="chip ok">0 erreur</span></div>
+        <div class="cmd"><code>npm run format:check</code><span class="chip ok">conforme</span></div>
+      </div>
+    </section>
+
+    <section id="retenir">
+      <h2>À retenir</h2>
+      <ul class="plain">
+        <li><b>Décider sans la base.</b> La logique de rapprochement se teste en quelques millisecondes ; la base ne sert qu'à fournir les réponses.</li>
+        <li><b>Jamais de meuble sans EAN.</b> Un rapprochement par le titre reste une proposition.</li>
+        <li><b>Suite :</b> 4b, la migration et l'écriture en base.</li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>try { hljs.highlightAll(); } catch (e) { /* sans coloration, le code reste lisible */ }</script>
