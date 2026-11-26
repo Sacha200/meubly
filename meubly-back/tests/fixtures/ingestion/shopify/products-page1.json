@@ -1,0 +1,189 @@
+{
+  "products": [
+    {
+      "id": 15899599700312,
+      "title": "HAY - Pouf Planar",
+      "handle": "hay-pouf-planar",
+      "body_html": "<h2> Pouf en coton et lin mélangés </h2>\nLe Planar Pouf de la maison danoise HAY est un élément de décoration multifonctionnel. Il peut être utilisé comme tabouret ou comme siège supplémentaire. Planar Il est facile à transporter et convient parfaitement pour le salon, la chambre d&#039;enfant ou la chambre à coucher. Le pouf est fabriqué dans un mélange coton/lin confortable et extrêmement doux. Disponible en plusieurs couleurs.",
+      "updated_at": "2026-11-20T10:00:00+01:00",
+      "vendor": "HAY",
+      "product_type": "Möbel",
+      "variants": [
+        {
+          "id": 57814168338776,
+          "title": "sable",
+          "option1": "sable",
+          "sku": "292394",
+          "available": true,
+          "price": "239.00",
+          "compare_at_price": null,
+          "grams": 4200,
+          "featured_image": {
+            "src": "https://cdn.shopify.com/s/files/1/0959/1760/5208/files/Hay-Planar-Pouf-H-40-cm-sand.jpg?v=1785157283"
+          }
+        },
+        {
+          "id": 57814168469848,
+          "title": "gris clair",
+          "option1": "gris clair",
+          "sku": "292392",
+          "available": true,
+          "price": "239.00",
+          "compare_at_price": null,
+          "grams": 4200,
+          "featured_image": {
+            "src": "https://cdn.shopify.com/s/files/1/0959/1760/5208/files/Hay-Planar-Pouf-H-40-cm-hellgrau.jpg?v=1785157283"
+          }
+        }
+      ],
+      "images": [
+        {
+          "src": "https://cdn.shopify.com/s/files/1/0959/1760/5208/files/Hay-Planar-Pouf-H-40-cm-hellgrau.jpg?v=1785157283"
+        },
+        {
+          "src": "https://cdn.shopify.com/s/files/1/0959/1760/5208/files/Hay-Planar-Pouf-Ambiente.jpg?v=1785157283"
+        },
+        {
+          "src": "https://cdn.shopify.com/s/files/1/0959/1760/5208/files/Hay-Planar-Pouf-H-40-cm-sand.jpg?v=1785157283"
+        }
+      ]
+    },
+    {
+      "id": 16204286460248,
+      "title": "Thonet - S 285/1 Bureau",
+      "handle": "thonet-s-285-1-bureau",
+      "body_html": "<h2> Thonet Bureau S 285/1 : un classique du Bauhaus signé Marcel Breuer pour votre bureau</h2>\r\n\r\n<p><strong>Le bureau S 285/1 d' Thonet </strong> allie des lignes épurées à un plan de travail fonctionnel. Créé par <strong>Marcel Breuer</strong> en 1935, ce modèle compte parmi les classiques de la Nouvelle Objectivité et apporte une touche de fraîcheur même dans les bureaux modernes et les espaces de travail à domicile.</p>\r\n\r\n<p> Thonet xml-ph-0000@deepl.internal, forte d’une longue histoire, fabrique depuis 1819 des meubles en bois courbé et en tube d’acier. Le modèle S 285 incarne l’ambition du Bauhaus d’allier art et technique en un tout harmonieux.</p>\r\n\r\n<h3>Une légèreté aérienne</h3>\r\n<p>Le piètement incurvé soutient les éléments en bois de telle sorte qu’ils semblent flotter au-dessus du sol. Grâce à son aspect compact, ce bureau s’intègre également dans des espaces plus réduits sans dominer son environnement.</p>\r\n\r\n<h3>Configuration flexible</h3>\r\n<p>Le S 285 est disponible en différentes versions, avec un ou plusieurs caissons, ainsi qu’avec ou sans étagères. Le bureau peut ainsi être adapté à l’espace disponible et au style de travail. Le configurateur vous permet de choisir la version qui vous convient, étape par étape.</p>\r\n\r\n<h3>Le confort dans les détails</h3>\r\n<p>Les tiroirs sont équipés d’une ouverture totale et d’un système de fermeture amortie. Ils coulissent en douceur et se ferment sans bruit, ce qui permet de maintenir facilement l’ordre sur le poste de travail.</p>",
+      "updated_at": "2026-11-20T10:00:00+01:00",
+      "vendor": "Thonet",
+      "product_type": "Möbel",
+      "variants": [
+        {
+          "id": 59021643448664,
+          "title": "Default Title",
+          "option1": "Default Title",
+          "sku": "279373",
+          "available": true,
+          "price": "5553.05",
+          "compare_at_price": "6533.00",
+          "grams": 61000,
+          "featured_image": {
+            "src": "https://cdn.shopify.com/s/files/1/0959/1760/5208/files/Thonet-S-285-1-Schreibtisch-Chrom-Esche-schwarz_2e9078f5-a1b0-4016-b7a8-ad339007b95b.jpg?v=1793718302"
+          }
+        }
+      ],
+      "images": [
+        {
+          "src": "https://cdn.shopify.com/s/files/1/0959/1760/5208/files/Thonet-S-285-1-Schreibtisch-Chrom-Esche-schwarz_2e9078f5-a1b0-4016-b7a8-ad339007b95b.jpg?v=1793718302"
+        },
+        {
+          "src": "https://cdn.shopify.com/s/files/1/0959/1760/5208/files/Thonet-S-285-Schreibtisch-Ambiente-1_af4e3bd5-cf5b-42cd-a77a-f5a3a359adea.jpg?v=1793758088"
+        },
+        {
+          "src": "https://cdn.shopify.com/s/files/1/0959/1760/5208/files/Thonet-S-285-Schreibtisch-Ambiente-2_a3555810-ab05-4be8-b77d-5a84d8887d91.jpg?v=1793758088"
+        },
+        {
+          "src": "https://cdn.shopify.com/s/files/1/0959/1760/5208/files/Thonet-S-285-Schreibtisch-Ambiente-3_718c1c6e-5ce0-4715-b0d2-a6daa4671afe.jpg?v=1793758088"
+        },
+        {
+          "src": "https://cdn.shopify.com/s/files/1/0959/1760/5208/files/Thonet-S-285-Schreibtisch-Ambiente-7_fef26a9f-4049-4225-9db8-44ab2155a164.jpg?v=1793758088"
+        },
+        {
+          "src": "https://cdn.shopify.com/s/files/1/0959/1760/5208/files/Thonet-S-285-Schreibtisch-Ambiente-4_8c6bf702-00cd-4e54-997b-5b8abcaff322.jpg?v=1793758088"
+        },
+        {
+          "src": "https://cdn.shopify.com/s/files/1/0959/1760/5208/files/Thonet-S-285-Schreibtisch-Ambiente-5_4e3579a1-ff7d-41b9-9b91-1e58e25971b5.jpg?v=1793758089"
+        }
+      ]
+    },
+    {
+      "id": 8707683942734,
+      "title": "Lampe de table Apex",
+      "handle": "lampe-de-table-apex",
+      "body_html": "<p>Découvrez notre lampe de table Apex imaginée par le designer britannique <span data-mce-fragment=\"1\">John Tree. Mélangeant références archétypales et contemporaines, l'abat-jours en acier plié de la lampe offre un contraste graphique avec la base chromée. Pour le bureau ou pour la table de chevet, l'abat-jour pivotable à 360 degrés offre un éclairage fonctionnelle et adapté à vos besoins. </span></p>\n<p> </p>",
+      "updated_at": "2026-11-20T10:00:00+01:00",
+      "vendor": "Hay",
+      "product_type": "Lampe de table",
+      "variants": [
+        {
+          "id": 47561977528654,
+          "title": "Emerald Green",
+          "option1": "Emerald Green",
+          "sku": "5710441326304",
+          "available": true,
+          "price": "125.00",
+          "compare_at_price": null,
+          "grams": 2000,
+          "featured_image": {
+            "src": "https://cdn.shopify.com/s/files/1/0589/5959/3531/files/apextable1.jpg?v=1706182365"
+          }
+        },
+        {
+          "id": 47561977561422,
+          "title": "Iron Black",
+          "option1": "Iron Black",
+          "sku": "5710441326311",
+          "available": true,
+          "price": "125.00",
+          "compare_at_price": null,
+          "grams": 2000,
+          "featured_image": {
+            "src": "https://cdn.shopify.com/s/files/1/0589/5959/3531/files/apextable3.jpg?v=1706182365"
+          }
+        },
+        {
+          "id": 47561977594190,
+          "title": "Oyster White",
+          "option1": "Oyster White",
+          "sku": "5710441326328",
+          "available": true,
+          "price": "125.00",
+          "compare_at_price": null,
+          "grams": 2000,
+          "featured_image": {
+            "src": "https://cdn.shopify.com/s/files/1/0589/5959/3531/files/apextable2.jpg?v=1706182365"
+          }
+        }
+      ],
+      "images": [
+        {
+          "src": "https://cdn.shopify.com/s/files/1/0589/5959/3531/files/apextable3.jpg?v=1706182365"
+        },
+        {
+          "src": "https://cdn.shopify.com/s/files/1/0589/5959/3531/files/apextable1.jpg?v=1706182365"
+        },
+        {
+          "src": "https://cdn.shopify.com/s/files/1/0589/5959/3531/files/apextable2.jpg?v=1706182365"
+        },
+        {
+          "src": "https://cdn.shopify.com/s/files/1/0589/5959/3531/files/apexlifestyle1.jpg?v=1706182365"
+        },
+        {
+          "src": "https://cdn.shopify.com/s/files/1/0589/5959/3531/files/apexlifestyle2.jpg?v=1706182365"
+        }
+      ]
+    },
+    {
+      "id": 16218735575384,
+      "title": "LIEWOOD - Basil Chaussette de Noël",
+      "handle": "liewood-basil-chaussette-de-noel",
+      "body_html": "",
+      "updated_at": "2026-11-20T10:00:00+01:00",
+      "vendor": "LIEWOOD",
+      "product_type": "Accessoires",
+      "variants": [
+        {
+          "id": 1,
+          "title": "Default Title",
+          "option1": "Default Title",
+          "sku": "",
+          "available": true,
+          "price": "33.60",
+          "compare_at_price": null,
+          "grams": 0,
+          "featured_image": null
+        }
+      ],
+      "images": []
+    }
+  ]
+}

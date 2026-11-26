@@ -1,0 +1,40 @@
+{
+  "id": 16204286460248,
+  "title": "Thonet - S 285/1 Bureau",
+  "handle": "thonet-s-285-1-bureau",
+  "description": "<h2> Thonet Bureau S 285/1 : un classique du Bauhaus signé Marcel Breuer pour votre bureau</h2>\r\n\r\n<p><strong>Le bureau S 285/1 d' Thonet </strong> allie des lignes épurées à un plan de travail fonctionnel. Créé par <strong>Marcel Breuer</strong> en 1935, ce modèle compte parmi les classiques de la Nouvelle Objectivité et apporte une touche de fraîcheur même dans les bureaux modernes et les espaces de travail à domicile.</p>\r\n\r\n<p> Thonet xml-ph-0000@deepl.internal, forte d’une longue histoire, fabrique depuis 1819 des meubles en bois courbé et en tube d’acier. Le modèle S 285 incarne l’ambition du Bauhaus d’allier art et technique en un tout harmonieux.</p>\r\n\r\n<h3>Une légèreté aérienne</h3>\r\n<p>Le piètement incurvé soutient les éléments en bois de telle sorte qu’ils semblent flotter au-dessus du sol. Grâce à son aspect compact, ce bureau s’intègre également dans des espaces plus réduits sans dominer son environnement.</p>\r\n\r\n<h3>Configuration flexible</h3>\r\n<p>Le S 285 est disponible en différentes versions, avec un ou plusieurs caissons, ainsi qu’avec ou sans étagères. Le bureau peut ainsi être adapté à l’espace disponible et au style de travail. Le configurateur vous permet de choisir la version qui vous convient, étape par étape.</p>\r\n\r\n<h3>Le confort dans les détails</h3>\r\n<p>Les tiroirs sont équipés d’une ouverture totale et d’un système de fermeture amortie. Ils coulissent en douceur et se ferment sans bruit, ce qui permet de maintenir facilement l’ordre sur le poste de travail.</p>",
+  "vendor": "Thonet",
+  "type": "Möbel",
+  "images": [
+    "//cdn.shopify.com/s/files/1/0959/1760/5208/files/Thonet-S-285-1-Schreibtisch-Chrom-Esche-schwarz_2e9078f5-a1b0-4016-b7a8-ad339007b95b.jpg?v=1793718302",
+    "//cdn.shopify.com/s/files/1/0959/1760/5208/files/Thonet-S-285-Schreibtisch-Ambiente-1_af4e3bd5-cf5b-42cd-a77a-f5a3a359adea.jpg?v=1793758088",
+    "//cdn.shopify.com/s/files/1/0959/1760/5208/files/Thonet-S-285-Schreibtisch-Ambiente-2_a3555810-ab05-4be8-b77d-5a84d8887d91.jpg?v=1793758088",
+    "//cdn.shopify.com/s/files/1/0959/1760/5208/files/Thonet-S-285-Schreibtisch-Ambiente-3_718c1c6e-5ce0-4715-b0d2-a6daa4671afe.jpg?v=1793758088",
+    "//cdn.shopify.com/s/files/1/0959/1760/5208/files/Thonet-S-285-Schreibtisch-Ambiente-7_fef26a9f-4049-4225-9db8-44ab2155a164.jpg?v=1793758088",
+    "//cdn.shopify.com/s/files/1/0959/1760/5208/files/Thonet-S-285-Schreibtisch-Ambiente-4_8c6bf702-00cd-4e54-997b-5b8abcaff322.jpg?v=1793758088",
+    "//cdn.shopify.com/s/files/1/0959/1760/5208/files/Thonet-S-285-Schreibtisch-Ambiente-5_4e3579a1-ff7d-41b9-9b91-1e58e25971b5.jpg?v=1793758089"
+  ],
+  "options": [
+    {
+      "name": "Title",
+      "position": 1,
+      "values": ["Default Title"]
+    }
+  ],
+  "variants": [
+    {
+      "id": 59021643448664,
+      "title": "Default Title",
+      "option1": "Default Title",
+      "sku": "279373",
+      "barcode": "4066962007545",
+      "available": true,
+      "price": 555305,
+      "compare_at_price": 653300,
+      "weight": 61000,
+      "featured_image": {
+        "src": "https://cdn.shopify.com/s/files/1/0959/1760/5208/files/Thonet-S-285-1-Schreibtisch-Chrom-Esche-schwarz_2e9078f5-a1b0-4016-b7a8-ad339007b95b.jpg?v=1793718302"
+      }
+    }
+  ]
+}

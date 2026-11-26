@@ -157,7 +157,7 @@ Branche `feat/ingestion-shopify`.
 - `adapter_config` Shopify : `{ "baseUrl": "https://www.connox.fr", "stripBrandPrefix": true }` (`stripBrandPrefix` retire le prefixe `MARQUE - ` du titre ; vrai pour Connox seulement).
 - `ctx.knownPages` : `pageId -> updated_at` deja vus ; une page dont `updated_at` n'a pas change n'est pas relue en `.js` et ses variantes sont rendues a partir de `products.json` avec `gtin: null` remplace par celui deja connu (voir tache 4, `knownGtins`). Pour rester simple : `knownPages` porte `{ updatedAt, gtins: Record<externalId, string|null> }`.
 
-- [ ] **Step 1 : tests en echec** (`fetchText` simule servant les fixtures) :
+- [x] **Step 1 : tests en echec** (`fetchText` simule servant les fixtures) :
   - `listBrands` lit les pages jusqu'a une page vide et renvoie les `vendor` normalises ;
   - `listItems` ne lit en `.js` que les produits dont la marque est dans `brands` ;
   - produit Connox : `productTitle` sans le prefixe `MARQUE - `, `price` en euros (centimes / 100), `gtin` pris dans `barcode`, `availability` selon `available`, `variantLabel === ""` quand le titre de variante est `Default Title`, `url` de la forme `<baseUrl>/products/<handle>?variant=<id>` ;
@@ -165,9 +165,9 @@ Branche `feat/ingestion-shopify`.
   - variante au `barcode` de 13 chiffres a cle fausse : `gtin === null` ;
   - `compare_at_price` absent de l'objet rendu ;
   - page presente dans `knownPages` avec le meme `updated_at` : aucun appel `.js`, `gtin` repris de `knownPages`.
-- [ ] **Step 2 :** lancer, attendu : echec.
-- [ ] **Step 3 :** Implementer `shopify.js` (`/products.json?limit=250&page=N`, `/products/<handle>.js`).
-- [ ] **Step 4 :** `npm run test:run`. Attendu : vert. Commit, PR.
+- [x] **Step 2 :** lancer, attendu : echec.
+- [x] **Step 3 :** Implementer `shopify.js` (`/products.json?limit=250&page=N`, `/products/<handle>.js`).
+- [x] **Step 4 :** `npm run test:run`. Attendu : vert. Commit, PR.
 
 ### Task 4: Rapprochement, ecriture en base, peremption, commande `ingest`
 
